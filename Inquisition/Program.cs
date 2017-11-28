@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace Inquisition
 {
@@ -14,9 +15,7 @@ namespace Inquisition
         private CommandService CommandService;
         private DiscordSocketClient DiscordSocketClient;
         private IServiceProvider ServiceProvider;
-        
-
-        private string token = "MzA0MzUzMTIyMDE5NzA0ODQy.DOdzuQ.y-fp-cRx4gno1bhyEjna6YOadeo";
+        private SocketUser SocketUser;
 
         public static void Main(string[] args)
                     => 
@@ -28,6 +27,18 @@ namespace Inquisition
 
             DiscordSocketClient.Log += Log;
             DiscordSocketClient.MessageReceived += MessageReceived;
+
+            string token;
+            try
+            {
+                System.IO.StreamReader file = new System.IO.StreamReader("token.txt");
+                token = file.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
 
             await DiscordSocketClient.LoginAsync(TokenType.Bot, token);
             await DiscordSocketClient.StartAsync();
@@ -44,21 +55,12 @@ namespace Inquisition
 
         private async Task MessageReceived(SocketMessage message)
         {
+            var channel = message.Channel;
+
             switch (message.Content)
             {
-                case "!assface":
-                    await message.Channel.SendMessageAsync("You're an assface, " + message.Author.Mention);
-                    break;
-
-                case "!prune":
-                    break;
-
-                case "!help":
-                    await message.Author.SendMessageAsync("!assface, !help, !commands, !prune");
-                    break;
-
-                case "!commands":
-                    await message.Channel.SendMessageAsync("I don't do much yet");
+                case "!hello":
+                    await message.Channel.SendMessageAsync("Hello " + message.Author.Mention);
                     break;
             }
         }
