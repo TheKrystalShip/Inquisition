@@ -9,9 +9,9 @@ namespace Inquisition
     class Program
     {
 
-        private CommandService CommandService;
+        // private CommandService CommandService;
         private DiscordSocketClient DiscordSocketClient;
-        private IServiceProvider ServiceProvider;
+        // private IServiceProvider ServiceProvider;
         private string token;
 
         public async Task MainAsync()
