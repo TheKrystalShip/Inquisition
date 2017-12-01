@@ -1,18 +1,18 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Rest;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Inquisition
 {
     class Program
     {
-
-        // private CommandService CommandService;
-        private DiscordSocketClient DiscordSocketClient;
-        // private IServiceProvider ServiceProvider;
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IServiceProvider _services;
         private string token;
 
         public static void Main(string[] args)
@@ -20,11 +20,13 @@ namespace Inquisition
 
         public async Task MainAsync()
         {
-            DiscordSocketClient = new DiscordSocketClient();
+            _client = new DiscordSocketClient();
+            _commands = new CommandService();
 
-            DiscordSocketClient.Log += Log;
-            DiscordSocketClient.UserLeft += UserLeft;
-            DiscordSocketClient.UserBanned += UserBanned;
+            _services = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_commands)
+                .BuildServiceProvider();
 
             try
             {
@@ -37,45 +39,42 @@ namespace Inquisition
                 throw;
             }
 
-            await DiscordSocketClient.LoginAsync(TokenType.Bot, token);
-            await DiscordSocketClient.StartAsync();
+            _client.Log += Log;
 
-            // Block this task until the program is closed.
+            await RegisterCommandsAsync();
+
+            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.StartAsync();
+            
             await Task.Delay(-1);
         }
 
-        private async Task UserBanned(SocketUser arg1, SocketGuild arg2)
+        private async Task RegisterCommandsAsync()
         {
-            ulong channel;
-            try
-            {
-                System.IO.StreamReader file = new System.IO.StreamReader("channel.txt");
-                channel = ulong.Parse(file.ReadLine());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            _client.MessageReceived += HandleCommands;
 
-            await arg2.GetTextChannel(channel).SendMessageAsync(arg1.Mention + " was banned from the server.");
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
-        private async Task UserLeft(SocketGuildUser arg)
+        private async Task HandleCommands(SocketMessage arg)
         {
-            ulong channel;
-            try
-            {
-                System.IO.StreamReader file = new System.IO.StreamReader("channel.txt");
-                channel = ulong.Parse(file.ReadLine());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            var message = arg as SocketUserMessage;
 
-            await arg.Guild.GetTextChannel(channel).SendMessageAsync(arg.Mention + " left the server.");
+            if (message is null || message.Author.IsBot) return;
+
+            int argPos = 0;
+
+            if(message.HasStringPrefix("!inq", ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            {
+                var context = new SocketCommandContext(_client, message);
+
+                var result = await _commands.ExecuteAsync(context, argPos, _services);
+
+                if (!result.IsSuccess)
+                {
+                    Console.WriteLine(result.ErrorReason);
+                }
+            }
         }
 
         private Task Log(LogMessage msg)
