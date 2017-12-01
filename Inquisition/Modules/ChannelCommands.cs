@@ -1,30 +1,15 @@
 ﻿using Discord;
 using Discord.Commands;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
-using Inquisition.Data;
-using System.Linq;
 
 namespace Inquisition.Modules
 {
-    public class Commands : ModuleBase<SocketCommandContext>
+    [Group("channel")]
+    public class ChannelCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("servers")]
-        [Summary("Displays all the Game Servers with the corresponding port")]
-        public async Task ServersAsync()
-        {
-            InquisitionContext db = new InquisitionContext();
-            List<Data.Game> Games = db.Games.ToList();
-            EmbedBuilder builder = new EmbedBuilder();
-
-            foreach (Data.Game game in Games)
-            {
-                builder.AddInlineField(game.Name, game.Port);
-            }
-
-            await ReplyAsync("Domain: **ffs.game-host.org**", false, builder.Build());
-        }
-
         [Command("wipe")]
         [Summary("Wipes a text channel")]
         [RequireUserPermission(GuildPermission.Administrator)]
