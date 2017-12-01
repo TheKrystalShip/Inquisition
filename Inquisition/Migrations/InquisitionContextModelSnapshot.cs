@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
@@ -24,6 +25,8 @@ namespace Inquisition.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100);
+
+                    b.Property<bool>("IsOnline");
 
                     b.Property<string>("Port")
                         .HasMaxLength(10);

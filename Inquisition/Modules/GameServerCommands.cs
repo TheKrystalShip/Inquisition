@@ -12,6 +12,41 @@ namespace Inquisition.Modules
     {
         InquisitionContext db = new InquisitionContext();
 
+        [Command("help")]
+        [Summary("Retuns a list of all commands that can be used in the server group")]
+        public async Task HelpAsync()
+        {
+
+
+            await ReplyAsync("");
+        }
+
+        [Command("status")]
+        [Summary("Returns if a game server is on")]
+        public async Task StatusAsync(string name)
+        {
+            Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
+            await ReplyAsync(game.IsOnline ? $"{name} server is online" : $"{name} server is offline");
+        }
+
+        [Command("start")]
+        [Summary("Starts up a game server")]
+        public async Task StartGameAsync(string name)
+        {
+
+
+            await ReplyAsync($"{name} server should be online in a few seconds");
+        }
+
+        [Command("stop")]
+        [Summary("Stops a game server")]
+        public async Task StopGameAsync(string name)
+        {
+
+
+            await ReplyAsync($"{name} server is shutting down");
+        }
+
         [Command("list")]
         [Summary("Displays all the Game Servers with the corresponding port")]
         public async Task ServerListAsync()
@@ -28,7 +63,7 @@ namespace Inquisition.Modules
             {
                 builder.AddInlineField(game.Name, game.Port);
             }
-            await ReplyAsync("", false, builder.Build());
+            await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
         }
 
         [Command("add")]
@@ -37,16 +72,17 @@ namespace Inquisition.Modules
         {
             await db.AddAsync(new Data.Game { Name = name, Port = port, Version = version });
             await db.SaveChangesAsync();
+            await ReplyAsync($"{name}, on port {port}, with version {version} successfully added to the server list");
         }
 
         [Command("delete")]
         [Summary("Delete a game server from the list")]
-        public Task DeleteGameAsync(string name)
+        public async Task DeleteGameAsync(string name)
         {
             Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
             db.Remove(game);
-            db.SaveChanges();
-            return Task.CompletedTask;
+            await db.SaveChangesAsync();
+            await ReplyAsync($"{name} successfully deleted from the server list");
         }
     }
 }

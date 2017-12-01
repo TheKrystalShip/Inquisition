@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Inquisition.Migrations
 {
-    public partial class InitialStructure : Migration
+    public partial class GameServersStructure : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,6 +13,7 @@ namespace Inquisition.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(maxLength: 100, nullable: false),
+                    IsOnline = table.Column<bool>(nullable: false),
                     Port = table.Column<string>(maxLength: 10, nullable: true),
                     Version = table.Column<string>(maxLength: 10, nullable: true)
                 },

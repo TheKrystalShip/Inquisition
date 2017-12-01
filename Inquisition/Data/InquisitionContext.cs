@@ -39,5 +39,7 @@ namespace Inquisition.Data
 
         [StringLength(10)]
         public string Version { get; set; }
+
+        public bool IsOnline { get; set; }
     }
 }

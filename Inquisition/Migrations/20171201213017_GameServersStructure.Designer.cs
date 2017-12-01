@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    [Migration("20171201194859_Initial-Structure")]
-    partial class InitialStructure
+    [Migration("20171201213017_GameServersStructure")]
+    partial class GameServersStructure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,6 +26,8 @@ namespace Inquisition.Migrations
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100);
+
+                    b.Property<bool>("IsOnline");
 
                     b.Property<string>("Port")
                         .HasMaxLength(10);
