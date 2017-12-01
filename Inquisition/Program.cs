@@ -8,6 +8,34 @@ using System.Reflection;
 
 namespace Inquisition
 {
+    /*
+     * TODO: 
+     * 
+     * [NotVeryUsefulButGoodForLearning]
+     * Make db with all game server data and set up commands to update
+     *  delete and select data directly from/to db.
+     *  (Making the *servers* command only show data from the db)
+     * 
+     * [EndGoal]
+     * Track member activity and store it in db, removing inactive members
+     *  regardless of role. Some exceptions can be set in place.
+     *  This can be done by tracking user activity on the server using
+     *  (UserIsTyping && UserVoiceStateUpdated) events to track time between
+     *  activities, increasing a counter on the db ofr every 24h of inactivity.
+     *  
+     * [CoolConcept]
+     * Make bot be able to launch a program on the server, eventually
+     *  leading to the bot starting and stopping game servers.
+     *  This is used to start a diferent process from within the console application:
+     *      var proc = new Process();
+     *      proc.StartInfo.FileName = "process.exe";
+     *      proc.StartInfo.Arguments = "-v -s -a";
+     *      proc.Start();
+     *      proc.WaitForExit();
+     *      var exitCode = proc.ExitCode;
+     *      proc.Close();
+     */
+
     class Program
     {
         private DiscordSocketClient _client;
@@ -47,7 +75,7 @@ namespace Inquisition
             _client.Log += Log;
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
-
+            
             await RegisterCommandsAsync();
 
             await _client.LoginAsync(TokenType.Bot, token);

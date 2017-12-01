@@ -42,7 +42,7 @@ namespace Inquisition.Modules
         {
             var messages = await Context.Channel.GetMessagesAsync((int)amount + 1).Flatten();
 
-            await this.Context.Channel.DeleteMessagesAsync(messages);
+            await Context.Channel.DeleteMessagesAsync(messages);
             const int delay = 5000;
             var m = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
             await Task.Delay(delay);
