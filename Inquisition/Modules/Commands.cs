@@ -6,26 +6,10 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-
-    /*
-    |===========================================|
-    | Game Server     | Port | Version | Modded |
-    |===========================================|
-    | Space Engineers | 3080 |         | NO     |
-    | StarMade        | 3070 | .654    | NO     |
-    | Project Zomboid | 3050 | 37.14   | YES    |
-    | Starbound       | 3040 | 1.2.2   | NO     |
-    | Terraria        | 3030 | 1.3.5.3 | NO     |
-    | Factorio        | 3020 | 15.18   | NO     |
-    | 7 Days To Die   | 3010 | 16 b138 | NO     |
-    | GMod Sandbox    | 3003 |         | NO     |
-    | GMod Murder     | 3000 |         | NO     |
-    |===========================================|
-    */
-
     public class Commands : ModuleBase<SocketCommandContext>
     {
         [Command("servers")]
+        [Summary("Displays all the Game Servers with the corresponding port")]
         public async Task ServersAsync()
         {
             List<Game> Games = new List<Game>
@@ -52,9 +36,18 @@ namespace Inquisition.Modules
         }
 
         [Command("wipe")]
-        public async Task WipeChannelAsync()
+        [Summary("Wipes a text channel")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireBotPermission(ChannelPermission.ManageMessages)]
+        public async Task WipeChannelAsync(uint amount = 1)
         {
+            var messages = await Context.Channel.GetMessagesAsync((int)amount + 1).Flatten();
 
+            await this.Context.Channel.DeleteMessagesAsync(messages);
+            const int delay = 5000;
+            var m = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
+            await Task.Delay(delay);
+            await m.DeleteAsync();
         }
     }
 }
