@@ -32,10 +32,10 @@ namespace Inquisition
 
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader("token.txt");
+                System.IO.StreamReader file = new System.IO.StreamReader("Data/t_token.txt");
                 token = file.ReadLine();
 
-                file = new System.IO.StreamReader("channel.txt");
+                file = new System.IO.StreamReader("Data/t_channel.txt");
                 channel = ulong.Parse(file.ReadLine());
             }
             catch (Exception ex)
