@@ -13,7 +13,9 @@ namespace Inquisition
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
+
         private string token;
+        private ulong channel;
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -32,6 +34,9 @@ namespace Inquisition
             {
                 System.IO.StreamReader file = new System.IO.StreamReader("token.txt");
                 token = file.ReadLine();
+
+                file = new System.IO.StreamReader("channel.txt");
+                channel = ulong.Parse(file.ReadLine());
             }
             catch (Exception ex)
             {
@@ -40,6 +45,8 @@ namespace Inquisition
             }
 
             _client.Log += Log;
+            _client.UserLeft += UserLeftAsync;
+            _client.UserBanned += UserBannedAsync;
 
             await RegisterCommandsAsync();
 
@@ -47,6 +54,16 @@ namespace Inquisition
             await _client.StartAsync();
             
             await Task.Delay(-1);
+        }
+
+        private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
+        {
+            await arg2.GetTextChannel(channel).SendMessageAsync(arg1.Mention + " was banned from the server.");
+        }
+
+        private async Task UserLeftAsync(SocketGuildUser arg)
+        {
+            await arg.Guild.GetTextChannel(channel).SendMessageAsync(arg.Mention + " left the server.");
         }
 
         private async Task RegisterCommandsAsync()
