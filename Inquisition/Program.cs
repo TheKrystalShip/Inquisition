@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord.Rest;
 using System;
 using System.Threading.Tasks;
 
@@ -13,6 +14,9 @@ namespace Inquisition
         private DiscordSocketClient DiscordSocketClient;
         // private IServiceProvider ServiceProvider;
         private string token;
+
+        public static void Main(string[] args)
+            => new Program().MainAsync().GetAwaiter().GetResult();
 
         public async Task MainAsync()
         {
