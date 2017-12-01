@@ -2,6 +2,8 @@
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Inquisition.Data;
+using System.Linq;
 
 namespace Inquisition.Modules
 {
@@ -11,22 +13,11 @@ namespace Inquisition.Modules
         [Summary("Displays all the Game Servers with the corresponding port")]
         public async Task ServersAsync()
         {
-            List<Game> Games = new List<Game>
-            {
-                new Game { Name = "Space Engineers", Port = "3080", Version = "?" },
-                new Game { Name = "StarMade", Port = "3070", Version = ".654" },
-                new Game { Name = "Project Zomboid", Port = "3050", Version = "37.14" },
-                new Game { Name = "Starbound", Port = "3040", Version = "1.2.2" },
-                new Game { Name = "Terraria", Port = "3030", Version = "1.3.5.3" },
-                new Game { Name = "Factorio", Port = "3020", Version = "15.18" },
-                new Game { Name = "7 Days to die", Port = "3010", Version = "16 b138" },
-                new Game { Name = "GMod - Sandbox", Port = "3003", Version = "?" },
-                new Game { Name = "GMod - Murder", Port = "3000", Version = "?" }
-            };
-
+            InquisitionContext db = new InquisitionContext();
+            List<Data.Game> Games = db.Games.ToList();
             EmbedBuilder builder = new EmbedBuilder();
 
-            foreach (Game game in Games)
+            foreach (Data.Game game in Games)
             {
                 builder.AddInlineField(game.Name, game.Port);
             }

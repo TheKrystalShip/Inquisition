@@ -5,6 +5,17 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using System.Collections.Generic;
+
+/*
+ * Required packages for the porject:
+ *  1. Discord.Net v1.0.2
+ *  2. Discord.Net.Commands v1.0.2
+ *  3. Discord.Net.Rest v1.0.2
+ *  4. Discord.Net.WebSocket v1.0.2
+ *  5. Microsoft.EntityFrameworkCore.SqlServer
+ *  6. Microsoft.EntityFrameworkCore.Tools
+ */
 
 namespace Inquisition
 {
@@ -78,6 +89,9 @@ namespace Inquisition
             
             await RegisterCommandsAsync();
 
+            /* Information: See below*/
+            // await PopulateDb();
+
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             
@@ -100,6 +114,35 @@ namespace Inquisition
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
+
+        /* 
+         * Uncomment and call this method ONCE from the MainAsync() to populate the database
+         * with the games info. Once the database is populated, this method and the call from MainAsync()
+         * can both be either commented or completly removed to avoid creating duplicate information
+         * in the database since this is done at runtime everytime the orgram starts.
+         */
+        
+        /*
+        private async Task PopulateDb()
+        {
+            List<Data.Game> Games = new List<Data.Game>
+            {
+                new Data.Game { Name = "Space Engineers", Port = "3080", Version = "?" },
+                new Data.Game { Name = "StarMade", Port = "3070", Version = ".654" },
+                new Data.Game { Name = "Project Zomboid", Port = "3050", Version = "37.14" },
+                new Data.Game { Name = "Starbound", Port = "3040", Version = "1.2.2" },
+                new Data.Game { Name = "Terraria", Port = "3030", Version = "1.3.5.3" },
+                new Data.Game { Name = "Factorio", Port = "3020", Version = "15.18" },
+                new Data.Game { Name = "7 Days to die", Port = "3010", Version = "16 b138" },
+                new Data.Game { Name = "GMod - Sandbox", Port = "3003", Version = "?" },
+                new Data.Game { Name = "GMod - Murder", Port = "3000", Version = "?" }
+            };
+
+            Data.InquisitionContext db = new Data.InquisitionContext();
+            await db.Games.AddRangeAsync(Games);
+            await db.SaveChangesAsync();
+        }
+         */
 
         private async Task HandleCommands(SocketMessage arg)
         {
