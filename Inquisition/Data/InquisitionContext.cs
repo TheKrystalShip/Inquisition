@@ -21,6 +21,7 @@ namespace Inquisition.Data
     public class InquisitionContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,5 +42,19 @@ namespace Inquisition.Data
         public string Version { get; set; }
 
         public bool IsOnline { get; set; }
+
+        public string ExeDir { get; set; } = "";
+    }
+
+    public class Reminder
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Username { get; set; }
+
+        public string Message { get; set; }
+
+        public DateTime Time { get; set; }
     }
 }
