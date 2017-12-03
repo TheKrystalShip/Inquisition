@@ -12,6 +12,7 @@ namespace Inquisition.Modules
     public class GameCommands : ModuleBase<SocketCommandContext>
     {
         InquisitionContext db = new InquisitionContext();
+        private readonly string Path = "";
 
         [Command("status")]
         [Summary("Returns if a game server is on")]
@@ -23,7 +24,25 @@ namespace Inquisition.Modules
                 await ReplyAsync($"Sorry, {name} not found in the database");
                 return;
             }
-            await ReplyAsync(game.IsOnline ? $"{game.Name} server is online" : $"{game.Name} server is offline");
+
+            bool ProcessRunning = ProcessDictionary.Instance.TryGetValue(game.Name, out Process p);
+            bool GameMarkedOnline = game.IsOnline;
+
+            if (!ProcessRunning && !GameMarkedOnline)
+            {
+                await ReplyAsync($"{game.Name} server is offline");
+                return;
+            } else if (ProcessRunning && !GameMarkedOnline)
+            {
+                await ReplyAsync($"{game.Name} has a process running, but is marked as offline in the database, " +
+                    $"please let the knobhead who programmed this know abut this error, thanks");
+                return;
+            } else if (!ProcessRunning && GameMarkedOnline)
+            {
+                await ReplyAsync($"{game.Name} server is not running, but is marked as online in the database, " +
+                    $"please let the knobhead who programmed this know abut this error, thanks");
+                return;
+            }
         }
 
         [Command("start")]
@@ -47,7 +66,7 @@ namespace Inquisition.Modules
                 }
 
                 Process p = new Process();
-                p.StartInfo.FileName = game.ExeDir;
+                p.StartInfo.FileName = Path + game.ExeDir;
                 p.StartInfo.Arguments = game.Args;
                 p.Start();
 
@@ -97,7 +116,7 @@ namespace Inquisition.Modules
             }
             catch (System.Exception ex)
             {
-                await ReplyAsync($"Something went wrong, couldn't stop {game.Name} server, please contact an Administrator");
+                await ReplyAsync($"Something went wrong, couldn't stop {game.Name} server, please contact the Administrator");
                 System.Console.WriteLine(ex.Message);
                 throw;
             }
