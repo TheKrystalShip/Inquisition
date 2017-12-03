@@ -47,6 +47,11 @@ namespace Inquisition.Modules
             try
             {
                 Process p = new Process();
+                p.StartInfo.FileName = game.ExeDir;
+                p.StartInfo.Arguments = game.Args;
+                p.Start();
+
+                ProcessDictionary.Instance.Add(game.Name, p);
 
                 game.IsOnline = true;
                 await db.SaveChangesAsync();
@@ -74,12 +79,17 @@ namespace Inquisition.Modules
 
             try
             {
+                if (ProcessDictionary.Instance.TryGetValue(game.Name, out Process p))
+                {
+                    p.CloseMainWindow();
+                    p.Close();
+                    ProcessDictionary.Instance.Remove(game.Name);
 
+                    game.IsOnline = false;
+                    await db.SaveChangesAsync();
 
-                game.IsOnline = false;
-                await db.SaveChangesAsync();
-
-                await ReplyAsync($"{game.Name} server is shutting down");
+                    await ReplyAsync($"{game.Name} server is shutting down");
+                }
             }
             catch (System.Exception ex)
             {

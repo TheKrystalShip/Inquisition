@@ -22,11 +22,6 @@ namespace Inquisition
     /*
      * TODO: 
      * 
-     * [NotVeryUsefulButGoodForLearning]
-     * Make db with all game server data and set up commands to update
-     *  delete and select data directly from/to db.
-     *  (Making the *servers* command only show data from the db)
-     * 
      * [EndGoal]
      * Track member activity and store it in db, removing inactive members
      *  regardless of role. Some exceptions can be set in place.
@@ -34,17 +29,9 @@ namespace Inquisition
      *  (UserIsTyping && UserVoiceStateUpdated) events to track time between
      *  activities, increasing a counter on the db ofr every 24h of inactivity.
      *  
-     * [CoolConcept]
+     * [CoolConcept] IT ALREADY WORKS
      * Make bot be able to launch a program on the server, eventually
      *  leading to the bot starting and stopping game servers.
-     *  This is used to start a diferent process from within the console application:
-     *      var proc = new Process();
-     *      proc.StartInfo.FileName = "process.exe";
-     *      proc.StartInfo.Arguments = "-v -s -a";
-     *      proc.Start();
-     *      proc.WaitForExit();
-     *      var exitCode = proc.ExitCode;
-     *      proc.Close();
      */
 
     class Program
@@ -136,7 +123,7 @@ namespace Inquisition
 
                 if (!result.IsSuccess)
                 {
-                    Console.WriteLine(result.ErrorReason);
+                    Console.WriteLine($"{DateTime.Now.Minute}:{DateTime.Now.Second} - {result.ErrorReason}");
                 }
             }
         }

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Inquisition.Data
 {
@@ -44,6 +42,8 @@ namespace Inquisition.Data
         public bool IsOnline { get; set; }
 
         public string ExeDir { get; set; } = "";
+
+        public string Args { get; set; } = "";
     }
 
     public class Reminder

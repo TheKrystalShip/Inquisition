@@ -10,11 +10,11 @@ namespace Inquisition.Modules
     [Group("notify")]
     public class NotifyCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("online")]
-        [Summary("Alerts when user comes online")]
-        public async Task NotifyWhenOnlineAsync(SocketUser user)
-        {
+        //[Command("online")]
+        //[Summary("Alerts when user comes online")]
+        //public async Task NotifyWhenOnlineAsync(SocketUser user)
+        //{
             
-        }
+        //}
     }
 }
