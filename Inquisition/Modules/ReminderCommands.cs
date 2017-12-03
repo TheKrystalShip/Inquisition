@@ -14,7 +14,7 @@ namespace Inquisition.Modules
     {
         Data.InquisitionContext db = new Data.InquisitionContext();
 
-        [Command("set")]
+        [Command("add")]
         [Summary("Creates a reminder")]
         public async Task SetReminderAsync(DateTime dateTime, [Remainder] string remainder)
         {
@@ -32,14 +32,8 @@ namespace Inquisition.Modules
             await ReplyAsync($"Reminder set {Context.Message.Author.Mention}");
         }
 
-        [Command("remove")]
-        [Summary("Removes a reminder")]
-        public async Task RemoveReminderAsync(int id)
-        {
-            await DeleteReminderAsync(id);
-        }
-
         [Command("delete")]
+        [Alias("remove")]
         [Summary("Deletes a reminder")]
         public async Task DeleteReminderAsync(int id)
         {

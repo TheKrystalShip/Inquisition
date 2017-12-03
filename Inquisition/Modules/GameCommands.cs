@@ -13,13 +13,6 @@ namespace Inquisition.Modules
     {
         InquisitionContext db = new InquisitionContext();
 
-        [Command("help")]
-        [Summary("Retuns a list of all commands that can be used in the server group")]
-        public async Task HelpAsync()
-        {
-            await ReplyAsync("Not implemented yet");
-        }
-
         [Command("status")]
         [Summary("Returns if a game server is on")]
         public async Task StatusAsync(string name)
@@ -46,6 +39,13 @@ namespace Inquisition.Modules
 
             try
             {
+                if (ProcessDictionary.Instance.TryGetValue(game.Name, out Process temp))
+                {
+                    await ReplyAsync($"{game.Name} is already running, version {game.Version} on port {game.Port}. " +
+                        $"If you want to stop it, use the command: game stop {game.Name}.");
+                    return;
+                }
+
                 Process p = new Process();
                 p.StartInfo.FileName = game.ExeDir;
                 p.StartInfo.Arguments = game.Args;
@@ -56,7 +56,7 @@ namespace Inquisition.Modules
                 game.IsOnline = true;
                 await db.SaveChangesAsync();
 
-                await ReplyAsync($"{game.Name} server should be online in a few seconds");
+                await ReplyAsync($"{game.Name} server should be online in a few seconds, version {game.Version} on port {game.Port}");
             }
             catch (System.Exception ex)
             {
@@ -89,7 +89,11 @@ namespace Inquisition.Modules
                     await db.SaveChangesAsync();
 
                     await ReplyAsync($"{game.Name} server is shutting down");
+                    return;
                 }
+
+                await ReplyAsync($"{Context.Message.Author.Mention}, {game.Name} doesn't seem to be running. " +
+                    $"If you wish to start it up, use the command: game start {game.Name}");
             }
             catch (System.Exception ex)
             {
@@ -116,37 +120,6 @@ namespace Inquisition.Modules
                 builder.AddInlineField(game.Name, game.Port);
             }
             await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
-        }
-
-        [Command("add")]
-        [Summary("Add a game to the server list")]
-        public async Task AddGameAsync(string name, string port = "?", string version = "?")
-        {
-            await db.AddAsync(new Data.Game { Name = name, Port = port, Version = version });
-            await db.SaveChangesAsync();
-            await ReplyAsync($"{name}, on port {port}, with version {version} successfully added to the server list");
-        }
-
-        [Command("delete")]
-        [Summary("Delete a game server from the list")]
-        public async Task DeleteGameAsync(string name)
-        {
-            Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
-            if (game is null)
-            {
-                await ReplyAsync($"Sorry, {name} not found in the database");
-                return;
-            }
-            db.Remove(game);
-            await db.SaveChangesAsync();
-            await ReplyAsync($"{game.Name} successfully deleted from the server list");
-        }
-
-        [Command("remove")]
-        [Summary("Same as delete, removes a game server from the list")]
-        public async Task RemoveGameAsync(string name)
-        {
-            await DeleteGameAsync(name);
         }
     }
 }
