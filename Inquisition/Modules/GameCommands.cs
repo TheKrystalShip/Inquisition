@@ -136,7 +136,9 @@ namespace Inquisition.Modules
 
             foreach (Data.Game game in Games)
             {
-                builder.AddInlineField(game.Name, game.Port);
+                string status = game.IsOnline ? "Online " : "Offline ";
+                string port = game.IsOnline ? $"on port {game.Port}" : "";
+                builder.AddInlineField(game.Name,status + port);
             }
             await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
         }
