@@ -20,6 +20,8 @@ namespace Inquisition.Data
     {
         public DbSet<Game> Games { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<Joke> Jokes { get; set; }
+        public DbSet<Meme> Memes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -56,5 +58,29 @@ namespace Inquisition.Data
         public string Message { get; set; }
 
         public DateTime Time { get; set; }
+    }
+
+    public class Joke
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Author { get; set; }
+
+        public string Text { get; set; }
+
+        public int PositiveVotes { get; set; } = 0;
+
+        public int NegativeVotes { get; set; } = 0;
+    }
+
+    public class Meme
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Author { get; set; }
+
+        public string Url { get; set; }
     }
 }

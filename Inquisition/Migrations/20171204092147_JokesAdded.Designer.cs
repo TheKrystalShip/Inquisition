@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171204092147_JokesAdded")]
+    partial class JokesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,20 +60,6 @@ namespace Inquisition.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Jokes");
-                });
-
-            modelBuilder.Entity("Inquisition.Data.Meme", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<string>("Url");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Memes");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
