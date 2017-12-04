@@ -11,7 +11,7 @@ using Discord.WebSocket;
 namespace Inquisition.Modules
 {
     [Group("show")]
-    [Alias("tell me a", "tell me", "gimme", "tell a")]
+    [Alias("tell me a", "tell me", "gimme", "tell a", "show me a", "show me")]
     public class ShowModule : ModuleBase<SocketCommandContext>
     {
         [Group("game")]
