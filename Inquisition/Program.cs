@@ -127,9 +127,11 @@ namespace Inquisition
 
             if (message is null || message.Author.IsBot) return;
 
+            string prefix = "rip ";
+
             int argPos = 0;
 
-            if(message.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            if(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos))
             {
                 var context = new SocketCommandContext(_client, message);
 
@@ -156,11 +158,6 @@ namespace Inquisition
 
         public void ReminderLoop()
         {
-            ReminderLoopAsync();
-        }
-
-        public async Task ReminderLoopAsync()
-        {
             InquisitionContext db = new InquisitionContext();
             List<Reminder> Reminders;
 
@@ -173,15 +170,18 @@ namespace Inquisition
                 {
                     if (DateTime.Now >= r.DueDate)
                     {
-                        await _client.GetUser(ulong.Parse(r.UserId)).SendMessageAsync($"Reminder: {r.Message}");
+                        _client.GetUser(ulong.Parse(r.UserId)).SendMessageAsync($"Reminder: {r.Message}");
                         FinishedReminders.Add(r);
                     }
                 }
 
-                db.Reminders.RemoveRange(FinishedReminders);
-                db.SaveChanges();
+                if (FinishedReminders.Count != 0)
+                {
+                    db.Reminders.RemoveRange(FinishedReminders);
+                    db.SaveChanges();
+                }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
             }
         }
 

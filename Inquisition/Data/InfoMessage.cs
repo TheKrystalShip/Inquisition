@@ -70,7 +70,7 @@
 #region Users
         public static string UsersPruned(int users, int days)
         {
-            return $"{users} were pruned for inactivity in the last {days} days";
+            return $"{users} users were pruned for inactivity in the last {days} days";
         }
 
         public static string UserLeft(string user)

@@ -123,7 +123,7 @@ namespace Inquisition.Modules
         }
 
         [Group("meme")]
-        [Alias("meme pls", "memes", "memes pls")]
+        [Alias("meme pls", "memes", "memes pls", "spice", "spice pls", "some spice", "some spice pls", "spiciness", " some spiciness", "spiciness pls", "some spiciness pls")]
         public class ShowMemeModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
