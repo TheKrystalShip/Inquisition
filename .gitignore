@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /Inquisition/token.txt
 /Inquisition/channel.txt
+*.txt
