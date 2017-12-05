@@ -1,10 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
 namespace Inquisition.Modules
 {
@@ -16,7 +14,7 @@ namespace Inquisition.Modules
         public async Task PruneMembersAsync(int d)
         {
             var n = await Context.Guild.PruneUsersAsync(d);
-            await ReplyAsync($"{n} users were pruned for inactivity in the last {d} days");
+            await ReplyAsync(InfoMessage.UsersPruned(n, d));
         }
 
         [Command("ban")]
@@ -24,7 +22,7 @@ namespace Inquisition.Modules
         public async Task KickMemberAsync(SocketUser user)
         {
             await Context.Guild.AddBanAsync(user);
-            await ReplyAsync($"{user.Username} has been banned");
+            await ReplyAsync(InfoMessage.UserBanned(user.Username));
         }
 
         [Command("unban")]
@@ -32,7 +30,7 @@ namespace Inquisition.Modules
         public async Task UnbanMemberAsync(SocketUser user)
         {
             await Context.Guild.RemoveBanAsync(user);
-            await ReplyAsync($"{user.Username} has been unbanned");
+            await ReplyAsync(InfoMessage.UserUnbanned(user.Username));
         }
 
         [Command("wipe")]

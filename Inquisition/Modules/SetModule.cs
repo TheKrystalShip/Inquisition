@@ -10,6 +10,7 @@ using Discord;
 namespace Inquisition.Modules
 {
     [Group("set")]
+    [RequireUserPermission(GuildPermission.Administrator)]
     public class SetModule : ModuleBase<SocketCommandContext>
     {
         [Group("game")]
@@ -110,7 +111,6 @@ namespace Inquisition.Modules
             }
 
             [Command("exe")]
-            [RequireUserPermission(GuildPermission.Administrator)]
             public async Task SetGameExeAsync(string name, string path)
             {
                 if (name is null || path is null)

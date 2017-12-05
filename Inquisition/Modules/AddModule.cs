@@ -12,7 +12,7 @@ namespace Inquisition.Modules
         InquisitionContext db = new InquisitionContext();
 
         [Command("game")]
-        [Alias("a game", "new game")]
+        [Alias("a game", "new game", "a new game")]
         [Summary("Add a game to the server list")]
         [RequireUserPermission(Discord.GuildPermission.Administrator)]
         public async Task AddGameAsync(string name, string port = "?", string version = "?")
@@ -23,14 +23,15 @@ namespace Inquisition.Modules
                 return;
             } else
             {
-                await db.AddAsync(new Data.Game { Name = name, Port = port, Version = version });
+                Game game = new Game { Name = name, Port = port, Version = version };
+                await db.AddAsync(game);
                 await db.SaveChangesAsync();
-                await ReplyAsync($"{name}, on port {port}, with version {version} successfully added to the server list");
+                await ReplyAsync(InfoMessage.SuccessfullyAdded(game));
             }
         }
 
         [Command("joke")]
-        [Alias("a joke", "new joke")]
+        [Alias("a joke", "new joke", "a new joke")]
         [Summary("Adds a joke to the db")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
@@ -44,19 +45,18 @@ namespace Inquisition.Modules
 
                 db.Jokes.Add(joke);
                 await db.SaveChangesAsync();
-                await ReplyAsync($"{Context.User.Mention}, your joke was added successfully, thanks!");
+                await ReplyAsync(InfoMessage.SuccessfullyAdded(joke));
             }
             catch (Exception ex)
             {
-                await ReplyAsync($"There was an error while trying to add your joke to the database, " +
-                    $"please let the knobhead who porgrammed this know about it, thanks");
+                await ReplyAsync(ErrorMessage.DatabaseAccess());
                 Console.WriteLine(ex.Message);
                 throw;
             }
         }
 
         [Command("meme")]
-        [Alias("a meme", "new meme")]
+        [Alias("a meme", "new meme", "a new meme")]
         [Summary("Adds a meme to the db")]
         public async Task AddMemeAsync([Remainder] string url)
         {
@@ -70,34 +70,42 @@ namespace Inquisition.Modules
 
                 db.Memes.Add(meme);
                 await db.SaveChangesAsync();
-                await ReplyAsync($"{Context.User.Mention}, your meme was added successfully, thanks!");
+                await ReplyAsync(InfoMessage.SuccessfullyAdded(meme));
             }
             catch (Exception ex)
             {
-                await ReplyAsync($"There was an error while trying to add your meme to the database, " +
-                    $"please let the knobhead who porgrammed this know about it, thanks");
+                await ReplyAsync(ErrorMessage.DatabaseAccess());
                 Console.WriteLine(ex.Message);
                 throw;
             }
         }
 
         [Command("reminder")]
-        [Alias("a reminder", "new reminder")]
+        [Alias("a reminder", "new reminder", "a new reminder")]
         [Summary("Add a reminder")]
         public async Task AddReminderAsync(DateTime dateTime, [Remainder] string remainder)
         {
             SocketUser user = Context.Message.Author;
-            Data.Reminder reminder = new Data.Reminder
+            Reminder reminder = new Reminder
             {
                 Username = user.Username,
                 Time = dateTime,
                 Message = remainder
             };
 
-            await db.Reminders.AddAsync(reminder);
-            await db.SaveChangesAsync();
+            try
+            {
+                await db.Reminders.AddAsync(reminder);
+                await db.SaveChangesAsync();
 
-            await ReplyAsync($"Reminder set {Context.Message.Author.Mention}");
+                await ReplyAsync(InfoMessage.SuccessfullyAdded(reminder));
+            }
+            catch (Exception ex)
+            {
+                await ReplyAsync(ErrorMessage.DatabaseAccess());
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
     }
 }

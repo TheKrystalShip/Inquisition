@@ -9,7 +9,7 @@ using Discord.WebSocket;
 namespace Inquisition.Modules
 {
     [Group("list")]
-    [Alias("tell me all", "tell all", "list all")]
+    [Alias("list me all", "tell me all", "show me all")]
     public class ListModule : ModuleBase<SocketCommandContext>
     {
         [Group("games")]
@@ -135,7 +135,6 @@ namespace Inquisition.Modules
         }
 
         [Group("memes")]
-        [RequireUserPermission(GuildPermission.Administrator)]
         public class ListMemesModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
@@ -152,13 +151,15 @@ namespace Inquisition.Modules
                 List<Meme> Memes = db.Memes.Where(x => x.Author == user.Username).ToList();
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.WithAuthor(user.Username);
+                int i = 1;
 
                 foreach (Meme meme in Memes)
                 {
-                    builder.WithImageUrl(meme.Url);
+                    builder.AddField($"Shitpost nr {i}:", $"{meme.Url}");
+                    i++;
                 }
 
-                await ReplyAsync($"Here's the jokes list {Context.User.Mention}:", false, builder.Build());
+                await ReplyAsync($"Here's the meme list {Context.User.Mention}:", false, builder.Build());
             }
         }
     }

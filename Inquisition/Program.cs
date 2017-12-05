@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Collections.Generic;
+using Inquisition.Data;
 
 /*
  * Required packages for the porject:
@@ -29,9 +30,6 @@ namespace Inquisition
      *  (UserIsTyping && UserVoiceStateUpdated) events to track time between
      *  activities, increasing a counter on the db ofr every 24h of inactivity.
      *  
-     * [CoolConcept] IT ALREADY WORKS
-     * Make bot be able to launch a program on the server, eventually
-     *  leading to the bot starting and stopping game servers.
      */
 
     class Program
@@ -42,6 +40,8 @@ namespace Inquisition
 
         private string token;
         private ulong channel;
+
+#region Main Execution
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -73,6 +73,7 @@ namespace Inquisition
             _client.Log += Log;
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
+            _client.UserUpdated += UserUpdated;
             
             await RegisterCommandsAsync();
 
@@ -90,14 +91,25 @@ namespace Inquisition
             await Task.Delay(-1);
         }
 
+#endregion
+#region Listeners
+
+        private async Task UserUpdated(SocketUser arg1, SocketUser arg2)
+        {
+            if (arg1.Status == UserStatus.Offline && arg2.Status == UserStatus.Online)
+            {
+                // Does fuck all for now.
+            }
+        }
+
         private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
         {
-            await arg2.GetTextChannel(channel).SendMessageAsync(arg1.Mention + " was banned from the server.");
+            await arg2.GetTextChannel(channel).SendMessageAsync(InfoMessage.UserBanned(arg1.Mention));
         }
 
         private async Task UserLeftAsync(SocketGuildUser arg)
         {
-            await arg.Guild.GetTextChannel(channel).SendMessageAsync(arg.Mention + " left the server.");
+            await arg.Guild.GetTextChannel(channel).SendMessageAsync(InfoMessage.UserLeft(arg.Mention));
         }
 
         private async Task RegisterCommandsAsync()
@@ -106,6 +118,9 @@ namespace Inquisition
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
+
+#endregion
+#region CommandHandling
 
         private async Task HandleCommands(SocketMessage arg)
         {
@@ -128,11 +143,17 @@ namespace Inquisition
             }
         }
 
+#endregion
+#region Logging data
+
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
+
+#endregion
+#region Database data
 
         private async Task PopulateDbAsync()
         {
@@ -149,9 +170,11 @@ namespace Inquisition
                 new Data.Game { Name = "GMod - Murder", Port = "3000", Version = "?" }
             };
 
-            Data.InquisitionContext db = new Data.InquisitionContext();
+            InquisitionContext db = new InquisitionContext();
             await db.Games.AddRangeAsync(Games);
             await db.SaveChangesAsync();
         }
+
+#endregion
     }
 }

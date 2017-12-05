@@ -11,7 +11,7 @@ using Discord.WebSocket;
 namespace Inquisition.Modules
 {
     [Group("show")]
-    [Alias("tell me a", "tell me", "gimme", "tell a", "show me a", "show me")]
+    [Alias("gimme", "show me", "show me a", "tell", "tell me", "tell me a")]
     public class ShowModule : ModuleBase<SocketCommandContext>
     {
         [Group("game")]
@@ -121,6 +121,7 @@ namespace Inquisition.Modules
         }
 
         [Group("meme")]
+        [Alias("meme pls", "memes pls")]
         public class ShowMemeModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();

@@ -21,18 +21,18 @@ namespace Inquisition.Modules
             Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
             if (game is null)
             {
-                await ReplyAsync($"Sorry, {name} not found in the database");
+                await ReplyAsync(ErrorMessage.GameNotFound(game.Name));
                 return;
             }
             try
             {
                 db.Remove(game);
                 await db.SaveChangesAsync();
-                await ReplyAsync($"{game.Name} successfully deleted from the server list");
+                await ReplyAsync(InfoMessage.SuccessfullyRemoved(game));
             }
             catch (Exception ex)
             {
-                await ReplyAsync($"Something went wrong, check the console for the error message");
+                await ReplyAsync(ErrorMessage.DatabaseAccess());
                 Console.WriteLine(ex.Message);
                 throw;
             }

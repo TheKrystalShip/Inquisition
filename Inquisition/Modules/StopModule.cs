@@ -21,7 +21,7 @@ namespace Inquisition.Modules
             Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
             if (game is null)
             {
-                await ReplyAsync($"Sorry, {name} not found in the database");
+                await ReplyAsync(ErrorMessage.GameNotFound(game.Name));
                 return;
             }
 
@@ -36,17 +36,16 @@ namespace Inquisition.Modules
                     game.IsOnline = false;
                     await db.SaveChangesAsync();
 
-                    await ReplyAsync($"{game.Name} server is shutting down");
+                    await ReplyAsync(InfoMessage.GameShuttingDown(game.Name));
                     return;
                 }
 
-                await ReplyAsync($"{Context.User.Mention}, {game.Name} doesn't seem to be running. " +
-                    $"If you wish to start it up, use the command: game start \"{game.Name}\"");
+                await ReplyAsync(ErrorMessage.GameNotRunning(Context.User.Mention, game.Name));
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                await ReplyAsync($"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this");
-                System.Console.WriteLine(ex.Message);
+                await ReplyAsync(ErrorMessage.UnableToStopGameServer(game.Name));
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
