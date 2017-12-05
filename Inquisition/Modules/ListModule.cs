@@ -100,7 +100,7 @@ namespace Inquisition.Modules
 
                 foreach (Data.Reminder reminder in Reminders)
                 {
-                    builder.AddField($"{reminder.Time}", $"{reminder.Message}, {reminder.Time}", true);
+                    builder.AddField($"{reminder.Duration}", $"{reminder.Message}, {reminder.Duration}", true);
                 }
                 await ReplyAsync($"Here's a list of all your reminders {Context.Message.Author.Mention}", false, builder.Build());
             }

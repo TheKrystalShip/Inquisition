@@ -15,6 +15,7 @@ namespace Inquisition.Modules
     public class ShowModule : ModuleBase<SocketCommandContext>
     {
         [Group("game")]
+        [Alias("game pls", "games", "games pls")]
         public class ShowGameModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
@@ -85,6 +86,7 @@ namespace Inquisition.Modules
         }
 
         [Group("joke")]
+        [Alias("joke pls", "jokes", "jokes pls")]
         public class ShowJokeModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
@@ -121,7 +123,7 @@ namespace Inquisition.Modules
         }
 
         [Group("meme")]
-        [Alias("meme pls", "memes pls")]
+        [Alias("meme pls", "memes", "memes pls")]
         public class ShowMemeModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();

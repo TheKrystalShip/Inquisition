@@ -53,11 +53,17 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
+        public string UserId { get; set; }
+
         public string Username { get; set; }
 
         public string Message { get; set; }
 
-        public DateTime Time { get; set; }
+        public DateTime CreateDate { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
+        public DateTime DueDate { get; set; }
     }
 
     public class Joke

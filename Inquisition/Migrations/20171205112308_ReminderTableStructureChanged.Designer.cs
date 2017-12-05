@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171205112308_ReminderTableStructureChanged")]
+    partial class ReminderTableStructureChanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,11 +85,9 @@ namespace Inquisition.Migrations
 
                     b.Property<DateTime>("DueDate");
 
-                    b.Property<TimeSpan>("Duration");
+                    b.Property<DateTime>("Duration");
 
                     b.Property<string>("Message");
-
-                    b.Property<string>("UserId");
 
                     b.Property<string>("Username");
 

@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Collections.Generic;
 using Inquisition.Data;
+using System.Threading;
+using System.Linq;
 
 /*
  * Required packages for the porject:
@@ -41,6 +43,8 @@ namespace Inquisition
         private string token;
         private ulong channel;
 
+        private Thread reminderLoopThread;
+
 #region Main Execution
 
         public static void Main(string[] args)
@@ -73,10 +77,9 @@ namespace Inquisition
             _client.Log += Log;
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
-            _client.UserUpdated += UserUpdated;
             
             await RegisterCommandsAsync();
-
+            
             /* 
              * Uncomment and call this method ONCE to populate the database with the games info.
              * Once the database is populated, this method can be either commented or completly 
@@ -87,20 +90,16 @@ namespace Inquisition
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-            
+
+            reminderLoopThread = new Thread(ReminderLoop);
+            reminderLoopThread.IsBackground = true;
+            reminderLoopThread.Start();
+
             await Task.Delay(-1);
         }
 
 #endregion
 #region Listeners
-
-        private async Task UserUpdated(SocketUser arg1, SocketUser arg2)
-        {
-            if (arg1.Status == UserStatus.Offline && arg2.Status == UserStatus.Online)
-            {
-                // Does fuck all for now.
-            }
-        }
 
         private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
         {
@@ -150,6 +149,40 @@ namespace Inquisition
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
+        }
+
+#endregion
+#region Reminders
+
+        public void ReminderLoop()
+        {
+            ReminderLoopAsync();
+        }
+
+        public async Task ReminderLoopAsync()
+        {
+            InquisitionContext db = new InquisitionContext();
+            List<Reminder> Reminders;
+
+            while (true)
+            {
+                Reminders = db.Reminders.ToList();
+                List<Reminder> FinishedReminders = new List<Reminder>();
+
+                foreach (Reminder r in Reminders)
+                {
+                    if (DateTime.Now >= r.DueDate)
+                    {
+                        await _client.GetUser(ulong.Parse(r.UserId)).SendMessageAsync($"Reminder: {r.Message}");
+                        FinishedReminders.Add(r);
+                    }
+                }
+
+                db.Reminders.RemoveRange(FinishedReminders);
+                db.SaveChanges();
+
+                Thread.Sleep(1000);
+            }
         }
 
 #endregion

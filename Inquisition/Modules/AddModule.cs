@@ -83,13 +83,16 @@ namespace Inquisition.Modules
         [Command("reminder")]
         [Alias("a reminder", "new reminder", "a new reminder")]
         [Summary("Add a reminder")]
-        public async Task AddReminderAsync(DateTime dateTime, [Remainder] string remainder)
+        public async Task AddReminderAsync(DateTime dueDate, [Remainder] string remainder)
         {
-            SocketUser user = Context.Message.Author;
+            SocketUser user = Context.User;
             Reminder reminder = new Reminder
             {
+                UserId = $"{user.Id}",
                 Username = user.Username,
-                Time = dateTime,
+                CreateDate = DateTime.Now,
+                DueDate = dueDate,
+                Duration = dueDate - DateTime.Now,
                 Message = remainder
             };
 
@@ -97,7 +100,6 @@ namespace Inquisition.Modules
             {
                 await db.Reminders.AddAsync(reminder);
                 await db.SaveChangesAsync();
-
                 await ReplyAsync(InfoMessage.SuccessfullyAdded(reminder));
             }
             catch (Exception ex)
