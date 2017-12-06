@@ -45,7 +45,7 @@ namespace Inquisition
 
         private Thread reminderLoopThread;
 
-#region Main Execution
+        #region Main Execution
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -101,6 +101,7 @@ namespace Inquisition
         }
 
         #endregion
+
         #region Listeners
 
         private Task UserJoined(SocketGuildUser user)
@@ -136,7 +137,7 @@ namespace Inquisition
             {
                 foreach (var n in nList)
                 {
-                    if (target.Username == n.TargetName)
+                    if (target.Username == n.TargetName || target.Nickname == n.TargetNickname)
                     {
                         SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
@@ -152,6 +153,7 @@ namespace Inquisition
         }
 
         #endregion
+
         #region CommandHandling
 
         private async Task RegisterCommandsAsync()
@@ -189,8 +191,9 @@ namespace Inquisition
             }
         }
 
-#endregion
-#region Logging data
+        #endregion
+
+        #region Logging data
 
         private Task Log(LogMessage msg)
         {
@@ -198,8 +201,9 @@ namespace Inquisition
             return Task.CompletedTask;
         }
 
-#endregion
-#region Reminders
+        #endregion
+
+        #region Reminders
 
         public void ReminderLoop()
         {
@@ -230,8 +234,9 @@ namespace Inquisition
             }
         }
 
-#endregion
-#region Database data
+        #endregion
+
+        #region Database data
 
         private Task PopulateDbAsync()
         {
@@ -252,6 +257,6 @@ namespace Inquisition
             return Task.CompletedTask;
         }
 
-#endregion
+        #endregion
     }
 }

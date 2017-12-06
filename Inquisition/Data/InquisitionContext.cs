@@ -138,5 +138,7 @@ namespace Inquisition.Data
         public string TargetId { get; set; }
 
         public string TargetName { get; set; }
+
+        public string TargetNickname { get; set; }
     }
 }
