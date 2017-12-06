@@ -75,8 +75,10 @@ namespace Inquisition
             }
 
             _client.Log += Log;
+            _client.UserJoined += UserJoined;
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
+            _client.GuildMemberUpdated += OnGuildMemberUpdated;
             
             await RegisterCommandsAsync();
             
@@ -86,7 +88,7 @@ namespace Inquisition
              * removed to avoid creating duplicate information in the database since this is done
              * at runtime everytime the orgram starts.
              */
-            // await PopulateDbAsync();
+            // PopulateDbAsync();
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
@@ -98,18 +100,59 @@ namespace Inquisition
             await Task.Delay(-1);
         }
 
-#endregion
-#region Listeners
+        #endregion
+        #region Listeners
+
+        private Task UserJoined(SocketGuildUser user)
+        {
+            if (!user.IsBot)
+            {
+                if (!DbHandler.Exists(user))
+                {
+                    DbHandler.AddToDb(user);
+                    return Task.CompletedTask;
+                }
+            }
+            return null;
+        }
 
         private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
         {
-            await arg2.GetTextChannel(channel).SendMessageAsync(InfoMessage.UserBanned(arg1.Mention));
+            await arg2.GetTextChannel(channel).SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
         }
 
         private async Task UserLeftAsync(SocketGuildUser arg)
         {
-            await arg.Guild.GetTextChannel(channel).SendMessageAsync(InfoMessage.UserLeft(arg.Mention));
+            await arg.Guild.GetTextChannel(channel).SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
+
+        private async Task OnGuildMemberUpdated(SocketGuildUser arg1, SocketGuildUser arg2)
+        {
+            List<Notification> nList = DbHandler.ListAll(new Notification());
+            List<Notification> finished = new List<Notification>();
+            User target = DbHandler.GetUser(arg2);
+
+            if (arg1.Status == UserStatus.Offline && arg2.Status == UserStatus.Online)
+            {
+                foreach (var n in nList)
+                {
+                    if (target.Username == n.TargetName)
+                    {
+                        SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
+                        await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
+                        finished.Add(n);
+                    }
+                }
+
+                if (finished.Count != 0)
+                {
+                    DbHandler.RemoveRangeFromDb(finished);
+                }
+            }
+        }
+
+        #endregion
+        #region CommandHandling
 
         private async Task RegisterCommandsAsync()
         {
@@ -118,14 +161,16 @@ namespace Inquisition
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
-#endregion
-#region CommandHandling
-
         private async Task HandleCommands(SocketMessage arg)
         {
             var message = arg as SocketUserMessage;
 
             if (message is null || message.Author.IsBot) return;
+
+            if (!DbHandler.Exists(arg.Author))
+            {
+                DbHandler.AddToDb(arg.Author);
+            }
 
             string prefix = "rip ";
 
@@ -139,7 +184,7 @@ namespace Inquisition
 
                 if (!result.IsSuccess)
                 {
-                    Console.WriteLine($"{DateTime.Now.Minute}:{DateTime.Now.Second} - {result.ErrorReason}");
+                    Console.WriteLine($"{DateTimeOffset.UtcNow} - {result.ErrorReason}");
                 }
             }
         }
@@ -158,27 +203,27 @@ namespace Inquisition
 
         public void ReminderLoop()
         {
-            InquisitionContext db = new InquisitionContext();
             List<Reminder> Reminders;
 
             while (true)
             {
-                Reminders = db.Reminders.ToList();
+                Reminders = DbHandler.ListAll(new Reminder());
                 List<Reminder> FinishedReminders = new List<Reminder>();
 
                 foreach (Reminder r in Reminders)
                 {
-                    if (DateTime.Now >= r.DueDate)
+                    if (DateTimeOffset.UtcNow >= r.DueDate)
                     {
-                        _client.GetUser(ulong.Parse(r.UserId)).SendMessageAsync($"Reminder: {r.Message}");
+                        _client
+                            .GetUser(Convert.ToUInt64(r.User.Id))
+                            .SendMessageAsync($"Reminder: {r.Message}");
                         FinishedReminders.Add(r);
                     }
                 }
 
                 if (FinishedReminders.Count != 0)
                 {
-                    db.Reminders.RemoveRange(FinishedReminders);
-                    db.SaveChanges();
+                    DbHandler.RemoveRangeFromDb(FinishedReminders);
                 }
 
                 Thread.Sleep(5000);
@@ -188,7 +233,7 @@ namespace Inquisition
 #endregion
 #region Database data
 
-        private async Task PopulateDbAsync()
+        private Task PopulateDbAsync()
         {
             List<Data.Game> Games = new List<Data.Game>
             {
@@ -203,9 +248,8 @@ namespace Inquisition
                 new Data.Game { Name = "GMod - Murder", Port = "3000", Version = "?" }
             };
 
-            InquisitionContext db = new InquisitionContext();
-            await db.Games.AddRangeAsync(Games);
-            await db.SaveChangesAsync();
+            DbHandler.AddRangeToDb(Games);
+            return Task.CompletedTask;
         }
 
 #endregion

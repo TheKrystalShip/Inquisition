@@ -115,26 +115,25 @@ namespace Inquisition.Modules
             {
                 if (name is null || path is null)
                 {
-                    await ReplyAsync("Incorrect command structure, use: db port \"[Game]\" \"[NewPath]\"");
+                    await ReplyAsync("Incorrect command structure, use: set game port \"[Game]\" \"[NewPath]\"");
                     return;
                 }
 
                 Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
                 if (game is null)
                 {
-                    await ReplyAsync($"Sorry, {name} not found in the database");
+                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
                     return;
                 }
                 try
                 {
-                    game.ExeDir = path;
+                    game.Exe = path;
                     await db.SaveChangesAsync();
                     await ReplyAsync($"Changed {game.Name}'s exe path to {path} successfully");
                 }
                 catch (Exception ex)
                 {
-                    await ReplyAsync($"Nope, something went wrong. " +
-                            $"Please let the knobhead who programmed this know about it, thanks");
+                    await ReplyAsync(Message.Error.Generic);
                     Console.WriteLine(ex.Message);
                     throw;
                 }

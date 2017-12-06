@@ -21,7 +21,7 @@ namespace Inquisition.Modules
             }
 
             var n = await Context.Guild.PruneUsersAsync(d);
-            await ReplyAsync(InfoMessage.UsersPruned(n, d));
+            await ReplyAsync(Message.Info.UsersPruned(n, d));
         }
 
         [Command("ban")]
@@ -29,7 +29,7 @@ namespace Inquisition.Modules
         public async Task KickMemberAsync(SocketUser user)
         {
             await Context.Guild.AddBanAsync(user);
-            await ReplyAsync(InfoMessage.UserBanned(user.Username));
+            await ReplyAsync(Message.Info.UserBanned(user.Username));
         }
 
         [Command("unban")]
@@ -37,7 +37,7 @@ namespace Inquisition.Modules
         public async Task UnbanMemberAsync(SocketUser user)
         {
             await Context.Guild.RemoveBanAsync(user);
-            await ReplyAsync(InfoMessage.UserUnbanned(user.Username));
+            await ReplyAsync(Message.Info.UserUnbanned(user.Username));
         }
 
         [Command("wipe")]

@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171205230309_Added members table with virtual lists")]
+    partial class Addedmemberstablewithvirtuallists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,11 +27,11 @@ namespace Inquisition.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100);
 
-                    b.Property<string>("Exe");
+                    b.Property<string>("Args");
+
+                    b.Property<string>("ExeDir");
 
                     b.Property<bool>("IsOnline");
-
-                    b.Property<string>("LaunchArgs");
 
                     b.Property<string>("Port")
                         .HasMaxLength(10);
@@ -48,9 +49,9 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<string>("Author");
 
-                    b.Property<DateTimeOffset>("CreatedAt");
+                    b.Property<string>("MemberIdId");
 
                     b.Property<int>("NegativeVotes");
 
@@ -58,13 +59,25 @@ namespace Inquisition.Migrations
 
                     b.Property<string>("Text");
 
-                    b.Property<string>("UserId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberIdId");
+
+                    b.ToTable("Jokes");
+                });
+
+            modelBuilder.Entity("Inquisition.Data.Member", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("LastSeenOnline");
+
+                    b.Property<string>("Username");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Jokes");
+                    b.ToTable("Members");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
@@ -72,39 +85,17 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<string>("Author");
 
-                    b.Property<DateTimeOffset>("CreatedAt");
+                    b.Property<string>("MemberIdId");
 
                     b.Property<string>("Url");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MemberIdId");
 
                     b.ToTable("Memes");
-                });
-
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AuthorName");
-
-                    b.Property<string>("TargetId");
-
-                    b.Property<string>("TargetName");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
@@ -112,13 +103,13 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<DateTime>("CreateDate");
 
-                    b.Property<DateTimeOffset>("CreateDate");
-
-                    b.Property<DateTimeOffset>("DueDate");
+                    b.Property<DateTime>("DueDate");
 
                     b.Property<TimeSpan>("Duration");
+
+                    b.Property<string>("MemberIdId");
 
                     b.Property<string>("Message");
 
@@ -126,57 +117,30 @@ namespace Inquisition.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("MemberIdId");
 
                     b.ToTable("Reminders");
                 });
 
-            modelBuilder.Entity("Inquisition.Data.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Discriminator");
-
-                    b.Property<DateTimeOffset?>("JoinedAt");
-
-                    b.Property<DateTimeOffset>("LastSeenOnline");
-
-                    b.Property<string>("Nickname");
-
-                    b.Property<string>("Username");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("Inquisition.Data.Joke", b =>
                 {
-                    b.HasOne("Inquisition.Data.User", "User")
+                    b.HasOne("Inquisition.Data.Member", "MemberId")
                         .WithMany("Jokes")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("MemberIdId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
                 {
-                    b.HasOne("Inquisition.Data.User", "User")
+                    b.HasOne("Inquisition.Data.Member", "MemberId")
                         .WithMany("Memes")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
-                {
-                    b.HasOne("Inquisition.Data.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("MemberIdId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
                 {
-                    b.HasOne("Inquisition.Data.User", "User")
+                    b.HasOne("Inquisition.Data.Member", "MemberId")
                         .WithMany("Reminders")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("MemberIdId");
                 });
 #pragma warning restore 612, 618
         }

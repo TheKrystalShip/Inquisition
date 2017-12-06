@@ -8,7 +8,7 @@ using System.Linq;
 namespace Inquisition.Modules
 {
     [Group("remove")]
-    [Alias("delete")]
+    [Alias("remove a", "delete", "delete a")]
     [RequireUserPermission(GuildPermission.Administrator)]
     public class RemoveModule : ModuleBase<SocketCommandContext>
     {
@@ -18,23 +18,12 @@ namespace Inquisition.Modules
         [Summary("Remove a game from db")]
         public async Task DeleteGameAsync(string name)
         {
-            Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
-            if (game is null)
+            if (!DbHandler.Exists(new Data.Game { Name = name }))
             {
-                await ReplyAsync(ErrorMessage.GameNotFound(game.Name));
-                return;
-            }
-            try
+                await ReplyAsync(Message.Error.GameNotFound(name));
+            } else
             {
-                db.Remove(game);
-                await db.SaveChangesAsync();
-                await ReplyAsync(InfoMessage.SuccessfullyRemoved(game));
-            }
-            catch (Exception ex)
-            {
-                await ReplyAsync(ErrorMessage.DatabaseAccess());
-                Console.WriteLine(ex.Message);
-                throw;
+                
             }
         }
     }

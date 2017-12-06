@@ -22,7 +22,7 @@ namespace Inquisition.Modules
             Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
             if (game is null)
             {
-                await ReplyAsync(ErrorMessage.GameNotFound(game.Name));
+                await ReplyAsync(Message.Error.GameNotFound(game.Name));
                 return;
             }
 
@@ -30,13 +30,13 @@ namespace Inquisition.Modules
             {
                 if (ProcessDictionary.Instance.TryGetValue(game.Name, out Process temp))
                 {
-                    await ReplyAsync(ErrorMessage.GameAlreadyRunning(Context.User.Mention, game.Name, game.Version, game.Port));
+                    await ReplyAsync(Message.Error.GameAlreadyRunning(Context.User.Mention, game.Name, game.Version, game.Port));
                     return;
                 }
 
                 Process p = new Process();
-                p.StartInfo.FileName = Path + game.ExeDir;
-                p.StartInfo.Arguments = game.Args;
+                p.StartInfo.FileName = Path + game.Exe;
+                p.StartInfo.Arguments = game.LaunchArgs;
                 p.Start();
 
                 ProcessDictionary.Instance.Add(game.Name, p);
@@ -44,11 +44,11 @@ namespace Inquisition.Modules
                 game.IsOnline = true;
                 await db.SaveChangesAsync();
 
-                await ReplyAsync(InfoMessage.GameStartingUp(Context.User.Mention, game.Name, game.Version, game.Port));
+                await ReplyAsync(Message.Info.GameStartingUp(Context.User.Mention, game.Name, game.Version, game.Port));
             }
             catch (Exception ex)
             {
-                await ReplyAsync(ErrorMessage.UnableToStartGameServer(game.Name));
+                await ReplyAsync(Message.Error.UnableToStartGameServer(game.Name));
                 Console.WriteLine(ex.Message);
                 throw;
             }

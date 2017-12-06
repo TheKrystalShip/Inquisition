@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171206124130_Added Users table and navigation properties to Jokes, Memes and Reminders, tracing back to the user")]
+    partial class AddedUserstableandnavigationpropertiestoJokesMemesandReminderstracingbacktotheuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +49,7 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<string>("Author");
 
                     b.Property<DateTimeOffset>("CreatedAt");
 
@@ -72,7 +73,7 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<string>("Author");
 
                     b.Property<DateTimeOffset>("CreatedAt");
 
@@ -87,32 +88,12 @@ namespace Inquisition.Migrations
                     b.ToTable("Memes");
                 });
 
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AuthorName");
-
-                    b.Property<string>("TargetId");
-
-                    b.Property<string>("TargetName");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
-                });
-
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorName");
+                    b.Property<string>("Author");
 
                     b.Property<DateTimeOffset>("CreateDate");
 
@@ -162,13 +143,6 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Memes")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
-                {
-                    b.HasOne("Inquisition.Data.User", "User")
-                        .WithMany("Notifications")
                         .HasForeignKey("UserId");
                 });
 

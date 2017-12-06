@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Inquisition.Data
@@ -18,10 +19,13 @@ namespace Inquisition.Data
      */
     public class InquisitionContext : DbContext
     {
+        
         public DbSet<Game> Games { get; set; }
-        public DbSet<Reminder> Reminders { get; set; }
         public DbSet<Joke> Jokes { get; set; }
         public DbSet<Meme> Memes { get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,27 +47,9 @@ namespace Inquisition.Data
 
         public bool IsOnline { get; set; }
 
-        public string ExeDir { get; set; } = "";
+        public string Exe { get; set; }
 
-        public string Args { get; set; } = "";
-    }
-
-    public class Reminder
-    {
-        [Key]
-        public int Id { get; set; }
-
-        public string UserId { get; set; }
-
-        public string Username { get; set; }
-
-        public string Message { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public TimeSpan Duration { get; set; }
-
-        public DateTime DueDate { get; set; }
+        public string LaunchArgs { get; set; }
     }
 
     public class Joke
@@ -71,13 +57,17 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
-        public string Author { get; set; }
+        public string AuthorName { get; set; }
+        
+        public virtual User User { get; set; }
 
         public string Text { get; set; }
 
-        public int PositiveVotes { get; set; } = 0;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-        public int NegativeVotes { get; set; } = 0;
+        public int PositiveVotes { get; set; }
+
+        public int NegativeVotes { get; set; }
     }
 
     public class Meme
@@ -85,8 +75,68 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
-        public string Author { get; set; }
+        public string AuthorName { get; set; }
+
+        public virtual User User { get; set; }
+
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         public string Url { get; set; }
+    }
+
+    public class Reminder
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string AuthorName { get; set; }
+
+        public virtual User User { get; set; }
+
+        public string Message { get; set; }
+
+        public DateTimeOffset CreateDate { get; set; }
+
+        public TimeSpan Duration { get; set; }
+
+        public DateTimeOffset DueDate { get; set; }
+    }
+
+    public class User
+    {
+        [Key]
+        public string Id { get; set; }
+
+        public string Username { get; set; }
+
+        public string Nickname { get; set; }
+
+        public string Discriminator { get; set; }
+
+        public DateTimeOffset? JoinedAt { get; set; } = DateTimeOffset.UtcNow;
+
+        public DateTimeOffset LastSeenOnline { get; set; } = DateTimeOffset.UtcNow;
+
+        public virtual List<Joke> Jokes { get; set; } = new List<Joke>();
+
+        public virtual List<Meme> Memes { get; set; } = new List<Meme>();
+
+        public virtual List<Reminder> Reminders { get; set; } = new List<Reminder>();
+
+        public virtual List<Notification> Notifications { get; set; } = new List<Notification>();
+    }
+
+    public class Notification
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string AuthorName { get; set; }
+
+        public virtual User User { get; set; }
+
+        public string TargetId { get; set; }
+
+        public string TargetName { get; set; }
     }
 }

@@ -15,7 +15,6 @@ namespace Inquisition.Modules
     public class ShowModule : ModuleBase<SocketCommandContext>
     {
         [Group("game")]
-        [Alias("game pls", "games", "games pls")]
         public class ShowGameModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
@@ -28,7 +27,7 @@ namespace Inquisition.Modules
                 Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
                 if (game is null)
                 {
-                    await ReplyAsync($"Sorry, {name} not found in the database");
+                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
                     return;
                 }
 
@@ -63,7 +62,7 @@ namespace Inquisition.Modules
                 Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
                 if (game is null)
                 {
-                    await ReplyAsync($"Sorry, {name} not found in the database");
+                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
                     return;
                 }
 
@@ -77,7 +76,7 @@ namespace Inquisition.Modules
                 Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
                 if (game is null)
                 {
-                    await ReplyAsync($"Sorry, {name} not found in the database");
+                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
                     return;
                 }
 
@@ -86,7 +85,6 @@ namespace Inquisition.Modules
         }
 
         [Group("joke")]
-        [Alias("joke pls", "jokes", "jokes pls")]
         public class ShowJokeModule : ModuleBase<SocketCommandContext>
         {
             InquisitionContext db = new InquisitionContext();
@@ -103,14 +101,14 @@ namespace Inquisition.Modules
                     Jokes = db.Jokes.ToList();
                 } else
                 {
-                    Jokes = db.Jokes.Where(x => x.Author == user.Username).ToList();
+                    Jokes = db.Jokes.Where(x => x.AuthorName == user.Username).ToList();
                 }
 
                 try
                 {
                     Joke joke = Jokes[rn.Next(Jokes.Count)];
 
-                    await ReplyAsync($"Random joke, submitted by {joke.Author}:\n ```{joke.Text}``` \n" +
+                    await ReplyAsync($"Random joke, submitted by {joke.AuthorName}:\n ```{joke.Text}``` \n" +
                         $"With {joke.PositiveVotes} positive votes and {joke.NegativeVotes} negative votes");
                 }
                 catch (Exception ex)
@@ -140,13 +138,13 @@ namespace Inquisition.Modules
                     Memes = db.Memes.ToList();
                 } else
                 {
-                    Memes = db.Memes.Where(x => x.Author == user.Username).ToList();
+                    Memes = db.Memes.Where(x => x.AuthorName == user.Username).ToList();
                 }
 
                 try
                 {
                     Meme meme = Memes[rn.Next(Memes.Count)];
-                    await ReplyAsync($"Random meme, submitted by {meme.Author}:\n" +
+                    await ReplyAsync($"Random meme, submitted by {meme.AuthorName}:\n" +
                         $"{meme.Url}");
                 }
                 catch (Exception ex)
@@ -157,6 +155,11 @@ namespace Inquisition.Modules
                 }
 
             }
+        }
+
+        public static bool FindUserInDb(SocketUser username)
+        {
+            return false;
         }
     }
 }

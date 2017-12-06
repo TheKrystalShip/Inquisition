@@ -7,106 +7,165 @@ using Discord.WebSocket;
 namespace Inquisition.Modules
 {
     [Group("add")]
+    [Alias("add a", "add a new", "make", "make a", "make a new", "create", "create a", "create a new")]
     public class AddModule : ModuleBase<SocketCommandContext>
     {
-        InquisitionContext db = new InquisitionContext();
-
         [Command("game")]
-        [Alias("a game", "new game", "a new game")]
+        [Alias("game:")]
         [Summary("Add a game to the server list")]
         [RequireUserPermission(Discord.GuildPermission.Administrator)]
         public async Task AddGameAsync(string name, string port = "?", string version = "?")
         {
             if (name is null)
             {
-                await ReplyAsync($"Incorrect struncture, use: \"[game]\" \"[port]\" \"[version]\"");
+                await ReplyAsync(Message.Error.IncorrectStructure(new Game()));
                 return;
             } else
             {
                 Game game = new Game { Name = name, Port = port, Version = version };
-                await db.AddAsync(game);
-                await db.SaveChangesAsync();
-                await ReplyAsync(InfoMessage.SuccessfullyAdded(game));
+                if (!DbHandler.Exists(game))
+                {
+                    if (DbHandler.AddToDb(game))
+                    {
+                        await ReplyAsync(Message.Info.SuccessfullyAdded(game));
+                    } else
+                    {
+                        await ReplyAsync(Message.Error.DatabaseAccess);
+                    }
+                } else
+                {
+                    await ReplyAsync(Message.Error.AlreadyExists(game));
+                }
             }
         }
 
         [Command("joke")]
-        [Alias("a joke", "new joke", "a new joke")]
+        [Alias("joke:")]
         [Summary("Adds a joke to the db")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
-            try
+            if (jokeText is null)
+            {
+                await ReplyAsync(Message.Error.IncorrectStructure(new Joke()));
+                return;
+            } else
             {
                 Joke joke = new Joke
                 {
-                    Author = Context.User.Username,
-                    Text = jokeText
+                    AuthorName = Context.User.Username,
+                    Text = jokeText,
+                    User = DbHandler.GetUser(Context.User)
                 };
 
-                db.Jokes.Add(joke);
-                await db.SaveChangesAsync();
-                await ReplyAsync(InfoMessage.SuccessfullyAdded(joke));
-            }
-            catch (Exception ex)
-            {
-                await ReplyAsync(ErrorMessage.DatabaseAccess());
-                Console.WriteLine(ex.Message);
-                throw;
+                if (DbHandler.AddToDb(joke))
+                {
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
+                } else
+                {
+                    await ReplyAsync(Message.Error.DatabaseAccess);
+                }
             }
         }
 
         [Command("meme")]
-        [Alias("a meme", "new meme", "a new meme")]
+        [Alias("meme:")]
         [Summary("Adds a meme to the db")]
         public async Task AddMemeAsync([Remainder] string url)
         {
-            try
+            if (url is null)
+            {
+                await ReplyAsync(Message.Error.IncorrectStructure(new Meme()));
+                return;
+            } else
             {
                 Meme meme = new Meme
                 {
-                    Author = Context.User.Username,
-                    Url = url
+                    AuthorName = Context.User.Username,
+                    Url = url,
+                    User = DbHandler.GetUser(Context.User)
                 };
 
-                db.Memes.Add(meme);
-                await db.SaveChangesAsync();
-                await ReplyAsync(InfoMessage.SuccessfullyAdded(meme));
-            }
-            catch (Exception ex)
-            {
-                await ReplyAsync(ErrorMessage.DatabaseAccess());
-                Console.WriteLine(ex.Message);
-                throw;
+                if (DbHandler.AddToDb(meme))
+                {
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
+                }
+                else
+                {
+                    await ReplyAsync(Message.Error.DatabaseAccess);
+                }
             }
         }
 
         [Command("reminder")]
-        [Alias("a reminder", "new reminder", "a new reminder")]
+        [Alias("reminder:", "reminder at", "reminder at:")]
         [Summary("Add a reminder")]
-        public async Task AddReminderAsync(DateTime dueDate, [Remainder] string remainder)
+        public async Task AddReminderAsync(DateTimeOffset dueDate, [Remainder] string remainder = null)
         {
-            SocketUser user = Context.User;
             Reminder reminder = new Reminder
             {
-                UserId = $"{user.Id}",
-                Username = user.Username,
-                CreateDate = DateTime.Now,
+                AuthorName = Context.User.Username,
+                CreateDate = DateTimeOffset.Now,
                 DueDate = dueDate,
-                Duration = dueDate - DateTime.Now,
-                Message = remainder
+                Duration = dueDate - DateTimeOffset.Now,
+                Message = remainder,
+                User = DbHandler.GetUser(Context.User)
             };
 
-            try
+            if (DbHandler.AddToDb(reminder))
             {
-                await db.Reminders.AddAsync(reminder);
-                await db.SaveChangesAsync();
-                await ReplyAsync(InfoMessage.SuccessfullyAdded(reminder));
+                await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
+            } else
+            {
+                await ReplyAsync(Message.Error.DatabaseAccess);
             }
-            catch (Exception ex)
+        }
+
+        [Command("user")]
+        [Alias("user:")]
+        public async Task AddUserAsync(SocketGuildUser user)
+        {
+            if (!DbHandler.Exists(user))
             {
-                await ReplyAsync(ErrorMessage.DatabaseAccess());
-                Console.WriteLine(ex.Message);
-                throw;
+                if (DbHandler.AddToDb(user))
+                {
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(user));
+                } else
+                {
+                    await ReplyAsync(Message.Error.DatabaseAccess);
+                }
+            } else
+            {
+                await ReplyAsync(Message.Error.AlreadyExists(user));
+            }
+        }
+
+        [Command("notification")]
+        [Alias("notification when", "notification:", "notification when:")]
+        public async Task AddNotificationAsync(SocketGuildUser user = null, [Remainder] string etc = "")
+        {
+            if (user is null)
+            {
+                await ReplyAsync(Message.Error.Generic);
+                return;
+            } else
+            {
+                User author = DbHandler.GetUser(Context.User);
+                User target = DbHandler.GetUser(user);
+
+                Notification n = new Notification
+                {
+                    AuthorName = author.Username,
+                    User = author,
+                    TargetName = target.Username,
+                    TargetId = target.Id
+                };
+                if (DbHandler.AddToDb(n))
+                {
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(n));
+                } else
+                {
+                    await ReplyAsync(Message.Error.DatabaseAccess);
+                }
             }
         }
     }

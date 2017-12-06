@@ -21,7 +21,7 @@ namespace Inquisition.Modules
             Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
             if (game is null)
             {
-                await ReplyAsync(ErrorMessage.GameNotFound(game.Name));
+                await ReplyAsync(Message.Error.GameNotFound(game.Name));
                 return;
             }
 
@@ -36,15 +36,15 @@ namespace Inquisition.Modules
                     game.IsOnline = false;
                     await db.SaveChangesAsync();
 
-                    await ReplyAsync(InfoMessage.GameShuttingDown(game.Name));
+                    await ReplyAsync(Message.Info.GameShuttingDown(game.Name));
                     return;
                 }
 
-                await ReplyAsync(ErrorMessage.GameNotRunning(Context.User.Mention, game.Name));
+                await ReplyAsync(Message.Error.GameNotRunning(Context.User.Mention, game.Name));
             }
             catch (Exception ex)
             {
-                await ReplyAsync(ErrorMessage.UnableToStopGameServer(game.Name));
+                await ReplyAsync(Message.Error.UnableToStopGameServer(game.Name));
                 Console.WriteLine(ex.Message);
                 throw;
             }

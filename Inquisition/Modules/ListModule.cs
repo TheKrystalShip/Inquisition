@@ -5,162 +5,108 @@ using System.Threading.Tasks;
 using Inquisition.Data;
 using System.Linq;
 using Discord.WebSocket;
+using System;
 
 namespace Inquisition.Modules
 {
     [Group("list")]
-    [Alias("list me all", "tell me all", "show me all")]
+    [Alias("list all", "list me", "list me all")]
     public class ListModule : ModuleBase<SocketCommandContext>
     {
-        [Group("games")]
-        public class ListGameModule : ModuleBase<SocketCommandContext>
+        [Command("games")]
+        [Summary("Returns list of all games in the database")]
+        public async Task ListAllGamesAsync()
         {
-            InquisitionContext db = new InquisitionContext();
+            List<Data.Game> Games = DbHandler.ListAll(new Data.Game());
+            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
-            [Command("")]
-            [Alias("all")]
-            public async Task ListAllGamesAsync()
+            foreach (Data.Game game in Games)
             {
-                List<Data.Game> Games = db.Games.ToList();
-                EmbedBuilder builder = new EmbedBuilder
-                {
-                    Color = Color.Orange,
-                    Title = "Domain: ffs.game-host.org",
-                    Description = $"List of all game servers with ports"
-                };
-
-                foreach (Data.Game game in Games)
-                {
-                    string st = game.IsOnline ? "Online " : "Offline ";
-                    builder.AddInlineField(game.Name, st + $"on: {game.Port}, v: {game.Version}");
-                }
-
-                await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
+                string st = game.IsOnline ? "Online " : "Offline ";
+                builder.AddInlineField(game.Name, st + $"on: {game.Port}, v: {game.Version}");
             }
 
-            [Command("online")]
-            public async Task ListOnlineGamesAsync()
-            {
-                List<Data.Game> Games = db.Games.ToList();
-                EmbedBuilder builder = new EmbedBuilder
-                {
-                    Color = Color.Orange,
-                    Title = "Domain: ffs.game-host.org",
-                    Description = $"List of online game servers with ports"
-                };
-
-                foreach (Data.Game game in Games)
-                {
-                    if (game.IsOnline)
-                        builder.AddInlineField(game.Name, $"Port: {game.Port}, v: {game.Version}");
-                }
-
-                await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
-            }
-
-            [Command("offline")]
-            public async Task ListOfflineGamesAsync()
-            {
-                List<Data.Game> Games = db.Games.ToList();
-                EmbedBuilder builder = new EmbedBuilder
-                {
-                    Color = Color.Orange,
-                    Title = "Domain: ffs.game-host.org",
-                    Description = $"List of offline game servers with ports"
-                };
-
-                foreach (Data.Game game in Games)
-                {
-                    if (!game.IsOnline)
-                        builder.AddInlineField(game.Name, $"Port: {game.Port}, v: {game.Version}");
-                }
-
-                await ReplyAsync($"Here's the server list {Context.User.Mention}:", false, builder.Build());
-            }
+            await ReplyAsync($"Here's the server list:", false, builder.Build());
         }
 
-        [Group("reminders")]
-        public class ListRemindersModule : ModuleBase<SocketCommandContext>
+        [Command("jokes")]
+        [Alias("jokes by")]
+        public async Task ListJokesAsync(SocketUser user = null)
         {
-            InquisitionContext db = new InquisitionContext();
+            List<Joke> Jokes = DbHandler.ListAll(new Joke(), user);
+            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
-            [Summary("Returns a list of all set reminders")]
-            public async Task ListRemindersAsync()
+            foreach (Joke joke in Jokes)
             {
-                SocketUser user = Context.Message.Author;
-
-                List<Data.Reminder> Reminders = db.Reminders.ToList();
-                EmbedBuilder builder = new EmbedBuilder
-                {
-                    Color = Color.Blue,
-                    Title = $"{user.Username}'s reminders:",
-                };
-
-                builder.WithAuthor(user.Username);
-
-                foreach (Data.Reminder reminder in Reminders)
-                {
-                    builder.AddField($"{reminder.Duration}", $"{reminder.Message}, {reminder.Duration}", true);
-                }
-                await ReplyAsync($"Here's a list of all your reminders {Context.Message.Author.Mention}", false, builder.Build());
+                builder.AddField($"{joke.Text}", $"Y: {joke.PositiveVotes} - N: {joke.NegativeVotes}");
             }
+
+            await ReplyAsync($"Here's the jokes list {Context.User.Mention}:", false, builder.Build());
         }
 
-        [Group("jokes")]
-        public class ListJokesModule : ModuleBase<SocketCommandContext>
+        [Command("memes")]
+        [Alias("memes by")]
+        public async Task ListMemesAsync(SocketUser user = null)
         {
-            InquisitionContext db = new InquisitionContext();
+            List<Meme> Memes = DbHandler.ListAll(new Meme(), user);
+            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
-            [Command("")]
-            [Alias("by")]
-            public async Task ListJokesAsync(SocketUser user, [Remainder] string garbage = "")
+            int i = 1;
+
+            foreach (Meme meme in Memes)
             {
-                if (user is null)
-                {
-                    user = Context.User;
-                }
-
-                List<Joke> Jokes = db.Jokes.Where(x => x.Author == user.Username).ToList();
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.WithAuthor(user.Username);
-
-                foreach (Joke joke in Jokes)
-                {
-                    builder.AddField($"{joke.Text}", $"Y: {joke.PositiveVotes} - N: {joke.NegativeVotes}");
-                }
-
-                await ReplyAsync($"Here's the jokes list {Context.User.Mention}:", false, builder.Build());
+                builder.AddField($"Shitpost nr {i}:", $"{meme.Url}");
+                i++;
             }
 
+            await ReplyAsync($"Here's the meme list {Context.User.Mention}:", false, builder.Build());
         }
 
-        [Group("memes")]
-        public class ListMemesModule : ModuleBase<SocketCommandContext>
+        [Command("reminders")]
+        [Summary("Returns a list of all set reminders")]
+        public async Task ListRemindersAsync(SocketUser user = null)
         {
-            InquisitionContext db = new InquisitionContext();
-
-            [Command("")]
-            [Alias("by")]
-            public async Task ListMemesAsync(SocketUser user = null)
+            List<Reminder> Reminders;
+            switch (user)
             {
-                if (user is null)
-                {
-                    user = Context.User;
-                }
-
-                List<Meme> Memes = db.Memes.Where(x => x.Author == user.Username).ToList();
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.WithAuthor(user.Username);
-                int i = 1;
-
-                foreach (Meme meme in Memes)
-                {
-                    builder.AddField($"Shitpost nr {i}:", $"{meme.Url}");
-                    i++;
-                }
-
-                await ReplyAsync($"Here's the meme list {Context.User.Mention}:", false, builder.Build());
+                case null:
+                    Reminders = DbHandler.ListAll(new Reminder(), Context.User);
+                    break;
+                default:
+                    Reminders = DbHandler.ListAll(new Reminder(), user);
+                    break;
             }
+            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+            foreach (Reminder reminder in Reminders)
+            {
+                builder.AddField($"{reminder.Message}", $"{reminder.DueDate}");
+            }
+            await ReplyAsync($"Here's a list of all your reminders", false, builder.Build());
+        }
+
+        [Command("notifications")]
+        [Summary("Returns a list of all notifications")]
+        public async Task ListNotificationsAsync(SocketUser user = null)
+        {
+            List<Notification> list;
+            switch (user)
+            {
+                case null:
+                    list = DbHandler.ListAll(new Notification(), Context.User);
+                    break;
+                default:
+                    list = DbHandler.ListAll(new Notification(), user);
+                    break;
+            }
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+            foreach (Notification n in list)
+            {
+                embed.AddField($"By {n.User.Username}", $"For when {n.TargetName} comes online");
+            }
+
+            await ReplyAsync($"Here's the list of all your notifications", false, embed.Build());
         }
     }
 }
