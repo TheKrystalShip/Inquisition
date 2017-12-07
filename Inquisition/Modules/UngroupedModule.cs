@@ -217,9 +217,8 @@ namespace Inquisition.Modules
                 {
                     Meme meme = Memes[rn.Next(Memes.Count)];
                     EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                    embed.WithFooter($"Submitted by {meme.User.Username}#{meme.User.Discriminator}:", meme.User.AvatarUrl);
+                    embed.WithFooter($"Submitted by: {meme.User.Username}#{meme.User.Discriminator}", meme.User.AvatarUrl);
                     embed.WithImageUrl(meme.Url);
-                    embed.WithColor(Color.Purple);
 
                     await ReplyAsync($"Here you go:", false, embed.Build()); 
                 } else

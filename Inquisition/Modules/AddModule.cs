@@ -149,10 +149,13 @@ namespace Inquisition.Modules
                 User author = DbHandler.GetFromDb(Context.User);
                 User target = DbHandler.GetFromDb(user);
 
+                bool permanent = etc.Equals("permanent");
+
                 Notification n = new Notification
                 {
                     User = author,
-                    TargetUser = target
+                    TargetUser = target,
+                    IsPermanent = permanent
                 };
                 if (DbHandler.AddToDb(n))
                 {

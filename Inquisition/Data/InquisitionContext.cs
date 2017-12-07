@@ -153,10 +153,12 @@ namespace Inquisition.Data
     {
         [Key]
         public int Id { get; set; }
-        
+
         public virtual User User { get; set; }
 
         public virtual User TargetUser { get; set; }
+
+        public bool IsPermanent { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }

@@ -34,15 +34,15 @@ namespace Inquisition.Modules
                 {
                     "meme", "a meme", "new meme", "a new meme"
                 };
-                EmbedBuilder embedBuilder = new EmbedBuilder();
+                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                 int i = 1;
 
                 foreach (string item in Commands)
                 {
-                    embedBuilder.AddField($"Option {i}:", $"add {item} URL/Link");
+                    embed.AddField($"Option {i}:", $"add {item} URL/Link");
                     i++;
                 }
-                await ReplyAsync($"To add a new meme you can use:", false, embedBuilder.Build());
+                await ReplyAsync($"To add a new meme you can use:", false, embed.Build());
             }
 
             [Command("game")]
@@ -59,7 +59,7 @@ namespace Inquisition.Modules
                     "joke", "a joke", "new joke", "a new joke"
                 };
 
-                EmbedBuilder embedBuilder = new EmbedBuilder();
+                EmbedBuilder embedBuilder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                 int i = 1;
 
                 foreach (string item in Commands)
@@ -78,7 +78,7 @@ namespace Inquisition.Modules
                     "reminder", "a reminder", "new reminder", "a new reminder"
                 };
 
-                EmbedBuilder embedBuilder = new EmbedBuilder();
+                EmbedBuilder embedBuilder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                 int i = 1;
 
                 foreach (string item in Commands)

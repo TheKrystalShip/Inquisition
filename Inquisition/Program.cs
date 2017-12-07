@@ -141,7 +141,10 @@ namespace Inquisition
                     {
                         SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
-                        finished.Add(n);
+                        if (!n.IsPermanent)
+                        {
+                            finished.Add(n); 
+                        }
                     }
                 }
 
@@ -175,15 +178,15 @@ namespace Inquisition
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
-        private async Task HandleCommands(SocketMessage arg)
+        private async Task HandleCommands(SocketMessage msg)
         {
-            var message = arg as SocketUserMessage;
+            var message = msg as SocketUserMessage;
 
             if (message is null || message.Author.IsBot) return;
 
-            if (!DbHandler.Exists(arg.Author))
+            if (!DbHandler.Exists(msg.Author))
             {
-                DbHandler.AddToDb(arg.Author);
+                DbHandler.AddToDb(msg.Author);
             }
 
             string prefix = "rip ";
