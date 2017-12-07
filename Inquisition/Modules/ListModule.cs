@@ -26,40 +26,62 @@ namespace Inquisition.Modules
                 builder.AddInlineField(game.Name, st + $"on: {game.Port}, v: {game.Version}");
             }
 
-            await ReplyAsync($"Here's the server list:", false, builder.Build());
+            await ReplyAsync(Message.Info.Generic, false, builder.Build());
         }
 
         [Command("jokes")]
         [Alias("jokes by")]
         public async Task ListJokesAsync(SocketUser user = null)
         {
-            List<Joke> Jokes = DbHandler.ListAll(new Joke(), user);
-            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            List<Joke> Jokes;
+
+            switch (user)
+            {
+                case null:
+                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(Context.User));
+                    break;
+                default:
+                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(user));
+                    break;
+            }
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
             foreach (Joke joke in Jokes)
             {
-                builder.AddField($"{joke.Text}", $"Submitted {joke.CreatedAt}");
+                embed.AddField($"{joke.Text}", $"Submitted {joke.CreatedAt}");
             }
 
-            await ReplyAsync($"Here's the jokes list {Context.User.Mention}:", false, builder.Build());
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
 
         [Command("memes")]
         [Alias("memes by")]
         public async Task ListMemesAsync(SocketUser user = null)
         {
-            List<Meme> Memes = DbHandler.ListAll(new Meme(), user);
-            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            List<Meme> Memes;
+
+            switch (user)
+            {
+                case null:
+                    Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(Context.User));
+                    break;
+                default:
+                    Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(user));
+                    break;
+            }
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
             int i = 1;
 
             foreach (Meme meme in Memes)
             {
-                builder.AddField($"Shitpost nr {i}:", $"{meme.Url}");
+                embed.AddField($"Shitpost nr {i}:", $"{meme.Url}");
                 i++;
             }
 
-            await ReplyAsync($"Here's the meme list {Context.User.Mention}:", false, builder.Build());
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
 
         [Command("reminders")]
@@ -70,43 +92,43 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Reminders = DbHandler.ListAll(new Reminder(), Context.User);
+                    Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(Context.User));
                     break;
                 default:
-                    Reminders = DbHandler.ListAll(new Reminder(), user);
+                    Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(user));
                     break;
             }
-            EmbedBuilder builder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
             foreach (Reminder reminder in Reminders)
             {
-                builder.AddField($"{reminder.Message}", $"{reminder.DueDate}");
+                embed.AddField($"{reminder.Message}", $"{reminder.DueDate}");
             }
-            await ReplyAsync($"Here's a list of all your reminders", false, builder.Build());
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
 
         [Command("notifications")]
         [Summary("Returns a list of all notifications")]
         public async Task ListNotificationsAsync(SocketUser user = null)
         {
-            List<Notification> list;
+            List<Notification> Notifications;
             switch (user)
             {
                 case null:
-                    list = DbHandler.ListAll(new Notification(), Context.User);
+                    Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(Context.User));
                     break;
                 default:
-                    list = DbHandler.ListAll(new Notification(), user);
+                    Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(user));
                     break;
             }
             EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
-            foreach (Notification n in list)
+            foreach (Notification n in Notifications)
             {
                 embed.AddField($"By {n.User.Username}", $"For when {n.TargetUser.Username} comes online");
             }
 
-            await ReplyAsync($"Here's the list of all your notifications", false, embed.Build());
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
     }
 }

@@ -46,6 +46,10 @@ namespace Inquisition.Data
                 Console.WriteLine(ex.Message);
                 return false;
             }
+            finally
+            {
+                Save();
+            }
         }
 
         /*Discord member*/
@@ -67,7 +71,6 @@ namespace Inquisition.Data
                     };
 
                     db.Users.Add(local);
-                    db.SaveChanges();
                     return true;
                 }
             }
@@ -75,6 +78,10 @@ namespace Inquisition.Data
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -89,7 +96,6 @@ namespace Inquisition.Data
                 } else
                 {
                     db.Users.Add(user);
-                    db.SaveChanges();
                     return true;
                 }
             }
@@ -97,6 +103,10 @@ namespace Inquisition.Data
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -110,7 +120,6 @@ namespace Inquisition.Data
                 } else
                 {
                     db.Games.Add(game);
-                    db.SaveChanges();
                     return true;
                 }
             }
@@ -119,6 +128,10 @@ namespace Inquisition.Data
                 Console.WriteLine(ex.Message);
                 return false;
             }
+            finally
+            {
+                Save();
+            }
         }
 
         public static bool AddToDb(Joke joke)
@@ -126,13 +139,16 @@ namespace Inquisition.Data
             try
             {
                 db.Jokes.Add(joke);
-                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -141,13 +157,16 @@ namespace Inquisition.Data
             try
             {
                 db.Memes.Add(meme);
-                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -156,13 +175,16 @@ namespace Inquisition.Data
             try
             {
                 db.Reminders.Add(reminder);
-                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -171,13 +193,16 @@ namespace Inquisition.Data
             try
             {
                 db.Notifications.Add(notification);
-                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
+            }
+            finally
+            {
+                Save();
             }
         }
 
@@ -430,13 +455,13 @@ namespace Inquisition.Data
         /*Server member*/
         public static bool Exists(SocketGuildUser user)
         {
-            return db.Users.Any(x => ulong.Parse(x.Id) == user.Id);
+            return db.Users.Any(x => Convert.ToUInt64(x.Id) == user.Id);
         }
 
         /*Discord member*/
         public static bool Exists(SocketUser user)
         {
-            return db.Users.Any(x => ulong.Parse(x.Id) == user.Id);
+            return db.Users.Any(x => Convert.ToUInt64(x.Id) == user.Id);
         }
 
         /*Local member*/
@@ -483,51 +508,36 @@ namespace Inquisition.Data
 
         #region List (SocketUser)
 
-        public static List<Joke> ListAll(Joke joke, SocketUser user)
+        public static List<Joke> ListAll(Joke joke, User user)
         {
             if (user is null)
-            {
                 return ListAll(joke);
-            } else if (!Exists(user))
-                AddToDb(user);
 
-            return db.Jokes.Where(x => x.User.Id == $"{user.Id}").ToList();
+            return db.Jokes.Where(x => x.User == user).ToList();
         }
 
-        public static List<Meme> ListAll(Meme meme, SocketUser user)
+        public static List<Meme> ListAll(Meme meme, User user)
         {
             if (user is null)
-            {
                 return ListAll(meme);
-            }
-            else if (!Exists(user))
-                AddToDb(user);
 
-            return db.Memes.Where(x => x.User.Id == $"{user.Id}").ToList();
+            return db.Memes.Where(x => x.User == user).ToList();
         }
 
-        public static List<Reminder> ListAll(Reminder reminder, SocketUser user)
+        public static List<Reminder> ListAll(Reminder reminder, User user)
         {
             if (user is null)
-            {
                 return ListAll(reminder);
-            }
-            else if (!Exists(user))
-                AddToDb(user);
 
-            return db.Reminders.Where(x => x.User.Id == $"{user.Id}").ToList();
-
+            return db.Reminders.Where(x => x.User == user).ToList();
         }
 
-        public static List<Notification> ListAll(Notification notification, SocketUser user)
+        public static List<Notification> ListAll(Notification notification, User user)
         {
             if (user is null)
-            {
                 return ListAll(notification);
-            } else if (!Exists(user))
-                AddToDb(user);
-
-            return db.Notifications.Where(x => x.User.Id == $"{user.Id}").ToList();
+            
+            return db.Notifications.Where(x => x.User == user).ToList();
         }
 
         #endregion
@@ -536,30 +546,21 @@ namespace Inquisition.Data
 
         public static User GetFromDb(SocketUser user)
         {
-            if (!Exists(user))
-                AddToDb(user);
             return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
         }
 
         public static User GetFromDb(SocketGuildUser user)
         {
-            if (!Exists(user))
-                AddToDb(user);
             return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
         }
 
         public static User GetFromDb(User user)
         {
-            if (!Exists(user))
-                AddToDb(user);
             return db.Users.Where(x => x.Id == user.Id).FirstOrDefault();
         }
 
         public static Game GetFromDb(Game game)
         {
-            if (!Exists(game))
-                AddToDb(game);
-
             return db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
         }
 

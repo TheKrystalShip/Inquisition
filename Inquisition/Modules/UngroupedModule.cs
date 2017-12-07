@@ -160,31 +160,37 @@ namespace Inquisition.Modules
             List<Joke> Jokes;
             Random rn = new Random();
 
-            if (user is null)
+            switch (user)
             {
-                Jokes = DbHandler.ListAll(new Joke());
-                user = Context.User;
-            }
-            else
-            {
-                Jokes = DbHandler.ListAll(new Joke(), user);
+                case null:
+                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(Context.User));
+                    user = Context.User;
+                    break;
+                default:
+                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(user));
+                    break;
             }
 
             try
             {
-                Joke joke = Jokes[rn.Next(Jokes.Count - 1)];
-                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                embed.WithTitle(joke.Text);
-                embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
-                embed.WithColor(Color.Green);
+                if (Jokes.Count > 0)
+                {
+                    Joke joke = Jokes[rn.Next(Jokes.Count - 1)];
+                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+                    embed.WithTitle(joke.Text);
+                    embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
+                    embed.WithColor(Color.Green);
 
-                await ReplyAsync($"Here you go:", false, embed.Build());
+                    await ReplyAsync($"Here you go:", false, embed.Build()); 
+                } else
+                {
+                    await ReplyAsync(Message.Error.NoContent(user));
+                }
             }
             catch (Exception ex)
             {
                 await ReplyAsync($"Something happened, oops. Let the admin know pls thx <3");
                 Console.WriteLine(ex.Message);
-                throw;
             }
         }
 
@@ -207,13 +213,19 @@ namespace Inquisition.Modules
 
             try
             {
-                Meme meme = Memes[rn.Next(Memes.Count)];
-                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                embed.WithFooter($"Submitted by {meme.User}:", meme.User.AvatarUrl);
-                embed.WithImageUrl(meme.Url);
-                embed.WithColor(Color.Purple);
+                if (Memes.Count > 0)
+                {
+                    Meme meme = Memes[rn.Next(Memes.Count)];
+                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+                    embed.WithFooter($"Submitted by {meme.User.Username}#{meme.User.Discriminator}:", meme.User.AvatarUrl);
+                    embed.WithImageUrl(meme.Url);
+                    embed.WithColor(Color.Purple);
 
-                await ReplyAsync($"Here you go:", false, embed.Build());
+                    await ReplyAsync($"Here you go:", false, embed.Build()); 
+                } else
+                {
+                    await ReplyAsync(Message.Error.NoContent(user));
+                }
             }
             catch (Exception ex)
             {

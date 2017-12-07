@@ -8,6 +8,7 @@ namespace Inquisition.Data
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
             public static string DatabaseAccess = $"There was an error while trying to access the database, please let the Admin know about this, thanks";
+            public static string NoContent(SocketUser user) => $"{user} doesn't have anything in the database";
 
             #region AlreadyExists
 
@@ -91,6 +92,8 @@ namespace Inquisition.Data
 
         public class Info
         {
+            public static string Generic = $"Here you go:";
+
             #region Successfully Added
             public static string SuccessfullyAdded(string data)
             {
