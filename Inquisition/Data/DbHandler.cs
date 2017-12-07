@@ -32,7 +32,8 @@ namespace Inquisition.Data
                         Discriminator = user.Discriminator,
                         Username = user.Username,
                         JoinedAt = user.JoinedAt,
-                        Nickname = user.Nickname
+                        Nickname = user.Nickname,
+                        AvatarUrl = user.GetAvatarUrl()
                     };
 
                     db.Users.Add(local);
@@ -61,7 +62,8 @@ namespace Inquisition.Data
                     {
                         Id = $"{user.Id}",
                         Discriminator = user.Discriminator,
-                        Username = user.Username
+                        Username = user.Username,
+                        AvatarUrl = user.GetAvatarUrl()
                     };
 
                     db.Users.Add(local);
@@ -202,7 +204,8 @@ namespace Inquisition.Data
                             Discriminator = user.Discriminator,
                             Username = user.Username,
                             JoinedAt = user.JoinedAt,
-                            Nickname = user.Nickname
+                            Nickname = user.Nickname,
+                            AvatarUrl = user.GetAvatarUrl()
                         };
 
                         list.Add(local);
@@ -237,7 +240,8 @@ namespace Inquisition.Data
                         {
                             Id = $"{user.Id}",
                             Discriminator = user.Discriminator,
-                            Username = user.Username
+                            Username = user.Username,
+                            AvatarUrl = user.GetAvatarUrl()
                         };
 
                         list.Add(local);

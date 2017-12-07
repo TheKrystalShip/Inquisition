@@ -117,6 +117,8 @@ namespace Inquisition.Data
 
         public DateTimeOffset LastSeenOnline { get; set; } = DateTimeOffset.UtcNow;
 
+        public string AvatarUrl { get; set; }
+
         public virtual List<Joke> Jokes { get; set; } = new List<Joke>();
 
         public virtual List<Meme> Memes { get; set; } = new List<Meme>();

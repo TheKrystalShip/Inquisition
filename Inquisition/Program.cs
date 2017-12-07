@@ -126,13 +126,13 @@ namespace Inquisition
             await arg.Guild.GetTextChannel(channel).SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
 
-        private async Task OnGuildMemberUpdated(SocketGuildUser arg1, SocketGuildUser arg2)
+        private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
         {
             List<Notification> nList = DbHandler.ListAll(new Notification());
             List<Notification> finished = new List<Notification>();
-            User target = DbHandler.GetFromDb(arg2);
+            User target = DbHandler.GetFromDb(after);
 
-            if (arg1.Status == UserStatus.Offline && arg2.Status == UserStatus.Online)
+            if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
             {
                 foreach (var n in nList)
                 {
@@ -150,11 +150,17 @@ namespace Inquisition
                 }
             }
 
-            if (arg1.Nickname != arg1.Nickname)
+            if (before.Nickname != before.Nickname)
             {
-                DbHandler.GetFromDb(arg1).Nickname = arg2.Nickname;
-                DbHandler.Save();
+                DbHandler.GetFromDb(before).Nickname = after.Nickname;
             }
+
+            if (before.GetAvatarUrl() != after.GetAvatarUrl())
+            {
+                DbHandler.GetFromDb(before).AvatarUrl = after.GetAvatarUrl();
+            }
+
+            DbHandler.Save();
         }
 
         #endregion

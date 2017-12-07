@@ -1,8 +1,5 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Inquisition.Data
 {
@@ -15,8 +12,7 @@ namespace Inquisition.Data
             embed.WithCurrentTimestamp();
             embed.WithColor(Color.Blue);
             embed.WithAuthor(author);
-            embed.WithFooter($"Requested by: {user}");
-            embed.WithThumbnailUrl(user.GetAvatarUrl());
+            embed.WithFooter($"Requested by: {user}", user.GetAvatarUrl());
 
             return embed;
         }
