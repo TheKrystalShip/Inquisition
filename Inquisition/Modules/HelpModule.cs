@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Inquisition.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,8 +13,7 @@ namespace Inquisition.Modules
         [Command("")]
         public async Task HelpCommandsAsync()
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.WithAuthor(Context.User);
+            EmbedBuilder embedBuilder = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
             embedBuilder.WithDescription("Optional: [] - Mandatory: {}");
             embedBuilder.AddField("add/create/make [a]/[a new]", "joke, meme, reminder, game");
             embedBuilder.AddField("show/tell [me]/[me a]", "joke, meme, reminder, game");

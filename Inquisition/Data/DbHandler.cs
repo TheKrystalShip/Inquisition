@@ -9,6 +9,11 @@ namespace Inquisition.Data
     {
         private static InquisitionContext db = new InquisitionContext();
 
+        public static void Save()
+        {
+            db.SaveChanges();
+        }
+
         #region AddToDb
 
         /*Server member*/
@@ -311,14 +316,14 @@ namespace Inquisition.Data
 
         public static void RemoveFromDb(SocketGuildUser user)
         {
-            User temp = GetUser(user);
+            User temp = GetFromDb(user);
             db.Users.Remove(temp);
             db.SaveChanges();
         }
 
         public static void RemoveFromDb(SocketUser user)
         {
-            User temp = GetUser(user);
+            User temp = GetFromDb(user);
             db.Users.Remove(temp);
             db.SaveChanges();
         }
@@ -398,6 +403,21 @@ namespace Inquisition.Data
             db.RemoveRange(notifications);
             db.SaveChanges();
         }
+
+        #endregion
+
+        #region UpdateInDb
+
+        public static void UpdateInDb(Game game)
+        {
+            if (!Exists(game))
+                AddToDb(game);
+
+            db.Games.Update(game);
+            db.SaveChanges();
+        }
+
+
 
         #endregion
 
@@ -508,27 +528,35 @@ namespace Inquisition.Data
 
         #endregion
 
-        #region GetUser
+        #region GetFromDb
 
-        public static User GetUser(SocketUser user)
+        public static User GetFromDb(SocketUser user)
         {
             if (!Exists(user))
                 AddToDb(user);
             return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
         }
 
-        public static User GetUser(SocketGuildUser user)
+        public static User GetFromDb(SocketGuildUser user)
         {
             if (!Exists(user))
                 AddToDb(user);
             return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
         }
 
-        public static User GetUser(User user)
+        public static User GetFromDb(User user)
         {
             if (!Exists(user))
                 AddToDb(user);
             return db.Users.Where(x => x.Id == user.Id).FirstOrDefault();
+        }
+
+        public static Game GetFromDb(Game game)
+        {
+            if (!Exists(game))
+                AddToDb(game);
+
+            return db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
         }
 
         #endregion

@@ -20,10 +20,11 @@ namespace Inquisition.Modules
         {
             if (!DbHandler.Exists(new Data.Game { Name = name }))
             {
-                await ReplyAsync(Message.Error.GameNotFound(name));
+                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
             } else
             {
-                
+                DbHandler.RemoveFromDb(new Data.Game { Name = name });
+                await ReplyAsync(Message.Info.SuccessfullyRemoved(new Data.Game { Name = name }));
             }
         }
     }

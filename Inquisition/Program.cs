@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Collections.Generic;
 using Inquisition.Data;
 using System.Threading;
-using System.Linq;
 
 /*
  * Required packages for the porject:
@@ -131,7 +130,7 @@ namespace Inquisition
         {
             List<Notification> nList = DbHandler.ListAll(new Notification());
             List<Notification> finished = new List<Notification>();
-            User target = DbHandler.GetUser(arg2);
+            User target = DbHandler.GetFromDb(arg2);
 
             if (arg1.Status == UserStatus.Offline && arg2.Status == UserStatus.Online)
             {
@@ -149,6 +148,12 @@ namespace Inquisition
                 {
                     DbHandler.RemoveRangeFromDb(finished);
                 }
+            }
+
+            if (arg1.Nickname != arg1.Nickname)
+            {
+                DbHandler.GetFromDb(arg1).Nickname = arg2.Nickname;
+                DbHandler.Save();
             }
         }
 

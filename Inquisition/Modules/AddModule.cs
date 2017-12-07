@@ -54,7 +54,7 @@ namespace Inquisition.Modules
                 {
                     AuthorName = Context.User.Username,
                     Text = jokeText,
-                    User = DbHandler.GetUser(Context.User)
+                    User = DbHandler.GetFromDb(Context.User)
                 };
 
                 if (DbHandler.AddToDb(joke))
@@ -82,7 +82,7 @@ namespace Inquisition.Modules
                 {
                     AuthorName = Context.User.Username,
                     Url = url,
-                    User = DbHandler.GetUser(Context.User)
+                    User = DbHandler.GetFromDb(Context.User)
                 };
 
                 if (DbHandler.AddToDb(meme))
@@ -108,7 +108,7 @@ namespace Inquisition.Modules
                 DueDate = dueDate,
                 Duration = dueDate - DateTimeOffset.Now,
                 Message = remainder,
-                User = DbHandler.GetUser(Context.User)
+                User = DbHandler.GetFromDb(Context.User)
             };
 
             if (DbHandler.AddToDb(reminder))
@@ -149,8 +149,8 @@ namespace Inquisition.Modules
                 return;
             } else
             {
-                User author = DbHandler.GetUser(Context.User);
-                User target = DbHandler.GetUser(user);
+                User author = DbHandler.GetFromDb(Context.User);
+                User target = DbHandler.GetFromDb(user);
 
                 Notification n = new Notification
                 {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Diagnostics;
 using Discord.WebSocket;
+using Discord;
 
 namespace Inquisition.Modules
 {
@@ -17,17 +18,15 @@ namespace Inquisition.Modules
         [Group("game")]
         public class ShowGameModule : ModuleBase<SocketCommandContext>
         {
-            InquisitionContext db = new InquisitionContext();
-
             [Command("status")]
             [Alias("info")]
             [Summary("Returns if a game server is online")]
             public async Task StatusAsync(string name)
             {
-                Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
+                Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
                 if (game is null)
                 {
-                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
+                    await ReplyAsync(Message.Error.GameNotFound(game));
                     return;
                 }
 
@@ -59,10 +58,10 @@ namespace Inquisition.Modules
             [Summary("Returns a game's version")]
             public async Task GameVersionAsync(string name)
             {
-                Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
+                Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
                 if (game is null)
                 {
-                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
+                    await ReplyAsync(Message.Error.GameNotFound(game));
                     return;
                 }
 
@@ -73,10 +72,10 @@ namespace Inquisition.Modules
             [Summary("Returns a game's port")]
             public async Task GamePortAsync(string name)
             {
-                Data.Game game = db.Games.Where(x => x.Name == name).FirstOrDefault();
+                Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
                 if (game is null)
                 {
-                    await ReplyAsync(Message.Error.GameNotFound(game.Name));
+                    await ReplyAsync(Message.Error.GameNotFound(game));
                     return;
                 }
 
@@ -87,8 +86,6 @@ namespace Inquisition.Modules
         [Group("joke")]
         public class ShowJokeModule : ModuleBase<SocketCommandContext>
         {
-            InquisitionContext db = new InquisitionContext();
-
             [Command("")]
             [Alias("by")]
             public async Task ShowJokeAsync(SocketUser user = null)
@@ -98,18 +95,21 @@ namespace Inquisition.Modules
 
                 if (user is null)
                 {
-                    Jokes = db.Jokes.ToList();
+                    Jokes = DbHandler.ListAll(new Joke());
+                    user = Context.User;
                 } else
                 {
-                    Jokes = db.Jokes.Where(x => x.AuthorName == user.Username).ToList();
+                    Jokes = DbHandler.ListAll(new Joke(), user);
                 }
 
                 try
                 {
                     Joke joke = Jokes[rn.Next(Jokes.Count)];
+                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, user);
+                    embed.WithDescription($"Random joke submitted by {joke.AuthorName}:");
+                    embed.AddField($"{joke.Text}", $"P:{joke.PositiveVotes} - N:{joke.NegativeVotes}");
 
-                    await ReplyAsync($"Random joke, submitted by {joke.AuthorName}:\n ```{joke.Text}``` \n" +
-                        $"With {joke.PositiveVotes} positive votes and {joke.NegativeVotes} negative votes");
+                    await ReplyAsync($"Here you go:", false, embed.Build());
                 }
                 catch (Exception ex)
                 {
@@ -124,8 +124,6 @@ namespace Inquisition.Modules
         [Alias("meme pls", "memes", "memes pls", "spice", "spice pls", "some spice", "some spice pls", "spiciness", " some spiciness", "spiciness pls", "some spiciness pls")]
         public class ShowMemeModule : ModuleBase<SocketCommandContext>
         {
-            InquisitionContext db = new InquisitionContext();
-
             [Command("")]
             [Alias("by")]
             public async Task ShowMemeAsync(SocketUser user = null)
@@ -135,31 +133,29 @@ namespace Inquisition.Modules
 
                 if (user is null)
                 {
-                    Memes = db.Memes.ToList();
+                    Memes = DbHandler.ListAll(new Meme());
+                    user = Context.User;
                 } else
                 {
-                    Memes = db.Memes.Where(x => x.AuthorName == user.Username).ToList();
+                    Memes = DbHandler.ListAll(new Meme(), user);
                 }
 
                 try
                 {
                     Meme meme = Memes[rn.Next(Memes.Count)];
-                    await ReplyAsync($"Random meme, submitted by {meme.AuthorName}:\n" +
-                        $"{meme.Url}");
+                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, user);
+                    embed.WithDescription($"Random meme submitted by {meme.AuthorName}:");
+                    embed.WithImageUrl(meme.Url);
+
+                    await ReplyAsync($"Here you go:", false, embed.Build());
                 }
                 catch (Exception ex)
                 {
                     await ReplyAsync($"Something happened, oops. Let the admin know pls thx <3");
                     Console.WriteLine(ex.Message);
-                    throw;
                 }
 
             }
-        }
-
-        public static bool FindUserInDb(SocketUser username)
-        {
-            return false;
         }
     }
 }

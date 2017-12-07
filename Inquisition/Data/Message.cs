@@ -35,29 +35,29 @@ namespace Inquisition.Data
 
             #region Game
 
-            public static string GameNotFound(string game)
+            public static string GameNotFound(Game game)
             {
-                return $"Sorry, could't find {game} in the database. Please make sure the name is correctly written.";
+                return $"Sorry, could't find {game.Name} in the database. Please make sure the name is correctly written.";
             }
 
-            public static string GameNotRunning(string mention, string game)
+            public static string GameNotRunning(Game game)
             {
-                return $"{mention}, {game} doesn't seem to be running";
+                return $"{game.Name} doesn't seem to be running";
             }
 
-            public static string GameAlreadyRunning(string mention, string game, string version, string port)
+            public static string GameAlreadyRunning(Game game)
             {
-                return $"{mention}, {game} server seems to already be running version {version}, on port {port}";
+                return $"{game.Name} server seems to already be running version {game.Version}, on port {game.Port}";
             }
 
-            public static string UnableToStopGameServer(string game)
+            public static string UnableToStopGameServer(Game game)
             {
-                return $"Something went wrong, couldn't stop {game} server, please let the Admin know about this.";
+                return $"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this.";
             }
 
-            public static string UnableToStartGameServer(string game)
+            public static string UnableToStartGameServer(Game game)
             {
-                return $"Something went wrong, couldn't start {game} server, please let the Admin know about this.";
+                return $"Something went wrong, couldn't start {game.Name} server, please let the Admin know about this.";
             }
 
             #endregion
@@ -128,6 +128,7 @@ namespace Inquisition.Data
             }
 
             #endregion
+
             #region Successfully Removed
             public static string SuccessfullyRemoved(string data)
             {
@@ -155,10 +156,11 @@ namespace Inquisition.Data
             }
 
             #endregion
+
             #region Game
-            public static string GameStartingUp(string mention, string game, string version, string port)
+            public static string GameStartingUp(Game game)
             {
-                return $"{mention}, {game} server should be online in a few moments, version {version} on port {port}";
+                return $"{game.Name} server should be online in a few moments, version {game.Version} on port {game.Port}";
             }
 
             public static string GameShuttingDown(string game)
@@ -166,10 +168,11 @@ namespace Inquisition.Data
                 return $"{game} server is shutting down";
             }
             #endregion
+
             #region Users
             public static string UsersPruned(int users, int days)
             {
-                return $"{users} users were pruned for inactivity in the last {days} days";
+                return $"{users} users were pruned for {days} days of innactivity";
             }
 
             public static string UserLeft(string user)
