@@ -50,10 +50,6 @@ namespace Inquisition.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt");
 
-                    b.Property<int>("NegativeVotes");
-
-                    b.Property<int>("PositiveVotes");
-
                     b.Property<string>("Text");
 
                     b.Property<string>("UserId");
@@ -153,7 +149,7 @@ namespace Inquisition.Migrations
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Jokes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
@@ -161,15 +157,14 @@ namespace Inquisition.Migrations
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Memes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Notification", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "TargetUser")
                         .WithMany("TargetNotifications")
-                        .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TargetUserId");
 
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Notifications")

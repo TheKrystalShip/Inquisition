@@ -202,7 +202,7 @@ namespace Inquisition.Modules
             }
             else
             {
-                Memes = DbHandler.ListAll(new Meme(), user);
+                Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(user));
             }
 
             try

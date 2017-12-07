@@ -11,8 +11,8 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    [Migration("20171207151349_NotificationsFk")]
-    partial class NotificationsFk
+    [Migration("20171207154455_InitialStructure")]
+    partial class InitialStructure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,10 +50,6 @@ namespace Inquisition.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTimeOffset>("CreatedAt");
-
-                    b.Property<int>("NegativeVotes");
-
-                    b.Property<int>("PositiveVotes");
 
                     b.Property<string>("Text");
 
@@ -153,22 +149,23 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Jokes")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Memes")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Notification", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "TargetUser")
                         .WithMany("TargetNotifications")
-                        .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TargetUserId");
 
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Notifications")
@@ -180,7 +177,8 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Reminders")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

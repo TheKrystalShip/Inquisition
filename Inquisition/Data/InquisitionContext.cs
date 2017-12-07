@@ -38,12 +38,12 @@ namespace Inquisition.Data
             modelBuilder.Entity<Joke>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Jokes)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Meme>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Memes)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Reminder>()
                 .HasOne(x => x.User)
@@ -53,14 +53,11 @@ namespace Inquisition.Data
             modelBuilder.Entity<Notification>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Notifications)
-                .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Notification>()
                 .HasOne(x => x.TargetUser)
-                .WithMany(x => x.TargetNotifications)
-                .HasForeignKey(x => x.TargetUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(x => x.TargetNotifications);
         }
     }
 
@@ -93,10 +90,6 @@ namespace Inquisition.Data
         public string Text { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-        public int PositiveVotes { get; set; }
-
-        public int NegativeVotes { get; set; }
     }
 
     public class Meme
@@ -106,9 +99,9 @@ namespace Inquisition.Data
 
         public virtual User User { get; set; }
 
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-
         public string Url { get; set; }
+
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 
     public class Reminder
@@ -160,15 +153,11 @@ namespace Inquisition.Data
     {
         [Key]
         public int Id { get; set; }
-
-        public string UserId { get; set; }
         
         public virtual User User { get; set; }
 
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-        
-        public string TargetUserId { get; set; }
-        
         public virtual User TargetUser { get; set; }
+
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }

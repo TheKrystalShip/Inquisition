@@ -13,22 +13,22 @@ namespace Inquisition.Data
 
             public static string AlreadyExists(Game game)
             {
-                return $"{game.Name} already exists in the daabase";
+                return $"{game.Name} already exists in the database";
             }
 
             public static string AlreadyExists(User user)
             {
-                return $"{user.Username} already exists in the daabase";
+                return $"{user.Username} already exists in the database";
             }
 
             public static string AlreadyExists(SocketUser user)
             {
-                return $"{user.Username} already exists in the daabase";
+                return $"{user.Username} already exists in the database";
             }
 
             public static string AlreadyExists(SocketGuildUser user)
             {
-                return $"{user.Username} already exists in the daabase";
+                return $"{user.Username} already exists in the database";
             }
 
             #endregion

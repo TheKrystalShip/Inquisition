@@ -38,7 +38,7 @@ namespace Inquisition.Modules
 
             foreach (Joke joke in Jokes)
             {
-                builder.AddField($"{joke.Text}", $"Y: {joke.PositiveVotes} - N: {joke.NegativeVotes}");
+                builder.AddField($"{joke.Text}", $"Submitted {joke.CreatedAt}");
             }
 
             await ReplyAsync($"Here's the jokes list {Context.User.Mention}:", false, builder.Build());
