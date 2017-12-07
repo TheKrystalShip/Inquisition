@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171207130819_DateTimeOffsetNotifications")]
+    partial class DateTimeOffsetNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,6 +49,8 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AuthorName");
+
                     b.Property<DateTimeOffset>("CreatedAt");
 
                     b.Property<int>("NegativeVotes");
@@ -70,6 +73,8 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AuthorName");
+
                     b.Property<DateTimeOffset>("CreatedAt");
 
                     b.Property<string>("Url");
@@ -88,15 +93,19 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AuthorName");
+
                     b.Property<DateTimeOffset>("CreatedAt");
 
-                    b.Property<string>("TargetUserId");
+                    b.Property<string>("TargetId");
+
+                    b.Property<string>("TargetName");
+
+                    b.Property<string>("TargetNickname");
 
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TargetUserId");
 
                     b.HasIndex("UserId");
 
@@ -107,6 +116,8 @@ namespace Inquisition.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AuthorName");
 
                     b.Property<DateTimeOffset>("CreateDate");
 
@@ -128,8 +139,7 @@ namespace Inquisition.Migrations
             modelBuilder.Entity("Inquisition.Data.User", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("AvatarUrl");
 
@@ -152,37 +162,28 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Jokes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Memes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Notification", b =>
                 {
-                    b.HasOne("Inquisition.Data.User", "TargetUser")
-                        .WithMany("TargetNotifications")
-                        .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Notifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Reminders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

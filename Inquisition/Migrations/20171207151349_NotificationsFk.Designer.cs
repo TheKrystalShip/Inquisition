@@ -11,9 +11,10 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(InquisitionContext))]
-    partial class InquisitionContextModelSnapshot : ModelSnapshot
+    [Migration("20171207151349_NotificationsFk")]
+    partial class NotificationsFk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,16 +153,14 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Jokes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Meme", b =>
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Memes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Notification", b =>
@@ -181,8 +180,7 @@ namespace Inquisition.Migrations
                 {
                     b.HasOne("Inquisition.Data.User", "User")
                         .WithMany("Reminders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

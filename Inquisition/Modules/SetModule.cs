@@ -13,33 +13,33 @@ namespace Inquisition.Modules
     [RequireUserPermission(GuildPermission.Administrator)]
     public class SetModule : ModuleBase<SocketCommandContext>
     {
-        [Group("game")]
-        public class SetGame : ModuleBase<SocketCommandContext>
-        {
+        //[Group("game")]
+        //public class SetGame : ModuleBase<SocketCommandContext>
+        //{
 
-            [Command("name")]
-            public async Task SetGameNameAsync(string name, string newName)
-            {
+        //    [Command("name")]
+        //    public async Task SetGameNameAsync(string name, string newName)
+        //    {
 
-            }
+        //    }
 
-            [Command("port")]
-            public async Task SetGamePortAsync(string name, string port)
-            {
+        //    [Command("port")]
+        //    public async Task SetGamePortAsync(string name, string port)
+        //    {
 
-            }
+        //    }
 
-            [Command("version")]
-            public async Task SetGameVersionAsync(string name, string version)
-            {
+        //    [Command("version")]
+        //    public async Task SetGameVersionAsync(string name, string version)
+        //    {
 
-            }
+        //    }
 
-            [Command("exe")]
-            public async Task SetGameExeAsync(string name, string path)
-            {
+        //    [Command("exe")]
+        //    public async Task SetGameExeAsync(string name, string path)
+        //    {
 
-            }
-        }
+        //    }
+        //}
     }
 }

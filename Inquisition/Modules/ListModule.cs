@@ -103,7 +103,7 @@ namespace Inquisition.Modules
 
             foreach (Notification n in list)
             {
-                embed.AddField($"By {n.User.Username}", $"For when {n.TargetName} comes online");
+                embed.AddField($"By {n.User.Username}", $"For when {n.TargetUser.Username} comes online");
             }
 
             await ReplyAsync($"Here's the list of all your notifications", false, embed.Build());

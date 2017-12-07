@@ -52,7 +52,6 @@ namespace Inquisition.Modules
             {
                 Joke joke = new Joke
                 {
-                    AuthorName = Context.User.Username,
                     Text = jokeText,
                     User = DbHandler.GetFromDb(Context.User)
                 };
@@ -80,7 +79,6 @@ namespace Inquisition.Modules
             {
                 Meme meme = new Meme
                 {
-                    AuthorName = Context.User.Username,
                     Url = url,
                     User = DbHandler.GetFromDb(Context.User)
                 };
@@ -103,7 +101,6 @@ namespace Inquisition.Modules
         {
             Reminder reminder = new Reminder
             {
-                AuthorName = Context.User.Username,
                 CreateDate = DateTimeOffset.Now,
                 DueDate = dueDate,
                 Duration = dueDate - DateTimeOffset.Now,
@@ -154,10 +151,8 @@ namespace Inquisition.Modules
 
                 Notification n = new Notification
                 {
-                    AuthorName = author.Username,
                     User = author,
-                    TargetName = target.Username,
-                    TargetId = target.Id
+                    TargetUser = target
                 };
                 if (DbHandler.AddToDb(n))
                 {

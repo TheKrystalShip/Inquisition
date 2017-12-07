@@ -131,12 +131,13 @@ namespace Inquisition
             List<Notification> nList = DbHandler.ListAll(new Notification());
             List<Notification> finished = new List<Notification>();
             User target = DbHandler.GetFromDb(after);
+            DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
 
             if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
             {
                 foreach (var n in nList)
                 {
-                    if (target.Username == n.TargetName || target.Nickname == n.TargetNickname)
+                    if (target.Username == n.TargetUser.Username || target.Nickname == n.TargetUser.Nickname)
                     {
                         SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");

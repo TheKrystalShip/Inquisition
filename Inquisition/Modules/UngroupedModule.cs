@@ -65,16 +65,17 @@ namespace Inquisition.Modules
         [Alias("poll:")]
         public async Task AddReactionAsync([Remainder] string r = "")
         {
-            SocketUserMessage msg = Context.Message;
-            List<Emoji> reactions = new List<Emoji>
-            { new Emoji("👍🏻"),
-              new Emoji("👎🏻"),
-              new Emoji("🤷🏻") };
+            List<Emoji> reactions = new List<Emoji> { new Emoji("👍🏻"), new Emoji("👎🏻"), new Emoji("🤷🏻") };
 
-            foreach (var item in reactions)
-            {
-                await msg.AddReactionAsync(item);
-            }
+            var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
+            await Context.Channel.DeleteMessagesAsync(messages);
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            embed.WithColor(Color.Gold);
+            embed.WithTitle(r);
+            embed.WithFooter($"Asked by: {Context.User}", Context.User.GetAvatarUrl());
+
+            var id = await ReplyAsync("", false, embed.Build());
         }
 
         [Command("start")]
@@ -171,10 +172,11 @@ namespace Inquisition.Modules
 
             try
             {
-                Joke joke = Jokes[rn.Next(Jokes.Count)];
+                Joke joke = Jokes[rn.Next(Jokes.Count - 1)];
                 EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                embed.WithDescription($"Submitted by {joke.AuthorName}:");
-                embed.AddField($"{joke.Text}", $"P:{joke.PositiveVotes} - N:{joke.NegativeVotes}");
+                embed.WithTitle(joke.Text);
+                embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
+                embed.WithColor(Color.Green);
 
                 await ReplyAsync($"Here you go:", false, embed.Build());
             }
@@ -207,8 +209,9 @@ namespace Inquisition.Modules
             {
                 Meme meme = Memes[rn.Next(Memes.Count)];
                 EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                embed.WithDescription($"Submitted by {meme.AuthorName}:");
+                embed.WithFooter($"Submitted by {meme.User}:", meme.User.AvatarUrl);
                 embed.WithImageUrl(meme.Url);
+                embed.WithColor(Color.Purple);
 
                 await ReplyAsync($"Here you go:", false, embed.Build());
             }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inquisition.Data
 {
@@ -31,6 +32,36 @@ namespace Inquisition.Data
         {
             optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Joke>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Jokes)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Meme>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Memes)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Reminder>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Reminders)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Notifications)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(x => x.TargetUser)
+                .WithMany(x => x.TargetNotifications)
+                .HasForeignKey(x => x.TargetUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 
     public class Game
@@ -56,8 +87,6 @@ namespace Inquisition.Data
     {
         [Key]
         public int Id { get; set; }
-
-        public string AuthorName { get; set; }
         
         public virtual User User { get; set; }
 
@@ -75,8 +104,6 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
-        public string AuthorName { get; set; }
-
         public virtual User User { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
@@ -89,13 +116,11 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
-        public string AuthorName { get; set; }
-
         public virtual User User { get; set; }
 
         public string Message { get; set; }
 
-        public DateTimeOffset CreateDate { get; set; }
+        public DateTimeOffset CreateDate { get; set; } = DateTimeOffset.UtcNow;
 
         public TimeSpan Duration { get; set; }
 
@@ -105,6 +130,7 @@ namespace Inquisition.Data
     public class User
     {
         [Key]
+        [StringLength(100)]
         public string Id { get; set; }
 
         public string Username { get; set; }
@@ -126,6 +152,8 @@ namespace Inquisition.Data
         public virtual List<Reminder> Reminders { get; set; } = new List<Reminder>();
 
         public virtual List<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public virtual List<Notification> TargetNotifications { get; set; } = new List<Notification>();
     }
 
     public class Notification
@@ -133,14 +161,14 @@ namespace Inquisition.Data
         [Key]
         public int Id { get; set; }
 
-        public string AuthorName { get; set; }
-
+        public string UserId { get; set; }
+        
         public virtual User User { get; set; }
 
-        public string TargetId { get; set; }
-
-        public string TargetName { get; set; }
-
-        public string TargetNickname { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        
+        public string TargetUserId { get; set; }
+        
+        public virtual User TargetUser { get; set; }
     }
 }
