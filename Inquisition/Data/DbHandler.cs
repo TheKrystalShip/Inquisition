@@ -37,7 +37,6 @@ namespace Inquisition.Data
                     };
 
                     db.Users.Add(local);
-                    db.SaveChanges();
                     return true;
                 }
             }

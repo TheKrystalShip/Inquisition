@@ -75,7 +75,13 @@ namespace Inquisition.Modules
             embed.WithTitle(r);
             embed.WithFooter($"Asked by: {Context.User}", Context.User.GetAvatarUrl());
 
-            var id = await ReplyAsync("", false, embed.Build());
+            var msg = await ReplyAsync("", false, embed.Build());
+
+            foreach (Emoji e in reactions)
+            {
+                await msg.AddReactionAsync(e);
+            }
+
         }
 
         [Command("start")]
@@ -203,7 +209,7 @@ namespace Inquisition.Modules
 
             if (user is null)
             {
-                Memes = DbHandler.ListAll(new Meme());
+                Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(Context.User));
                 user = Context.User;
             }
             else
@@ -215,7 +221,7 @@ namespace Inquisition.Modules
             {
                 if (Memes.Count > 0)
                 {
-                    Meme meme = Memes[rn.Next(Memes.Count)];
+                    Meme meme = Memes[rn.Next(Memes.Count - 1)];
                     EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                     embed.WithFooter($"Submitted by: {meme.User.Username}#{meme.User.Discriminator}", meme.User.AvatarUrl);
                     embed.WithImageUrl(meme.Url);
