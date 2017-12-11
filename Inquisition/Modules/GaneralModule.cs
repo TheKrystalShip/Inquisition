@@ -316,27 +316,25 @@ namespace Inquisition.Modules
                 await ReplyAsync(Message.Error.Generic);
                 return;
             }
+
+            User author = DbHandler.GetFromDb(Context.User);
+            User target = DbHandler.GetFromDb(user);
+
+            bool permanent = etc.Equals("permanent");
+
+            Notification n = new Notification
+            {
+                User = author,
+                TargetUser = target,
+                IsPermanent = permanent
+            };
+            if (DbHandler.AddToDb(n))
+            {
+                await ReplyAsync(Message.Info.SuccessfullyAdded(n));
+            }
             else
             {
-                User author = DbHandler.GetFromDb(Context.User);
-                User target = DbHandler.GetFromDb(user);
-
-                bool permanent = etc.Equals("permanent");
-
-                Notification n = new Notification
-                {
-                    User = author,
-                    TargetUser = target,
-                    IsPermanent = permanent
-                };
-                if (DbHandler.AddToDb(n))
-                {
-                    await ReplyAsync(Message.Info.SuccessfullyAdded(n));
-                }
-                else
-                {
-                    await ReplyAsync(Message.Error.DatabaseAccess);
-                }
+                await ReplyAsync(Message.Error.DatabaseAccess);
             }
         }
     }

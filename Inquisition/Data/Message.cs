@@ -8,87 +8,42 @@ namespace Inquisition.Data
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
             public static string DatabaseAccess = $"There was an error while trying to access the database, please let the Admin know about this, thanks";
+
+            #region NoContent
+
             public static string NoContent(SocketGuildUser user) => $"{user.Username} doesn't have anything in the database";
             public static string NoContent(SocketUser user) => $"{user.Username} doesn't have anything in the database";
             public static string NoContent(User user) => $"{user.Username} doesn't have anything in the database";
             public static string NoContentGeneric = $"You don't have anything in the database";
 
+            #endregion
+
             #region AlreadyExists
 
-            public static string AlreadyExists(Game game)
-            {
-                return $"{game.Name} already exists in the database";
-            }
-
-            public static string AlreadyExists(User user)
-            {
-                return $"{user.Username} already exists in the database";
-            }
-
-            public static string AlreadyExists(SocketUser user)
-            {
-                return $"{user.Username} already exists in the database";
-            }
-
-            public static string AlreadyExists(SocketGuildUser user)
-            {
-                return $"{user.Username} already exists in the database";
-            }
+            public static string AlreadyExists(Game game) => $"{game.Name} already exists in the database";
+            public static string AlreadyExists(User user) => $"{user.Username} already exists in the database";
+            public static string AlreadyExists(SocketUser user) => $"{user.Username} already exists in the database";
+            public static string AlreadyExists(SocketGuildUser user) => $"{user.Username} already exists in the database";
 
             #endregion
 
             #region Game
 
-            public static string GameNotFound(Game game)
-            {
-                return $"Sorry, could't find {game.Name} in the database. Please make sure the name is correctly written.";
-            }
-
-            public static string GameNotRunning(Game game)
-            {
-                return $"{game.Name} doesn't seem to be running";
-            }
-
-            public static string GameAlreadyRunning(Game game)
-            {
-                return $"{game.Name} server seems to already be running version {game.Version}, on port {game.Port}";
-            }
-
-            public static string UnableToStopGameServer(Game game)
-            {
-                return $"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this.";
-            }
-
-            public static string UnableToStartGameServer(Game game)
-            {
-                return $"Something went wrong, couldn't start {game.Name} server, please let the Admin know about this.";
-            }
+            public static string GameNotFound(Game game) => $"Sorry, could't find {game.Name} in the database. Please make sure the name is correctly written.";
+            public static string GameNotRunning(Game game) => $"{game.Name} doesn't seem to be running";
+            public static string GameAlreadyRunning(Game game) => $"{game.Name} server seems to already be running version {game.Version}, on port {game.Port}";
+            public static string UnableToStopGameServer(Game game) => $"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this.";
+            public static string UnableToStartGameServer(Game game) => $"Something went wrong, couldn't start {game.Name} server, please let the Admin know about this.";
 
             #endregion
 
             #region Incorrect command structure
 
             private static string Common = "Incorrect structure, please use: ";
-
-            public static string IncorrectStructure(Game game)
-            {
-                return Common + "\"[Name]\" \"[Version]\" \"[Port]\"";
-            }
-
-            public static string IncorrectStructure(Joke joke)
-            {
-                return Common + "\"[Joke text]\"";
-            }
-
-            public static string IncorrectStructure(Meme meme)
-            {
-                return Common + "[Url/Link]";
-            }
-
-            public static string IncorrectStructure(Reminder reminder)
-            {
-                return Common + "\"[dd/mm/yyyy hh:mm:ss]\" \"[Message]\"";
-            }
+            public static string IncorrectStructure(Game game) => Common + "\"[Name]\" \"[Version]\" \"[Port]\"";
+            public static string IncorrectStructure(Joke joke) => Common + "\"[Joke text]\"";
+            public static string IncorrectStructure(Meme meme) => Common + "[Url/Link]";
+            public static string IncorrectStructure(Reminder reminder) => Common + "\"[dd/mm/yyyy hh:mm:ss]\" \"[Message]\"";
 
             #endregion
         }

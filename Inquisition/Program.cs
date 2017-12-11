@@ -128,16 +128,16 @@ namespace Inquisition
 
         private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
         {
-            List<Notification> nList = DbHandler.ListAll(new Notification());
-            List<Notification> finished = new List<Notification>();
-            User target = DbHandler.GetFromDb(after);
-            DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
-
             if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
             {
+                List<Notification> nList = DbHandler.ListAll(new Notification());
+                List<Notification> finished = new List<Notification>();
+                User target = DbHandler.GetFromDb(after);
+
+                DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
                 foreach (var n in nList)
                 {
-                    if (target.Username == n.TargetUser.Username || target.Nickname == n.TargetUser.Nickname)
+                    if (n.TargetUser == target)
                     {
                         SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
@@ -148,7 +148,7 @@ namespace Inquisition
                     }
                 }
 
-                if (finished.Count != 0)
+                if (finished.Count > 0)
                 {
                     DbHandler.RemoveRangeFromDb(finished);
                 }

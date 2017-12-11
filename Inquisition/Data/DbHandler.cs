@@ -477,7 +477,12 @@ namespace Inquisition.Data
 
         public static List<Notification> ListAll(Notification notification)
         {
-            List<Notification> Notifications = db.Notifications.Include(x => x.User).Include(x => x.TargetUser).ToList();
+            List<Notification> Notifications = 
+                db.Notifications
+                .Include(x => x.User)
+                .Include(x => x.TargetUser)
+                .ToList();
+
             return Notifications;
         }
 

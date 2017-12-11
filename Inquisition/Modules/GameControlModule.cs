@@ -4,7 +4,6 @@ using Inquisition.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
@@ -34,7 +33,7 @@ namespace Inquisition.Modules
                 }
 
                 Process p = new Process();
-                p.StartInfo.FileName = Path + game.Exe;
+                p.StartInfo.FileName = $"C:\\Windows\\system32\\notepad.exe";
                 p.StartInfo.Arguments = game.LaunchArgs;
                 p.Start();
 
@@ -95,7 +94,7 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(game));
+                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
                 return;
             }
 
@@ -130,7 +129,7 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(game));
+                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
                 return;
             }
 
@@ -144,7 +143,7 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(game));
+                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
                 return;
             }
 
