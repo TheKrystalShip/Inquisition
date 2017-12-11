@@ -10,7 +10,7 @@ namespace Inquisition.Data
             EmbedBuilder embed = new EmbedBuilder();
             embed = new EmbedBuilder();
             embed.WithCurrentTimestamp();
-            embed.WithColor(Color.Blue);
+            embed.WithColor(Color.Gold);
             embed.WithAuthor(author);
             embed.WithFooter($"Requested by: {user}", user.GetAvatarUrl());
 

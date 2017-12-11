@@ -38,7 +38,7 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(Context.User));
+                    Jokes = DbHandler.ListAll(new Joke());
                     break;
                 default:
                     Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(user));
@@ -64,7 +64,7 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(Context.User));
+                    Memes = DbHandler.ListAll(new Meme());
                     break;
                 default:
                     Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(user));
@@ -92,7 +92,7 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(Context.User));
+                    Reminders = DbHandler.ListAll(new Reminder());
                     break;
                 default:
                     Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(user));
@@ -115,7 +115,7 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(Context.User));
+                    Notifications = DbHandler.ListAll(new Notification());
                     break;
                 default:
                     Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(user));
@@ -125,7 +125,8 @@ namespace Inquisition.Modules
 
             foreach (Notification n in Notifications)
             {
-                embed.AddField($"By {n.User.Username}", $"For when {n.TargetUser.Username} comes online");
+                string p = n.IsPermanent ? "Permanent - " : "";
+                embed.AddField($"By {n.User.Username}", $"{p}For when {n.TargetUser.Username} comes online");
             }
 
             await ReplyAsync(Message.Info.Generic, false, embed.Build());

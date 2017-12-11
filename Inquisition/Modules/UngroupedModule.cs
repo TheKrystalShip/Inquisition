@@ -169,8 +169,7 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(Context.User));
-                    user = Context.User;
+                    Jokes = DbHandler.ListAll(new Joke());
                     break;
                 default:
                     Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(user));
@@ -185,7 +184,6 @@ namespace Inquisition.Modules
                     EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                     embed.WithTitle(joke.Text);
                     embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
-                    embed.WithColor(Color.Green);
 
                     await ReplyAsync($"Here you go:", false, embed.Build()); 
                 } else
@@ -195,7 +193,7 @@ namespace Inquisition.Modules
             }
             catch (Exception ex)
             {
-                await ReplyAsync($"Something happened, oops. Let the admin know pls thx <3");
+                await ReplyAsync($"Joke has no user property for some fucking reason");
                 Console.WriteLine(ex.Message);
             }
         }
@@ -209,8 +207,7 @@ namespace Inquisition.Modules
 
             if (user is null)
             {
-                Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(Context.User));
-                user = Context.User;
+                Memes = DbHandler.ListAll(new Meme());
             }
             else
             {

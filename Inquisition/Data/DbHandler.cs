@@ -2,12 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inquisition.Data
 {
     public class DbHandler
     {
         private static InquisitionContext db = new InquisitionContext();
+
+        private static User ConvertToLocalUser(SocketGuildUser user)
+        {
+            User local = new User
+            {
+                Username = user.Username,
+                Id = $"{user.Id}",
+                Nickname = user.Nickname,
+                AvatarUrl = user.GetAvatarUrl(),
+                Discriminator = user.Discriminator,
+                JoinedAt = user.JoinedAt,
+                LastSeenOnline = DateTimeOffset.UtcNow
+            };
+
+            return local;
+        }
+
+        private static User ConvertToLocalUser(SocketUser user)
+        {
+            User local = new User
+            {
+                Username = user.Username,
+                Id = $"{user.Id}",
+                AvatarUrl = user.GetAvatarUrl(),
+                Discriminator = user.Discriminator,
+                LastSeenOnline = DateTimeOffset.UtcNow
+            };
+
+            return local;
+        }
 
         public static void Save()
         {
@@ -16,27 +47,18 @@ namespace Inquisition.Data
 
         #region AddToDb
 
-        /*Server member*/
         public static bool AddToDb(SocketGuildUser user)
         {
             try
             {
-                if (Exists(user))
+                User local = ConvertToLocalUser(user);
+                if (Exists(local))
                 {
                     return false;
                 } else
                 {
-                    User local = new User
-                    {
-                        Id = $"{user.Id}",
-                        Discriminator = user.Discriminator,
-                        Username = user.Username,
-                        JoinedAt = user.JoinedAt,
-                        Nickname = user.Nickname,
-                        AvatarUrl = user.GetAvatarUrl()
-                    };
-
                     db.Users.Add(local);
+                    db.SaveChanges();
                     return true;
                 }
             }
@@ -45,31 +67,20 @@ namespace Inquisition.Data
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            finally
-            {
-                Save();
-            }
         }
-
-        /*Discord member*/
+        
         public static bool AddToDb(SocketUser user)
         {
             try
             {
-                if (Exists(user))
+                User local = ConvertToLocalUser(user);
+                if (Exists(local))
                 {
                     return false;
                 } else
                 {
-                    User local = new User
-                    {
-                        Id = $"{user.Id}",
-                        Discriminator = user.Discriminator,
-                        Username = user.Username,
-                        AvatarUrl = user.GetAvatarUrl()
-                    };
-
                     db.Users.Add(local);
+                    db.SaveChanges();
                     return true;
                 }
             }
@@ -78,13 +89,8 @@ namespace Inquisition.Data
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            finally
-            {
-                Save();
-            }
         }
-
-        /*Local member*/
+        
         public static bool AddToDb(User user)
         {
             try
@@ -95,6 +101,7 @@ namespace Inquisition.Data
                 } else
                 {
                     db.Users.Add(user);
+                    db.SaveChanges();
                     return true;
                 }
             }
@@ -102,10 +109,6 @@ namespace Inquisition.Data
             {
                 Console.WriteLine(ex.Message);
                 return false;
-            }
-            finally
-            {
-                Save();
             }
         }
 
@@ -119,6 +122,7 @@ namespace Inquisition.Data
                 } else
                 {
                     db.Games.Add(game);
+                    db.SaveChanges();
                     return true;
                 }
             }
@@ -127,10 +131,6 @@ namespace Inquisition.Data
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            finally
-            {
-                Save();
-            }
         }
 
         public static bool AddToDb(Joke joke)
@@ -138,16 +138,13 @@ namespace Inquisition.Data
             try
             {
                 db.Jokes.Add(joke);
+                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
-            }
-            finally
-            {
-                Save();
             }
         }
 
@@ -156,16 +153,13 @@ namespace Inquisition.Data
             try
             {
                 db.Memes.Add(meme);
+                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
-            }
-            finally
-            {
-                Save();
             }
         }
 
@@ -174,16 +168,13 @@ namespace Inquisition.Data
             try
             {
                 db.Reminders.Add(reminder);
+                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
-            }
-            finally
-            {
-                Save();
             }
         }
 
@@ -192,16 +183,13 @@ namespace Inquisition.Data
             try
             {
                 db.Notifications.Add(notification);
+                db.SaveChanges();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
-            }
-            finally
-            {
-                Save();
             }
         }
 
@@ -216,22 +204,13 @@ namespace Inquisition.Data
                 List<User> list = new List<User>();
                 foreach (SocketGuildUser user in users)
                 {
-                    if (Exists(user))
+                    User local = ConvertToLocalUser(user);
+                    if (Exists(local))
                     {
                         continue;
                     }
                     else
                     {
-                        User local = new User
-                        {
-                            Id = $"{user.Id}",
-                            Discriminator = user.Discriminator,
-                            Username = user.Username,
-                            JoinedAt = user.JoinedAt,
-                            Nickname = user.Nickname,
-                            AvatarUrl = user.GetAvatarUrl()
-                        };
-
                         list.Add(local);
                     }
                 }
@@ -254,20 +233,13 @@ namespace Inquisition.Data
                 List<User> list = new List<User>();
                 foreach (SocketUser user in users)
                 {
-                    if (Exists(user))
+                    User local = ConvertToLocalUser(user);
+                    if (Exists(local))
                     {
                         continue;
                     }
                     else
                     {
-                        User local = new User
-                        {
-                            Id = $"{user.Id}",
-                            Discriminator = user.Discriminator,
-                            Username = user.Username,
-                            AvatarUrl = user.GetAvatarUrl()
-                        };
-
                         list.Add(local);
                     }
                 }
@@ -451,68 +423,77 @@ namespace Inquisition.Data
 
         #region Exists
 
-        /*Server member*/
         public static bool Exists(SocketGuildUser user)
         {
-            return db.Users.Any(x => Convert.ToUInt64(x.Id) == user.Id);
+            User local = ConvertToLocalUser(user);
+            bool exists = db.Users.Any(x => x.Id == local.Id);
+            return exists;
         }
 
-        /*Discord member*/
         public static bool Exists(SocketUser user)
         {
-            return db.Users.Any(x => Convert.ToUInt64(x.Id) == user.Id);
+            User local = ConvertToLocalUser(user);
+            bool exists = db.Users.Any(x => x.Id == local.Id);
+            return exists;
         }
 
-        /*Local member*/
         public static bool Exists(User user)
         {
-            return db.Users.Any(x => x.Id == user.Id);
+            bool exists = db.Users.Any(x => x.Id == user.Id);
+            return exists;
         }
 
         public static bool Exists(Game game)
         {
-            return db.Games.Any(x => x.Name == game.Name);
+            bool exists = db.Games.Any(x => x.Name == game.Name);
+            return exists;
         }
 
         #endregion
 
-        #region List (Context.User)
+        #region List (No user specified)
 
         public static List<Game> ListAll(Game game)
         {
-            return db.Games.ToList();
+            List<Game> Games = db.Games.ToList();
+            return Games;
         }
 
         public static List<Joke> ListAll(Joke joke)
         {
-            return db.Jokes.ToList();
+            List<Joke> Jokes = db.Jokes.Include(x => x.User).ToList();
+            return Jokes;
         }
 
         public static List<Meme> ListAll(Meme meme)
         {
-            return db.Memes.ToList();
+            List<Meme> Memes = db.Memes.Include(x => x.User).ToList();
+            return Memes;
         }
 
         public static List<Reminder> ListAll(Reminder reminder)
         {
-            return db.Reminders.ToList();
+            List<Reminder> Reminders = db.Reminders.Include(x => x.User).ToList();
+            return Reminders;
         }
 
         public static List<Notification> ListAll(Notification notification)
         {
-            return db.Notifications.ToList();
+            List<Notification> Notifications = db.Notifications.Include(x => x.User).Include(x => x.TargetUser).ToList();
+            return Notifications;
         }
 
         #endregion
 
-        #region List (SocketUser)
+        #region List (User specified)
 
         public static List<Joke> ListAll(Joke joke, User user)
         {
             if (user is null)
                 return ListAll(joke);
 
-            return db.Jokes.Where(x => x.User == user).ToList();
+            List<Joke> Jokes = db.Jokes.Where(x => x.User == user).Include(x => x.User).ToList();
+            return Jokes;
         }
 
         public static List<Meme> ListAll(Meme meme, User user)
@@ -520,7 +501,8 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(meme);
 
-            return db.Memes.Where(x => x.User == user).ToList();
+            List<Meme> Memes = db.Memes.Where(x => x.User == user).Include(x => x.User).ToList();
+            return Memes;
         }
 
         public static List<Reminder> ListAll(Reminder reminder, User user)
@@ -528,7 +510,8 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(reminder);
 
-            return db.Reminders.Where(x => x.User == user).ToList();
+            List<Reminder> Reminders = db.Reminders.Where(x => x.User == user).Include(x => x.User).ToList();
+            return Reminders;
         }
 
         public static List<Notification> ListAll(Notification notification, User user)
@@ -536,7 +519,13 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(notification);
             
-            return db.Notifications.Where(x => x.User == user).ToList();
+            List<Notification> Notifications = 
+                db.Notifications
+                .Where(x => x.User == user)
+                .Include(x => x.User)
+                .Include(x => x.TargetUser)
+                .ToList();
+            return Notifications;
         }
 
         #endregion
@@ -545,22 +534,28 @@ namespace Inquisition.Data
 
         public static User GetFromDb(SocketUser user)
         {
-            return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
+            User local = ConvertToLocalUser(user);
+            User u = db.Users.Where(x => x.Id == local.Id).FirstOrDefault();
+            return u;
         }
 
         public static User GetFromDb(SocketGuildUser user)
         {
-            return db.Users.Where(x => Convert.ToUInt64(x.Id) == user.Id).FirstOrDefault();
+            User local = ConvertToLocalUser(user);
+            User u = db.Users.Where(x => x.Id == local.Id).FirstOrDefault();
+            return u;
         }
 
         public static User GetFromDb(User user)
         {
-            return db.Users.Where(x => x.Id == user.Id).FirstOrDefault();
+            User u = db.Users.Where(x => x.Id == user.Id).FirstOrDefault();
+            return u;
         }
 
         public static Game GetFromDb(Game game)
         {
-            return db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
+            Game g = db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
+            return g;
         }
 
         #endregion
