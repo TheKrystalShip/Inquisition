@@ -28,7 +28,6 @@ namespace Inquisition.Modules
 
         [Command("ban")]
         [Summary("Bans a user from the server")]
-        [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task KickMemberAsync(SocketUser user)
         {
             await Context.Guild.AddBanAsync(user);
@@ -37,7 +36,6 @@ namespace Inquisition.Modules
 
         [Command("unban")]
         [Summary("Unbans a user")]
-        [RequireBotPermission(GuildPermission.BanMembers)]
         public async Task UnbanMemberAsync(SocketUser user)
         {
             await Context.Guild.RemoveBanAsync(user);
@@ -47,7 +45,6 @@ namespace Inquisition.Modules
         [Command("wipe")]
         [Alias("wipe last", "wipe the last")]
         [Summary("Wipes a text channel")]
-        [RequireBotPermission(ChannelPermission.ManageMessages)]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
         {
             var messages = await Context.Channel.GetMessagesAsync((int)amount + 1).Flatten();
@@ -71,7 +68,6 @@ namespace Inquisition.Modules
             await Context.Channel.DeleteMessagesAsync(messages);
 
             EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-            embed.WithColor(Color.Gold);
             embed.WithTitle(r);
             embed.WithFooter($"Asked by: {Context.User}", Context.User.GetAvatarUrl());
 
@@ -81,7 +77,6 @@ namespace Inquisition.Modules
             {
                 await msg.AddReactionAsync(e);
             }
-
         }
 
         [Command("start")]
@@ -165,36 +160,31 @@ namespace Inquisition.Modules
         {
             List<Joke> Jokes;
             Random rn = new Random();
+            User local;
 
             switch (user)
             {
                 case null:
                     Jokes = DbHandler.ListAll(new Joke());
+                    local = DbHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    Jokes = DbHandler.ListAll(new Joke(), DbHandler.GetFromDb(user));
+                    local = DbHandler.GetFromDb(user);
+                    Jokes = DbHandler.ListAll(new Joke(), local);
                     break;
             }
-
-            try
+            
+            if (Jokes.Count > 0)
             {
-                if (Jokes.Count > 0)
-                {
-                    Joke joke = Jokes[rn.Next(Jokes.Count - 1)];
-                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                    embed.WithTitle(joke.Text);
-                    embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
+                Joke joke = Jokes[rn.Next(Jokes.Count - 1)];
+                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+                embed.WithTitle(joke.Text);
+                embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
 
-                    await ReplyAsync($"Here you go:", false, embed.Build()); 
-                } else
-                {
-                    await ReplyAsync(Message.Error.NoContent(user));
-                }
-            }
-            catch (Exception ex)
+                await ReplyAsync($"Here you go:", false, embed.Build()); 
+            } else
             {
-                await ReplyAsync($"Joke has no user property for some fucking reason");
-                Console.WriteLine(ex.Message);
+                await ReplyAsync(Message.Error.NoContent(local));
             }
         }
 
@@ -204,37 +194,32 @@ namespace Inquisition.Modules
         {
             List<Meme> Memes;
             Random rn = new Random();
+            User local;
 
-            if (user is null)
+            switch (user)
             {
-                Memes = DbHandler.ListAll(new Meme());
-            }
-            else
-            {
-                Memes = DbHandler.ListAll(new Meme(), DbHandler.GetFromDb(user));
-            }
-
-            try
-            {
-                if (Memes.Count > 0)
-                {
-                    Meme meme = Memes[rn.Next(Memes.Count - 1)];
-                    EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                    embed.WithFooter($"Submitted by: {meme.User.Username}#{meme.User.Discriminator}", meme.User.AvatarUrl);
-                    embed.WithImageUrl(meme.Url);
-
-                    await ReplyAsync($"Here you go:", false, embed.Build()); 
-                } else
-                {
-                    await ReplyAsync(Message.Error.NoContent(user));
-                }
-            }
-            catch (Exception ex)
-            {
-                await ReplyAsync($"Something happened, oops. Let the admin know pls thx <3");
-                Console.WriteLine(ex.Message);
+                case null:
+                    Memes = DbHandler.ListAll(new Meme());
+                    local = DbHandler.GetFromDb(Context.User);
+                    break;
+                default:
+                    local = DbHandler.GetFromDb(user);
+                    Memes = DbHandler.ListAll(new Meme(), local);
+                    break;
             }
 
+            if (Memes.Count > 0)
+            {
+                Meme meme = Memes[rn.Next(Memes.Count - 1)];
+                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+                embed.WithFooter($"Submitted by: {meme.User.Username}#{meme.User.Discriminator}", meme.User.AvatarUrl);
+                embed.WithImageUrl(meme.Url);
+
+                await ReplyAsync($"Here you go:", false, embed.Build()); 
+            } else
+            {
+                await ReplyAsync(Message.Error.NoContent(local));
+            }
         }
     }
 

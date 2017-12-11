@@ -525,6 +525,7 @@ namespace Inquisition.Data
                 .Include(x => x.User)
                 .Include(x => x.TargetUser)
                 .ToList();
+
             return Notifications;
         }
 
@@ -535,20 +536,20 @@ namespace Inquisition.Data
         public static User GetFromDb(SocketUser user)
         {
             User local = ConvertToLocalUser(user);
-            User u = db.Users.Where(x => x.Id == local.Id).FirstOrDefault();
+            User u = db.Users.Where(x => x == local).FirstOrDefault();
             return u;
         }
 
         public static User GetFromDb(SocketGuildUser user)
         {
             User local = ConvertToLocalUser(user);
-            User u = db.Users.Where(x => x.Id == local.Id).FirstOrDefault();
+            User u = db.Users.Where(x => x == local).FirstOrDefault();
             return u;
         }
 
         public static User GetFromDb(User user)
         {
-            User u = db.Users.Where(x => x.Id == user.Id).FirstOrDefault();
+            User u = db.Users.Where(x => x == user).FirstOrDefault();
             return u;
         }
 

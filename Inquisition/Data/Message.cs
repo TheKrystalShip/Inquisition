@@ -8,7 +8,10 @@ namespace Inquisition.Data
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
             public static string DatabaseAccess = $"There was an error while trying to access the database, please let the Admin know about this, thanks";
-            public static string NoContent(SocketUser user) => $"{user} doesn't have anything in the database";
+            public static string NoContent(SocketGuildUser user) => $"{user.Username} doesn't have anything in the database";
+            public static string NoContent(SocketUser user) => $"{user.Username} doesn't have anything in the database";
+            public static string NoContent(User user) => $"{user.Username} doesn't have anything in the database";
+            public static string NoContentGeneric = $"You don't have anything in the database";
 
             #region AlreadyExists
 
@@ -95,103 +98,41 @@ namespace Inquisition.Data
             public static string Generic = $"Here you go:";
 
             #region Successfully Added
-            public static string SuccessfullyAdded(string data)
-            {
-                return $"Your {data} has been successfully added";
-            }
 
-            public static string SuccessfullyAdded(Meme meme)
-            {
-                return SuccessfullyAdded("meme");
-            }
-
-            public static string SuccessfullyAdded(Joke joke)
-            {
-                return SuccessfullyAdded("joke");
-            }
-
-            public static string SuccessfullyAdded(Game game)
-            {
-                return $"{game.Name} has been successfully added, version {game.Version}, on port {game.Port}";
-            }
-
-            public static string SuccessfullyAdded(Reminder reminder)
-            {
-                return SuccessfullyAdded("reminder");
-            }
-
-            public static string SuccessfullyAdded(SocketGuildUser user)
-            {
-                return $"{user} has been successfully added";
-            }
-
-            public static string SuccessfullyAdded(Notification notification)
-            {
-                return SuccessfullyAdded("notification");
-            }
+            public static string SuccessfullyAdded(string data) => $"Your {data} has been successfully added";
+            public static string SuccessfullyAdded(Meme meme) => SuccessfullyAdded("meme");
+            public static string SuccessfullyAdded(Joke joke) => SuccessfullyAdded("joke");
+            public static string SuccessfullyAdded(Game game) => $"{game.Name} has been successfully added, version {game.Version}, on port {game.Port}";
+            public static string SuccessfullyAdded(Reminder reminder) => SuccessfullyAdded("reminder");
+            public static string SuccessfullyAdded(SocketGuildUser user) => $"{user} has been successfully added";
+            public static string SuccessfullyAdded(Notification notification) => SuccessfullyAdded("notification");
 
             #endregion
 
             #region Successfully Removed
-            public static string SuccessfullyRemoved(string data)
-            {
-                return $"Your {data} has been successfully removed";
-            }
 
-            public static string SuccessfullyRemoved(Meme meme)
-            {
-                return SuccessfullyRemoved("meme");
-            }
-
-            public static string SuccessfullyRemoved(Joke joke)
-            {
-                return SuccessfullyRemoved("joke");
-            }
-
-            public static string SuccessfullyRemoved(Game game)
-            {
-                return SuccessfullyRemoved("game");
-            }
-
-            public static string SuccessfullyRemoved(Reminder reminder)
-            {
-                return SuccessfullyRemoved("reminder");
-            }
+            public static string SuccessfullyRemoved(string data) => $"Your {data} has been successfully removed";
+            public static string SuccessfullyRemoved(Meme meme) => SuccessfullyRemoved("meme");
+            public static string SuccessfullyRemoved(Joke joke) => SuccessfullyRemoved("joke");
+            public static string SuccessfullyRemoved(Game game) => SuccessfullyRemoved("game");
+            public static string SuccessfullyRemoved(Reminder reminder) => SuccessfullyRemoved("reminder");
 
             #endregion
 
             #region Game
-            public static string GameStartingUp(Game game)
-            {
-                return $"{game.Name} server should be online in a few moments, version {game.Version} on port {game.Port}";
-            }
 
-            public static string GameShuttingDown(string game)
-            {
-                return $"{game} server is shutting down";
-            }
+            public static string GameStartingUp(Game game) => $"{game.Name} server should be online in a few moments, version {game.Version} on port {game.Port}";
+            public static string GameShuttingDown(string game) => $"{game} server is shutting down";
+
             #endregion
 
             #region Users
-            public static string UsersPruned(int users, int days)
-            {
-                return $"{users} users were pruned for {days} days of innactivity";
-            }
 
-            public static string UserLeft(string user)
-            {
-                return $"{user} left the server";
-            }
+            public static string UsersPruned(int users, int days) => $"{users} users were pruned for {days} days of innactivity";
+            public static string UserLeft(string user) => $"{user} left the server";
+            public static string UserBanned(string user) => $"{user} has been banned";
+            public static string UserUnbanned(string user) => $"{user} has been unbanned";
 
-            public static string UserBanned(string user)
-            {
-                return $"{user} has been banned";
-            }
-
-            public static string UserUnbanned(string user)
-            {
-                return $"{user} has been unbanned";
-            }
             #endregion
         }
     }
