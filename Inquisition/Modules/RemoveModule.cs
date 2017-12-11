@@ -12,19 +12,19 @@ namespace Inquisition.Modules
     [RequireUserPermission(GuildPermission.Administrator)]
     public class RemoveModule : ModuleBase<SocketCommandContext>
     {
-        InquisitionContext db = new InquisitionContext();
-
         [Command("game")]
         [Summary("Remove a game from db")]
         public async Task DeleteGameAsync(string name)
         {
-            if (!DbHandler.Exists(new Data.Game { Name = name }))
+            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+
+            if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
+                await ReplyAsync(Message.Error.GameNotFound(game));
             } else
             {
-                DbHandler.RemoveFromDb(new Data.Game { Name = name });
-                await ReplyAsync(Message.Info.SuccessfullyRemoved(new Data.Game { Name = name }));
+                DbHandler.RemoveFromDb(game);
+                await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
             }
         }
     }

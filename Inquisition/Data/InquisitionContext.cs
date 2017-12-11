@@ -20,7 +20,6 @@ namespace Inquisition.Data
      */
     public class InquisitionContext : DbContext
     {
-        
         public DbSet<Game> Games { get; set; }
         public DbSet<Joke> Jokes { get; set; }
         public DbSet<Meme> Memes { get; set; }
@@ -31,6 +30,7 @@ namespace Inquisition.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;");
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

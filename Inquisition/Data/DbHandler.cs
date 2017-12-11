@@ -316,14 +316,14 @@ namespace Inquisition.Data
 
         public static void RemoveFromDb(SocketGuildUser user)
         {
-            User temp = GetFromDb(user);
+            User temp = ConvertToLocalUser(user);
             db.Users.Remove(temp);
             db.SaveChanges();
         }
 
         public static void RemoveFromDb(SocketUser user)
         {
-            User temp = GetFromDb(user);
+            User temp = ConvertToLocalUser(user);
             db.Users.Remove(temp);
             db.SaveChanges();
         }
