@@ -118,7 +118,7 @@ namespace Inquisition.Data
             public static string SuccessfullyRemoved(Reminder reminder) => SuccessfullyRemoved("reminder");
 
             #endregion
-
+            
             #region Game
 
             public static string GameStartingUp(Game game) => $"{game.Name} server should be online in a few moments, version {game.Version} on port {game.Port}";

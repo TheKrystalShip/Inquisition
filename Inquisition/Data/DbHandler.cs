@@ -417,8 +417,6 @@ namespace Inquisition.Data
             db.SaveChanges();
         }
 
-
-
         #endregion
 
         #region Exists
