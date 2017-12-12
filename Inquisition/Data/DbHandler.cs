@@ -193,6 +193,36 @@ namespace Inquisition.Data
             }
         }
 
+        public static bool AddToDb(Playlist playlist)
+        {
+            try
+            {
+                db.Playlists.Add(playlist);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool AddToDb(Song song)
+        {
+            try
+            {
+                db.Songs.Add(song);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
         #endregion
 
         #region AddRangeToDb
@@ -303,9 +333,63 @@ namespace Inquisition.Data
                 db.SaveChanges();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool AddRangeToDb(List<Playlist> playlists)
+        {
+            try
+            {
+                List<Playlist> list = new List<Playlist>();
+                foreach (Playlist p in playlists)
+                {
+                    if (Exists(p))
+                    {
+                        continue;
+                    } else
+                    {
+                        list.Add(p);
+                    }
+                }
+
+                db.Playlists.AddRange(list);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool AddRangeToDb(List<Song> songs)
+        {
+            try
+            {
+                List<Song> list = new List<Song>();
+                foreach (Song s in songs)
+                {
+                    if (Exists(s))
+                    {
+                        continue;
+                    } else
+                    {
+                        list.Add(s);
+                    }
+                }
+
+                db.Songs.AddRange(list);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 return false;
             }
         }
@@ -364,43 +448,67 @@ namespace Inquisition.Data
             db.SaveChanges();
         }
 
+        public static void RemoveFromDb(Playlist playlist)
+        {
+            db.Playlists.Remove(playlist);
+            db.SaveChanges();
+        }
+
+        public static void RemoveFromDb(Song song)
+        {
+            db.Songs.Remove(song);
+            db.SaveChanges();
+        }
+
         #endregion
 
         #region RemoveRangeFromDb
 
         public static void RemoveRangeFromDb(List<User> users)
         {
-            db.RemoveRange(users);
+            db.Users.RemoveRange(users);
             db.SaveChanges();
         }
 
         public static void RemoveRangeFromDb(List<Game> games)
         {
-            db.RemoveRange(games);
+            db.Games.RemoveRange(games);
             db.SaveChanges();
         }
 
         public static void RemoveRangeFromDb(List<Joke> jokes)
         {
-            db.RemoveRange(jokes);
+            db.Jokes.RemoveRange(jokes);
             db.SaveChanges();
         }
 
         public static void RemoveRangeFromDb(List<Meme> memes)
         {
-            db.RemoveRange(memes);
+            db.Memes.RemoveRange(memes);
             db.SaveChanges();
         }
 
         public static void RemoveRangeFromDb(List<Reminder> reminders)
         {
-            db.RemoveRange(reminders);
+            db.Reminders.RemoveRange(reminders);
             db.SaveChanges();
         }
 
         public static void RemoveRangeFromDb(List<Notification> notifications)
         {
-            db.RemoveRange(notifications);
+            db.Notifications.RemoveRange(notifications);
+            db.SaveChanges();
+        }
+
+        public static void RemoveRangeFromDb(List<Playlist> playlists)
+        {
+            db.Playlists.RemoveRange(playlists);
+            db.SaveChanges();
+        }
+
+        public static void RemoveRangeFromDb(List<Song> songs)
+        {
+            db.Songs.RemoveRange(songs);
             db.SaveChanges();
         }
 
@@ -414,6 +522,24 @@ namespace Inquisition.Data
                 AddToDb(game);
 
             db.Games.Update(game);
+            db.SaveChanges();
+        }
+
+        public static void UpdateInDb(Playlist playlist)
+        {
+            if (!Exists(playlist))
+                AddToDb(playlist);
+
+            db.Playlists.Update(playlist);
+            db.SaveChanges();
+        }
+
+        public static void UpdateInDb(Song song)
+        {
+            if (!Exists(song))
+                AddToDb(song);
+
+            db.Songs.Update(song);
             db.SaveChanges();
         }
 
@@ -444,6 +570,18 @@ namespace Inquisition.Data
         public static bool Exists(Game game)
         {
             bool exists = db.Games.Any(x => x.Name == game.Name);
+            return exists;
+        }
+
+        public static bool Exists(Playlist playlist)
+        {
+            bool exists = db.Playlists.Any(x => x.Name == playlist.Name && x.Author == playlist.Author);
+            return exists;
+        }
+
+        public static bool Exists(Song song)
+        {
+            bool exists = db.Songs.Any(x => x.Name == song.Name && x.Author == song.Author);
             return exists;
         }
 
@@ -484,6 +622,28 @@ namespace Inquisition.Data
                 .ToList();
 
             return Notifications;
+        }
+
+        public static List<Playlist> ListAll(Playlist playlist)
+        {
+            List<Playlist> Playlists =
+                db.Playlists
+                .Include(x => x.Songs)
+                .Include(x => x.Author)
+                .ToList();
+
+            return Playlists;
+        }
+
+        public static List<Song> ListAll(Song song)
+        {
+            List<Song> Songs =
+                db.Songs
+                .Include(x => x.Playlists)
+                .Include(x => x.Author)
+                .ToList();
+
+            return Songs;
         }
 
         #endregion
@@ -532,6 +692,35 @@ namespace Inquisition.Data
             return Notifications;
         }
 
+        public static List<Playlist> ListAll(Playlist playlist, User user)
+        {
+            if (user is null)
+                return ListAll(playlist);
+
+            List<Playlist> Playlists =
+                db.Playlists
+                .Where(x => x.Author == user)
+                .Include(x => x.Songs)
+                .Include(x => x.Author)
+                .ToList();
+
+            return Playlists;
+        }
+
+        public static List<Song> ListAll(Song song, User user)
+        {
+            if (user is null)
+                return ListAll(song);
+
+            List<Song> Songs =
+                db.Songs.Where(x => x.Author == user)
+                .Include(x => x.Playlists)
+                .Include(x => x.Author)
+                .ToList();
+
+            return Songs;
+        }
+
         #endregion
 
         #region GetFromDb
@@ -560,6 +749,18 @@ namespace Inquisition.Data
         {
             Game g = db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
             return g;
+        }
+
+        public static Playlist GetGromDb(Playlist playlist)
+        {
+            Playlist local = db.Playlists.Where(x => x.Name == playlist.Name).FirstOrDefault();
+            return local;
+        }
+
+        public static Song GetGromDb(Song song)
+        {
+            Song local = db.Songs.Where(x => x.Name == song.Name).FirstOrDefault();
+            return local;
         }
 
         #endregion

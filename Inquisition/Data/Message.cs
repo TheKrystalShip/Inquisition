@@ -8,6 +8,7 @@ namespace Inquisition.Data
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
             public static string DatabaseAccess = $"There was an error while trying to access the database, please let the Admin know about this, thanks";
+            public static string NotInVoiceChannel = $"You have to be in a voice channel first";
 
             #region NoContent
 
@@ -40,10 +41,11 @@ namespace Inquisition.Data
             #region Incorrect command structure
 
             private static string Common = "Incorrect structure, please use: ";
-            public static string IncorrectStructure(Game game) => Common + "\"[Name]\" \"[Version]\" \"[Port]\"";
-            public static string IncorrectStructure(Joke joke) => Common + "\"[Joke text]\"";
-            public static string IncorrectStructure(Meme meme) => Common + "[Url/Link]";
-            public static string IncorrectStructure(Reminder reminder) => Common + "\"[dd/mm/yyyy hh:mm:ss]\" \"[Message]\"";
+            public static string IncorrectStructure(Game game) => Common + "\"[Name]\"* \"[_Version_]\" \"[_Port_]\"";
+            public static string IncorrectStructure(Joke joke) => Common + "\"[Joke text]\"*";
+            public static string IncorrectStructure(Meme meme) => Common + "[Url/Link]*";
+            public static string IncorrectStructure(Reminder reminder) => Common + "\"[dd/mm/yyyy hh:mm:ss]\"* \"[_Message_]\"";
+            public static string IncorrectStructure(Notification n) => $"[Username]* [_permanent_]";
 
             #endregion
         }

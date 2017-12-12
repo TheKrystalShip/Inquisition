@@ -9,7 +9,7 @@ namespace Inquisition.Modules
     [RequireUserPermission(GuildPermission.Administrator)]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
-        [Command("prune")]
+        [Command("prune", RunMode = RunMode.Async)]
         [Summary("Prunes all inactive members from the server")]
         public async Task PruneMembersAsync(int d)
         {
@@ -23,23 +23,23 @@ namespace Inquisition.Modules
             await ReplyAsync(Message.Info.UsersPruned(n, d));
         }
 
-        [Command("ban")]
+        [Command("ban", RunMode = RunMode.Async)]
         [Summary("Bans a user from the server")]
-        public async Task KickMemberAsync(SocketUser user)
+        public async Task BanMemberAsync(SocketGuildUser user)
         {
             await Context.Guild.AddBanAsync(user);
             await ReplyAsync(Message.Info.UserBanned(user.Username));
         }
 
-        [Command("unban")]
+        [Command("unban", RunMode = RunMode.Async)]
         [Summary("Unbans a user")]
-        public async Task UnbanMemberAsync(SocketUser user)
+        public async Task UnbanMemberAsync(SocketGuildUser user)
         {
             await Context.Guild.RemoveBanAsync(user);
             await ReplyAsync(Message.Info.UserUnbanned(user.Username));
         }
 
-        [Command("wipe")]
+        [Command("wipe", RunMode = RunMode.Async)]
         [Alias("wipe last", "wipe the last")]
         [Summary("Wipes a text channel")]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
@@ -56,7 +56,7 @@ namespace Inquisition.Modules
         [Alias("add a", "add a new", "make", "make a", "make a new", "create", "create a", "create a new")]
         public class AddModule : ModuleBase<SocketCommandContext>
         {
-            [Command("game")]
+            [Command("game", RunMode = RunMode.Async)]
             [Alias("game:")]
             [Summary("Add a game to the server list")]
             public async Task AddGameAsync(string name, string port = "?", string version = "?")
@@ -87,7 +87,7 @@ namespace Inquisition.Modules
                 }
             }
 
-            [Command("user")]
+            [Command("user", RunMode = RunMode.Async)]
             [Alias("user:")]
             public async Task AddUserAsync(SocketGuildUser user)
             {
@@ -113,7 +113,7 @@ namespace Inquisition.Modules
         [Alias("remove a", "delete", "delete a")]
         public class RemoveModule : ModuleBase<SocketCommandContext>
         {
-            [Command("game")]
+            [Command("game", RunMode = RunMode.Async)]
             [Summary("Remove a game from db")]
             public async Task DeleteGameAsync(string name)
             {

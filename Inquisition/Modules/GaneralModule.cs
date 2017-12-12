@@ -10,7 +10,7 @@ namespace Inquisition.Modules
 {
     public class GaneralModule : ModuleBase<SocketCommandContext>
     {
-        [Command("poll")]
+        [Command("poll", RunMode = RunMode.Async)]
         [Alias("poll:")]
         public async Task AddReactionAsync([Remainder] string r = "")
         {
@@ -31,7 +31,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("joke")]
+        [Command("joke", RunMode = RunMode.Async)]
         [Alias("joke by")]
         public async Task ShowJokeAsync(SocketUser user = null)
         {
@@ -66,7 +66,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("jokes")]
+        [Command("jokes", RunMode = RunMode.Async)]
         [Alias("jokes by")]
         public async Task ListJokesAsync(SocketUser user = null)
         {
@@ -102,7 +102,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("meme")]
+        [Command("meme", RunMode = RunMode.Async)]
         [Alias("meme by")]
         public async Task ShowMemeAsync(SocketUser user = null)
         {
@@ -138,7 +138,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("memes")]
+        [Command("memes", RunMode = RunMode.Async)]
         [Alias("memes by")]
         public async Task ListMemesAsync(SocketUser user = null)
         {
@@ -174,7 +174,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminders")]
+        [Command("reminders", RunMode = RunMode.Async)]
         [Summary("Returns a list of all set reminders")]
         public async Task ListRemindersAsync()
         {
@@ -196,7 +196,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notifications")]
+        [Command("notifications", RunMode = RunMode.Async)]
         [Summary("Returns a list of all notifications")]
         public async Task ListNotificationsAsync()
         {
@@ -225,7 +225,7 @@ namespace Inquisition.Modules
     [Alias("add a", "add a new", "make", "make a", "make a new", "create", "create a", "create a new")]
     public class AddModule : ModuleBase<SocketCommandContext>
     {
-        [Command("joke")]
+        [Command("joke", RunMode = RunMode.Async)]
         [Alias("joke:")]
         [Summary("Adds a joke to the db")]
         public async Task AddJokeAsync([Remainder] string jokeText)
@@ -254,7 +254,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("meme")]
+        [Command("meme", RunMode = RunMode.Async)]
         [Alias("meme:")]
         [Summary("Adds a meme to the db")]
         public async Task AddMemeAsync([Remainder] string url)
@@ -283,7 +283,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminder")]
+        [Command("reminder", RunMode = RunMode.Async)]
         [Alias("reminder:", "reminder at", "reminder at:")]
         [Summary("Add a reminder")]
         public async Task AddReminderAsync(DateTimeOffset dueDate, [Remainder] string remainder = null)
@@ -307,13 +307,13 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notification")]
+        [Command("notification", RunMode = RunMode.Async)]
         [Alias("notification when", "notification:", "notification when:")]
         public async Task AddNotificationAsync(SocketGuildUser user = null, [Remainder] string etc = "")
         {
             if (user is null)
             {
-                await ReplyAsync(Message.Error.Generic);
+                await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
                 return;
             }
 

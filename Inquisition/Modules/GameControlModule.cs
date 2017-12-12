@@ -11,7 +11,7 @@ namespace Inquisition.Modules
     [Group("game")]
     public class GameControlModule : ModuleBase<SocketCommandContext>
     {
-        [Command("start")]
+        [Command("start", RunMode = RunMode.Async)]
         [Summary("Starts up a game server")]
         public async Task StartGameAsync(string name)
         {
@@ -51,7 +51,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("stop")]
+        [Command("stop", RunMode = RunMode.Async)]
         [Summary("Stops a game server")]
         public async Task StopGameAsync(string name)
         {
@@ -86,7 +86,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("status")]
+        [Command("status", RunMode = RunMode.Async)]
         [Alias("info")]
         [Summary("Returns if a game server is online")]
         public async Task StatusAsync(string name)
@@ -122,7 +122,7 @@ namespace Inquisition.Modules
             await ReplyAsync($"{game.Name} server is online, version {game.Version} on port {game.Port}");
         }
 
-        [Command("version")]
+        [Command("version", RunMode = RunMode.Async)]
         [Summary("Returns a game's version")]
         public async Task GameVersionAsync(string name)
         {
@@ -136,7 +136,7 @@ namespace Inquisition.Modules
             await ReplyAsync($"{game.Name}'s version is {game.Version}");
         }
 
-        [Command("port")]
+        [Command("port", RunMode = RunMode.Async)]
         [Summary("Returns a game's port")]
         public async Task GamePortAsync(string name)
         {
@@ -150,7 +150,7 @@ namespace Inquisition.Modules
             await ReplyAsync($"{game.Name}'s port is {game.Port}");
         }
 
-        [Command("list")]
+        [Command("list", RunMode = RunMode.Async)]
         [Summary("Returns list of all games in the database")]
         public async Task ListAllGamesAsync()
         {

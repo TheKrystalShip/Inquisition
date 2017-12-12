@@ -26,6 +26,8 @@ namespace Inquisition.Data
         public DbSet<Reminder> Reminders { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<Song> Songs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -58,6 +60,30 @@ namespace Inquisition.Data
             modelBuilder.Entity<Notification>()
                 .HasOne(x => x.TargetUser)
                 .WithMany(x => x.TargetNotifications);
+
+            modelBuilder.Entity<Playlist>()
+                .HasOne(x => x.Author)
+                .WithMany(x => x.Playlists)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Playlist>()
+                .HasMany(x => x.Songs);
+
+            modelBuilder.Entity<Song>()
+                .HasOne(x => x.Author)
+                .WithMany(x => x.Songs)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Song>()
+                .HasMany(x => x.Playlists);
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Playlists)
+                .WithOne(x => x.Author);
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Songs)
+                .WithOne(x => x.Author);
         }
     }
 
@@ -147,6 +173,10 @@ namespace Inquisition.Data
         public virtual List<Notification> Notifications { get; set; } = new List<Notification>();
 
         public virtual List<Notification> TargetNotifications { get; set; } = new List<Notification>();
+
+        public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();
+
+        public virtual List<Song> Songs { get; set; } = new List<Song>();
     }
 
     public class Notification
@@ -161,5 +191,35 @@ namespace Inquisition.Data
         public bool IsPermanent { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    }
+
+    public class Playlist
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+        public virtual User Author { get; set; }
+
+        public virtual List<Song> Songs { get; set; } = new List<Song>();
+    }
+
+    public class Song
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Duration { get; set; }
+
+        public string Url { get; set; } = null;
+
+        public virtual User Author { get; set; }
+
+        public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }
