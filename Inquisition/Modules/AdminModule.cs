@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Inquisition.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
@@ -25,10 +26,14 @@ namespace Inquisition.Modules
 
         [Command("ban", RunMode = RunMode.Async)]
         [Summary("[Admin] Bans a user from the server")]
-        public async Task BanMemberAsync(SocketGuildUser user)
+        public async Task BanMemberAsync(SocketUser user)
         {
-            await Context.Guild.AddBanAsync(user);
+            await ReplyAsync($"1/3 - I READ THAT THANKS");
+            
+            await ReplyAsync("2/3 - I BANNED HIM");
+
             await ReplyAsync(Message.Info.UserBanned(user.Username));
+            await ReplyAsync("3/3 - FUCK YOU");
         }
 
         [Command("unban", RunMode = RunMode.Async)]
