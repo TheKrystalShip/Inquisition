@@ -287,13 +287,12 @@ namespace Inquisition.Modules
 
         [Command("reminder", RunMode = RunMode.Async)]
         [Summary("Add a new reminder")]
-        public async Task AddReminderAsync(DateTimeOffset dueDate, [Remainder] string remainder = null)
+        public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.Now,
-                DueDate = dueDate,
-                Duration = dueDate - DateTimeOffset.Now,
+                DueDate = DateTimeOffset.Parse(dueDate),
                 Message = remainder,
                 User = DbHandler.GetFromDb(Context.User)
             };
@@ -332,6 +331,63 @@ namespace Inquisition.Modules
             if (DbHandler.AddToDb(n))
             {
                 await ReplyAsync(Message.Info.SuccessfullyAdded(n));
+            }
+            else
+            {
+                await ReplyAsync(Message.Error.DatabaseAccess);
+            }
+        }
+    }
+
+    [Group("remove")]
+    public class RemoveModule : ModuleBase<SocketCommandContext>
+    {
+        [Command("reminder", RunMode = RunMode.Async)]
+        [Summary("Remove a reminder")]
+        public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
+        {
+            Reminder reminder = new Reminder
+            {
+                CreateDate = DateTimeOffset.Now,
+                DueDate = DateTimeOffset.Parse(dueDate),
+                Message = remainder,
+                User = DbHandler.GetFromDb(Context.User)
+            };
+
+            if (DbHandler.RemoveFromDb(reminder))
+            {
+                await ReplyAsync(Message.Info.SuccessfullyRemoved(reminder));
+            }
+            else
+            {
+                await ReplyAsync(Message.Error.DatabaseAccess);
+            }
+        }
+
+        [Command("notification", RunMode = RunMode.Async)]
+        [Summary("Removes a notification, must specify a target user")]
+        public async Task RemoveNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
+        {
+            if (user is null)
+            {
+                await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
+                return;
+            }
+
+            User author = DbHandler.GetFromDb(Context.User);
+            User target = DbHandler.GetFromDb(user);
+
+            bool permanent = etc.Equals("permanent");
+
+            Notification n = new Notification
+            {
+                User = author,
+                TargetUser = target,
+                IsPermanent = permanent
+            };
+            if (DbHandler.RemoveFromDb(n))
+            {
+                await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
             }
             else
             {

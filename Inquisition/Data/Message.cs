@@ -74,9 +74,12 @@ namespace Inquisition.Data
             public static string SuccessfullyRemoved(Joke joke) => SuccessfullyRemoved("joke");
             public static string SuccessfullyRemoved(Game game) => SuccessfullyRemoved("game");
             public static string SuccessfullyRemoved(Reminder reminder) => SuccessfullyRemoved("reminder");
+            public static string SuccessfullyRemoved(Notification notification) => SuccessfullyRemoved("notification");
+            public static string SuccessfullyRemoved(Playlist playlist) => SuccessfullyRemoved("playlist");
+            public static string SuccessfullyRemoved(Song song) => SuccessfullyRemoved("song");
 
             #endregion
-            
+
             #region Game
 
             public static string GameStartingUp(Game game) => $"{game.Name} server should be online in a few moments, version {game.Version} on port {game.Port}";

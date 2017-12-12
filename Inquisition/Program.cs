@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Inquisition.Data;
 using System.Threading;
 using Inquisition.Modules;
+using Inquisition.Services;
 
 /*
  * Required packages for the porject:
@@ -58,6 +59,7 @@ namespace Inquisition
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
+                .AddSingleton(new AudioService())
                 .BuildServiceProvider();
 
             try

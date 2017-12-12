@@ -398,66 +398,162 @@ namespace Inquisition.Data
 
         #region RemoveFromDb
 
-        public static void RemoveFromDb(SocketGuildUser user)
+        public static bool RemoveFromDb(SocketGuildUser user)
         {
-            User temp = ConvertToLocalUser(user);
-            db.Users.Remove(temp);
-            db.SaveChanges();
+            try
+            {
+                User temp = ConvertToLocalUser(user);
+                db.Users.Remove(temp);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(SocketUser user)
+        public static bool RemoveFromDb(SocketUser user)
         {
-            User temp = ConvertToLocalUser(user);
-            db.Users.Remove(temp);
-            db.SaveChanges();
+            try
+            {
+                User temp = ConvertToLocalUser(user);
+                db.Users.Remove(temp);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(User user)
+        public static bool RemoveFromDb(User user)
         {
-            db.Users.Remove(user);
-            db.SaveChanges();
+            try
+            {
+                db.Users.Remove(user);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Game game)
+        public static bool RemoveFromDb(Game game)
         {
-            db.Games.Remove(game);
-            db.SaveChanges();
+            try
+            {
+                db.Games.Remove(game);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Joke joke)
+        public static bool RemoveFromDb(Joke joke)
         {
-            db.Jokes.Remove(joke);
-            db.SaveChanges();
+            try
+            {
+                db.Jokes.Remove(joke);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Meme meme)
+        public static bool RemoveFromDb(Meme meme)
         {
-            db.Memes.Remove(meme);
-            db.SaveChanges();
+            try
+            {
+                db.Memes.Remove(meme);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Reminder reminder)
+        public static bool RemoveFromDb(Reminder reminder)
         {
-            db.Reminders.Remove(reminder);
-            db.SaveChanges();
+            try
+            {
+                Reminder temp = db.Reminders.Where(x => x.DueDate == reminder.DueDate).FirstOrDefault();
+                db.Reminders.Remove(temp);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Notification notification)
+        public static bool RemoveFromDb(Notification notification)
         {
-            db.Notifications.Remove(notification);
-            db.SaveChanges();
+            try
+            {
+                Notification temp = 
+                    db.Notifications
+                    .Where(x => x.TargetUser == notification.TargetUser && x.User == notification.User)
+                    .FirstOrDefault();
+
+                db.Notifications.Remove(temp);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Playlist playlist)
+        public static bool RemoveFromDb(Playlist playlist)
         {
-            db.Playlists.Remove(playlist);
-            db.SaveChanges();
+            try
+            {
+                db.Playlists.Remove(playlist);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public static void RemoveFromDb(Song song)
+        public static bool RemoveFromDb(Song song)
         {
-            db.Songs.Remove(song);
-            db.SaveChanges();
+            try
+            {
+                db.Songs.Remove(song);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         #endregion

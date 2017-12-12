@@ -8,38 +8,33 @@ namespace Inquisition.Modules
 {
     public class AudioModule : ModuleBase<SocketCommandContext>
     {
-        // Scroll down further for the AudioService.
-        // Like, way down
         private AudioService _service;
 
-        // Remember to add an instance of the AudioService
-        // to your IServiceCollection when you initialize your bot
+        // _services.AddSingleton(new AudioService()) in Program.cs
         public AudioModule(AudioService service)
         {
             _service = service;
         }
         
         [Command("join", RunMode = RunMode.Async)]
+        [Summary("make the bot join the voice channel you're connected to")]
         public async Task JoinCmd()
         {
-            System.Console.WriteLine("Command recieved");
             await _service.JoinAudio(Context.Guild, (Context.Message.Author as SocketGuildUser).VoiceChannel);
         }
 
-        // Remember to add preconditions to your commands,
-        // this is merely the minimal amount necessary.
-        // Adding more commands of your own is also encouraged.
+        [Command("leave", RunMode = RunMode.Async)]
+        [Summary("Make the bot leave the voice channel you're connected to")]
+        public async Task LeaveCmd()
+        {
+            await _service.LeaveAudio(Context.Guild);
+        }
 
-        //[Command("leave", RunMode = RunMode.Async)]
-        //public async Task LeaveCmd()
-        //{
-        //    await _service.LeaveAudio(Context.Guild);
-        //}
-
-        //[Command("play", RunMode = RunMode.Async)]
-        //public async Task PlayCmd([Remainder] string song)
-        //{
-        //    await _service.SendAudioAsync(Context.Guild, Context.Channel, song);
-        //}
+        [Command("play", RunMode = RunMode.Async)]
+        [Summary("Play a song")]
+        public async Task PlayCmd([Remainder] string song)
+        {
+            await _service.SendAudioAsync(Context.Guild, Context.Channel, song);
+        }
     }
 }
