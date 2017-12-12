@@ -79,9 +79,10 @@ namespace Inquisition
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
             _client.GuildMemberUpdated += OnGuildMemberUpdated;
+            await _client.SetGameAsync($"@Inquisition help");
             
             await RegisterCommandsAsync();
-            HelpModule helpModule = new HelpModule(_commands);
+            HelpModule.Create(_commands);
             
             /* 
              * Uncomment and call this method ONCE to populate the database with the games info.
@@ -139,7 +140,7 @@ namespace Inquisition
                 DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
                 foreach (var n in nList)
                 {
-                    if (n.TargetUser == target)
+                    if (n.TargetUser == target && _client.GetUser(Convert.ToUInt64(n.User.Id)).Status == UserStatus.Online)
                     {
                         SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
@@ -195,11 +196,14 @@ namespace Inquisition
 
             int argPos = 0;
 
-            if(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(prefix, ref argPos))
+            if (message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
+                message.HasStringPrefix(prefix, ref argPos) ||
+                message.Channel.GetType() == typeof(SocketDMChannel))
             {
-                var context = new SocketCommandContext(_client, message);
+                Console.WriteLine($"{DateTimeOffset.UtcNow} - {message.Author}: {message.Content}");
 
-                var result = await _commands.ExecuteAsync(context, argPos, _services);
+                SocketCommandContext context = new SocketCommandContext(_client, message);
+                IResult result = await _commands.ExecuteAsync(context, argPos, _services);
 
                 if (!result.IsSuccess)
                 {

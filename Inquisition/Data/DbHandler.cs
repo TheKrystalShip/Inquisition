@@ -751,13 +751,13 @@ namespace Inquisition.Data
             return g;
         }
 
-        public static Playlist GetGromDb(Playlist playlist)
+        public static Playlist GetFromDb(Playlist playlist)
         {
             Playlist local = db.Playlists.Where(x => x.Name == playlist.Name).FirstOrDefault();
             return local;
         }
 
-        public static Song GetGromDb(Song song)
+        public static Song GetFromDb(Song song)
         {
             Song local = db.Songs.Where(x => x.Name == song.Name).FirstOrDefault();
             return local;

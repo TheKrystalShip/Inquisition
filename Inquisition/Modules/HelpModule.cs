@@ -8,11 +8,11 @@ namespace Inquisition.Modules
 {
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
-        private CommandService _commands;
+        private static CommandService _commands;
 
-        public HelpModule(CommandService service)
+        public static void Create(CommandService commandService)
         {
-            _commands = service;
+            _commands = commandService;
         }
 
         [Command("help"), Summary("List of all available commands.")]
@@ -24,7 +24,15 @@ namespace Inquisition.Modules
 
             foreach (var c in _commands.Commands)
             {
-                embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, c.Summary ?? "No specific description");
+                string str = "";
+                foreach (var a in c.Aliases)
+                {
+                    if (a != null)
+                    {
+                        str += a + " | "; 
+                    }
+                }
+                embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
             }
             await Context.User.SendMessageAsync(Message.Info.Generic, false, embed.Build());
         }

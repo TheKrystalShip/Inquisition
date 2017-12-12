@@ -46,6 +46,7 @@ namespace Inquisition.Data
             public static string IncorrectStructure(Meme meme) => Common + "[Url/Link]*";
             public static string IncorrectStructure(Reminder reminder) => Common + "\"[dd/mm/yyyy hh:mm:ss]\"* \"[_Message_]\"";
             public static string IncorrectStructure(Notification n) => $"[Username]* [_permanent_]";
+            public static string IncorrectStructure(Playlist n) => $"[playlist]*/[song-name]*";
 
             #endregion
         }

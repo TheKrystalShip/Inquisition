@@ -12,7 +12,7 @@ namespace Inquisition.Modules
     public class MusicModule : ModuleBase<SocketCommandContext>
     {
         //[Command("join", RunMode = RunMode.Async)]
-        //public async Task JoinChannelAsync(SocketVoiceChannel voiceChannel = null)
+        //public async Task JoinVoiceChannelAsync(SocketVoiceChannel voiceChannel = null)
         //{
         //    voiceChannel = voiceChannel ?? (Context.Message.Author as SocketGuildUser)?.VoiceChannel;
 
@@ -26,9 +26,14 @@ namespace Inquisition.Modules
         //}
 
         //[Command("play", RunMode = RunMode.Async)]
-        //public async Task PlayMusicAsync()
+        //public async Task PlayMusicAsync([Remainder] string playlistOrSong = null)
         //{
-
+        //    await JoinVoiceChannelAsync();
+        //    if (playlistOrSong is null)
+        //    {
+        //        await ReplyAsync(Message.Error.IncorrectStructure(new Playlist()));
+        //        return;
+        //    }
         //}
 
         //[Command("queue", RunMode = RunMode.Async)]
