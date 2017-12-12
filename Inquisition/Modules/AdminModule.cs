@@ -41,7 +41,7 @@ namespace Inquisition.Modules
 
         [Command("wipe", RunMode = RunMode.Async)]
         [Alias("wipe last", "wipe the last")]
-        [Summary("Wipes a text channel")]
+        [Summary("Wipes X number of messages from a text channel")]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
         {
             var messages = await Context.Channel.GetMessagesAsync((int)amount + 1).Flatten();
@@ -89,6 +89,7 @@ namespace Inquisition.Modules
 
             [Command("user", RunMode = RunMode.Async)]
             [Alias("user:")]
+            [Summary("Force add a user to the database")]
             public async Task AddUserAsync(SocketGuildUser user)
             {
                 if (!DbHandler.Exists(user))

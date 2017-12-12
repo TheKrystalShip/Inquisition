@@ -12,6 +12,7 @@ namespace Inquisition.Modules
     {
         [Command("poll", RunMode = RunMode.Async)]
         [Alias("poll:")]
+        [Summary("Create a poll")]
         public async Task AddReactionAsync([Remainder] string r = "")
         {
             List<Emoji> reactions = new List<Emoji> { new Emoji("👍🏻"), new Emoji("👎🏻"), new Emoji("🤷🏻") };
@@ -33,6 +34,7 @@ namespace Inquisition.Modules
 
         [Command("joke", RunMode = RunMode.Async)]
         [Alias("joke by")]
+        [Summary("Displays a random joke by random user unless user is specified")]
         public async Task ShowJokeAsync(SocketUser user = null)
         {
             List<Joke> Jokes;
@@ -68,6 +70,7 @@ namespace Inquisition.Modules
 
         [Command("jokes", RunMode = RunMode.Async)]
         [Alias("jokes by")]
+        [Summary("Shows a list of all jokes from all users unless user is specified")]
         public async Task ListJokesAsync(SocketUser user = null)
         {
             List<Joke> Jokes;
@@ -104,6 +107,7 @@ namespace Inquisition.Modules
 
         [Command("meme", RunMode = RunMode.Async)]
         [Alias("meme by")]
+        [Summary("Displays a random meme by random user unless user is specified")]
         public async Task ShowMemeAsync(SocketUser user = null)
         {
             List<Meme> Memes;
@@ -140,6 +144,7 @@ namespace Inquisition.Modules
 
         [Command("memes", RunMode = RunMode.Async)]
         [Alias("memes by")]
+        [Summary("Shows a list of all memes from all users unless user is specified")]
         public async Task ListMemesAsync(SocketUser user = null)
         {
             List<Meme> Memes;
@@ -175,7 +180,7 @@ namespace Inquisition.Modules
         }
 
         [Command("reminders", RunMode = RunMode.Async)]
-        [Summary("Returns a list of all set reminders")]
+        [Summary("Displays a list with all of your reminders")]
         public async Task ListRemindersAsync()
         {
             List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(Context.User));
@@ -197,7 +202,7 @@ namespace Inquisition.Modules
         }
 
         [Command("notifications", RunMode = RunMode.Async)]
-        [Summary("Returns a list of all notifications")]
+        [Summary("Displays a list of all of your notifications")]
         public async Task ListNotificationsAsync()
         {
             List<Notification> Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(Context.User));
@@ -227,7 +232,7 @@ namespace Inquisition.Modules
     {
         [Command("joke", RunMode = RunMode.Async)]
         [Alias("joke:")]
-        [Summary("Adds a joke to the db")]
+        [Summary("Adds a new joke")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
             if (jokeText is null)
@@ -256,7 +261,7 @@ namespace Inquisition.Modules
 
         [Command("meme", RunMode = RunMode.Async)]
         [Alias("meme:")]
-        [Summary("Adds a meme to the db")]
+        [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
             if (url is null)
@@ -285,7 +290,7 @@ namespace Inquisition.Modules
 
         [Command("reminder", RunMode = RunMode.Async)]
         [Alias("reminder:", "reminder at", "reminder at:")]
-        [Summary("Add a reminder")]
+        [Summary("Add a new reminder")]
         public async Task AddReminderAsync(DateTimeOffset dueDate, [Remainder] string remainder = null)
         {
             Reminder reminder = new Reminder
@@ -309,6 +314,7 @@ namespace Inquisition.Modules
 
         [Command("notification", RunMode = RunMode.Async)]
         [Alias("notification when", "notification:", "notification when:")]
+        [Summary("Add a new notifications, must specify a target user")]
         public async Task AddNotificationAsync(SocketGuildUser user = null, [Remainder] string etc = "")
         {
             if (user is null)

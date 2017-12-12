@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Inquisition.Data;
 using System.Threading;
+using Inquisition.Modules;
 
 /*
  * Required packages for the porject:
@@ -80,6 +81,7 @@ namespace Inquisition
             _client.GuildMemberUpdated += OnGuildMemberUpdated;
             
             await RegisterCommandsAsync();
+            HelpModule helpModule = new HelpModule(_commands);
             
             /* 
              * Uncomment and call this method ONCE to populate the database with the games info.
