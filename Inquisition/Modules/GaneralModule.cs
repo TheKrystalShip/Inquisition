@@ -289,9 +289,11 @@ namespace Inquisition.Modules
         [Summary("Add a new reminder")]
         public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
+            await ReplyAsync($"Reminders are created relative to UTC 0 time, so you need to calculate it based on your timezone");
+
             Reminder reminder = new Reminder
             {
-                CreateDate = DateTimeOffset.Now,
+                CreateDate = DateTimeOffset.UtcNow,
                 DueDate = DateTimeOffset.Parse(dueDate),
                 Message = remainder,
                 User = DbHandler.GetFromDb(Context.User)
