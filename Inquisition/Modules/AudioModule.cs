@@ -21,7 +21,7 @@ namespace Inquisition.Modules
             _service = service;
         }
 
-        [Command("join", RunMode = RunMode.Async)]
+        [Command("join")]
         [Summary("Make the bot join your voice channel")]
         public async Task JoinVoiceChannelAsync()
         {
@@ -48,7 +48,23 @@ namespace Inquisition.Modules
                 return;
             }
 
-            await voiceChannel.
+            await _service.LeaveAudio(Context.Guild);
+        }
+
+        [Command("play", RunMode = RunMode.Async)]
+        [Summary("Request a song to be played")]
+        public async Task PlayCmd([Remainder] string song)
+        {
+            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
+
+            if (voiceChannel is null)
+            {
+                await ReplyAsync(Message.Error.NotInVoiceChannel);
+                return;
+            }
+
+            await JoinVoiceChannelAsync();
+            await _service.SendAudioAsync(Context.Guild, Context.Channel, song);
         }
     }
 }
