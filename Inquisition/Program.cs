@@ -15,16 +15,25 @@ using Inquisition.Services;
  * Required packages for the porject:
  *  1. Discord.Net v1.0.2
  *  2. Discord.Net.Commands v1.0.2
- *  3. Discord.Net.Rest v1.0.2
- *  4. Discord.Net.WebSocket v1.0.2
- *  5. Microsoft.EntityFrameworkCore.SqlServer
- *  6. Microsoft.EntityFrameworkCore.Tools
+ *  3. Discord.Net.WebSocket v1.0.2
+ *  4. Microsoft.EntityFrameworkCore.SqlServer
+ *  5. Microsoft.EntityFrameworkCore.Tools
  */
 
 namespace Inquisition
 {
     /*
      * TODO: 
+     * 
+     * [Bugs]
+     * Reminders are only based on UTC 0 timezone, add timezone
+     *  field in User model and automate the reminder config upon creation
+     *  based on the user's timezone.
+     *  Ask the user to specify timezone if field is null in db.
+     * 
+     * [Developer branch]
+     * Make Inquisition play music, create and save playlists
+     *  in the database.
      * 
      * [EndGoal]
      * Track member activity and store it in db, removing inactive members
@@ -37,6 +46,8 @@ namespace Inquisition
 
     class Program
     {
+        #region Properties
+
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
@@ -44,7 +55,11 @@ namespace Inquisition
         private string token;
         private ulong channel;
 
+        private SocketTextChannel members_log;
+
         private Thread reminderLoopThread;
+
+        #endregion
 
         #region Main Execution
 
@@ -53,6 +68,9 @@ namespace Inquisition
 
         public async Task MainAsync()
         {
+
+            #region Properties assignment
+
             _client = new DiscordSocketClient();
             _commands = new CommandService();
 
@@ -62,6 +80,10 @@ namespace Inquisition
                 .AddSingleton(new AudioService())
                 .BuildServiceProvider();
 
+            #endregion
+
+            #region FileReader
+
             try
             {
                 System.IO.StreamReader file = new System.IO.StreamReader("Data/TextFiles/token.txt");
@@ -69,6 +91,8 @@ namespace Inquisition
 
                 file = new System.IO.StreamReader("Data/TextFiles/channel.txt");
                 channel = ulong.Parse(file.ReadLine());
+
+                members_log = _client.GetChannel(channel) as SocketTextChannel;
             }
             catch (Exception ex)
             {
@@ -76,37 +100,39 @@ namespace Inquisition
                 throw;
             }
 
+            #endregion
+
+            #region Events
+
             _client.Log += Log;
             _client.UserJoined += UserJoined;
             _client.UserLeft += UserLeftAsync;
             _client.UserBanned += UserBannedAsync;
             _client.GuildMemberUpdated += OnGuildMemberUpdated;
             await _client.SetGameAsync($"@Inquisition help");
-            
+
+            #endregion
+
             await RegisterCommandsAsync();
             HelpModule.Create(_commands);
-            
-            /* 
-             * Uncomment and call this method ONCE to populate the database with the games info.
-             * Once the database is populated, this method can be either commented or completly 
-             * removed to avoid creating duplicate information in the database since this is done
-             * at runtime everytime the orgram starts.
-             */
-            // PopulateDbAsync();
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
+            #region Reminder loop thread
+
             reminderLoopThread = new Thread(ReminderLoop);
             reminderLoopThread.IsBackground = true;
             reminderLoopThread.Start();
+
+            #endregion
 
             await Task.Delay(-1);
         }
 
         #endregion
 
-        #region Listeners
+        #region Events
 
         private Task UserJoined(SocketGuildUser user)
         {
@@ -123,12 +149,12 @@ namespace Inquisition
 
         private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
         {
-            await arg2.GetTextChannel(channel).SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
+            await members_log.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
         }
 
         private async Task UserLeftAsync(SocketGuildUser arg)
         {
-            await arg.Guild.GetTextChannel(channel).SendMessageAsync(Message.Info.UserLeft(arg.Mention));
+            await members_log.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
 
         private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
@@ -226,7 +252,7 @@ namespace Inquisition
 
         #endregion
 
-        #region Reminders
+        #region Reminder loop thread
 
         public void ReminderLoop()
         {
@@ -255,29 +281,6 @@ namespace Inquisition
 
                 Thread.Sleep(5000);
             }
-        }
-
-        #endregion
-
-        #region Database data
-
-        private Task PopulateDbAsync()
-        {
-            List<Data.Game> Games = new List<Data.Game>
-            {
-                new Data.Game { Name = "Space Engineers", Port = "3080", Version = "?" },
-                new Data.Game { Name = "StarMade", Port = "3070", Version = ".654" },
-                new Data.Game { Name = "Project Zomboid", Port = "3050", Version = "37.14" },
-                new Data.Game { Name = "Starbound", Port = "3040", Version = "1.2.2" },
-                new Data.Game { Name = "Terraria", Port = "3030", Version = "1.3.5.3" },
-                new Data.Game { Name = "Factorio", Port = "3020", Version = "15.18" },
-                new Data.Game { Name = "7 Days to die", Port = "3010", Version = "16 b138" },
-                new Data.Game { Name = "GMod - Sandbox", Port = "3003", Version = "?" },
-                new Data.Game { Name = "GMod - Murder", Port = "3000", Version = "?" }
-            };
-
-            DbHandler.AddRangeToDb(Games);
-            return Task.CompletedTask;
         }
 
         #endregion
