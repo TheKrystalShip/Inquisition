@@ -214,7 +214,7 @@ namespace Inquisition.Modules
 
                 foreach (Reminder reminder in Reminders)
                 {
-                    embed.AddField($"{reminder.Message}", $"{reminder.DueDate}");
+                    embed.AddField($"{reminder.Message ?? "No message"}", $"{reminder.DueDate}");
                 }
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
@@ -380,14 +380,16 @@ namespace Inquisition.Modules
         [Summary("Remove a reminder")]
         public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
-            User author = DbHandler.GetFromDb(Context.User);
+            User user = DbHandler.GetFromDb(Context.User);
+
+            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.Now,
-                DueDate = DateTimeOffset.Parse(dueDate).ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset)),
+                DueDate = dueDateUtc,
                 Message = remainder,
-                User = author
+                User = user
             };
 
             if (DbHandler.RemoveFromDb(reminder))
