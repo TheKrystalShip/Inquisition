@@ -265,7 +265,7 @@ namespace Inquisition
 
                 foreach (Reminder r in RemindersList)
                 {
-                    if (DateTimeOffset.UtcNow >= r.DueDate)
+                    if (DateTimeOffset.UtcNow > r.DueDate)
                     {
                         Client.GetUser(Convert.ToUInt64(r.User.Id))
                                .SendMessageAsync($"Reminder: {r.Message}");

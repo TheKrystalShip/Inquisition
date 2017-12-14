@@ -201,11 +201,12 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminders", RunMode = RunMode.Async)]
+        [Command("reminders")]
         [Summary("Displays a list with all of your reminders")]
         public async Task ListRemindersAsync()
         {
-            List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), DbHandler.GetFromDb(Context.User));
+            User user = DbHandler.GetFromDb(Context.User);
+            List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), user);
 
             if (Reminders.Count > 0)
             {
@@ -215,6 +216,7 @@ namespace Inquisition.Modules
                 {
                     embed.AddField($"{reminder.Message}", $"{reminder.DueDate}");
                 }
+
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
             }
             else
@@ -251,7 +253,7 @@ namespace Inquisition.Modules
     [Group("add")]
     public class AddModule : ModuleBase<SocketCommandContext>
     {
-        [Command("joke", RunMode = RunMode.Async)]
+        [Command("joke")]
         [Summary("Adds a new joke")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
@@ -279,7 +281,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("meme", RunMode = RunMode.Async)]
+        [Command("meme")]
         [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
@@ -307,32 +309,26 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminder", RunMode = RunMode.Async)]
+        [Command("reminder")]
         [Summary("Add a new reminder")]
         public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
-            User author = DbHandler.GetFromDb(Context.User);
-            DateTimeOffset dateTime = DateTimeOffset.Parse(dueDate);
-            DateTimeOffset userLocalTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset));
+            User user = DbHandler.GetFromDb(Context.User);
 
-            if (author.TimezoneOffset is null)
+            if (user.TimezoneOffset is null)
             {
                 await ReplyAsync(Message.Error.TimezoneNotSet);
                 return;
             }
 
-            if (dateTime < userLocalTime)
-            {
-                await ReplyAsync(Message.Error.InvalidDateTime);
-                return;
-            }
+            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.UtcNow,
-                DueDate = DateTimeOffset.Parse(dueDate).ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset)),
+                DueDate = dueDateUtc,
                 Message = remainder,
-                User = author
+                User = user
             };
 
             if (DbHandler.AddToDb(reminder))
@@ -444,12 +440,6 @@ namespace Inquisition.Modules
         public async Task SetTimezoneAsync(int offset)
         {
             User local = DbHandler.GetFromDb(Context.User);
-            if (local.TimezoneOffset != null)
-            {
-                await ReplyAsync($"Your timezone is set to {local.TimezoneOffset} in the database");
-                return;
-            }
-
             local.TimezoneOffset = offset;
             DbHandler.UpdateInDb(local);
             await ReplyAsync(Message.Info.Timezone(local));
