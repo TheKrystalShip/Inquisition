@@ -714,7 +714,10 @@ namespace Inquisition.Data
 
         public static List<Reminder> ListAll(Reminder reminder)
         {
-            List<Reminder> Reminders = db.Reminders.Include(x => x.User).ToList();
+            List<Reminder> Reminders = db.Reminders
+                                         .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+                                         .Include(x => x.User)
+                                         .ToList();
             return Reminders;
         }
 

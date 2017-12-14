@@ -68,6 +68,10 @@ namespace Inquisition
 
         public async Task MainAsync()
         {
+            using (InquisitionContext db = new InquisitionContext())
+            {
+                db.Database.EnsureCreated();
+            }
 
             #region Properties assignment
 
@@ -261,23 +265,13 @@ namespace Inquisition
             while (true)
             {
                 RemindersList = DbHandler.ListAll(new Reminder());
-                List<Reminder> FinishedRemindersList = new List<Reminder>();
 
                 foreach (Reminder r in RemindersList)
                 {
-                    if (DateTimeOffset.UtcNow > r.DueDate)
-                    {
-                        Client.GetUser(Convert.ToUInt64(r.User.Id))
-                               .SendMessageAsync($"Reminder: {r.Message}");
+                    Client.GetUser(Convert.ToUInt64(r.User.Id)) .SendMessageAsync($"Reminder: {r.Message}");   
+                }                
 
-                        FinishedRemindersList.Add(r);
-                    }
-                }
-
-                if (FinishedRemindersList.Count != 0)
-                {
-                    DbHandler.RemoveRangeFromDb(FinishedRemindersList);
-                }
+                DbHandler.RemoveRangeFromDb(RemindersList);
 
                 Thread.Sleep(5000);
             }
