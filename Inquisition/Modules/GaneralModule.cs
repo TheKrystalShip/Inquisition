@@ -330,7 +330,7 @@ namespace Inquisition.Modules
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.UtcNow,
-                DueDate = dueDateUtc,
+                DueDate = dueDateOffset,
                 Message = remainder,
                 User = localUser
             };
