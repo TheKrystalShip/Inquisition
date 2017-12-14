@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
+    [Group("help")]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
         private static CommandService _commands;
@@ -15,7 +16,7 @@ namespace Inquisition.Modules
             _commands = commandService;
         }
 
-        [Command("help"), Summary("List of all available commands.")]
+        [Command, Summary("List of all available commands.")]
         public async Task Help()
         {
             var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);

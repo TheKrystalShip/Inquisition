@@ -13,7 +13,7 @@ namespace Inquisition.Modules
         [Command("poll", RunMode = RunMode.Async)]
         [Alias("poll:")]
         [Summary("Create a poll")]
-        public async Task AddReactionAsync([Remainder] string r = "")
+        public async Task CreatePollAsync([Remainder] string r = "")
         {
             List<Emoji> reactions = new List<Emoji> { new Emoji("👍🏻"), new Emoji("👎🏻"), new Emoji("🤷🏻") };
 
@@ -30,6 +30,28 @@ namespace Inquisition.Modules
             {
                 await msg.AddReactionAsync(e);
             }
+        }
+
+        [Command("timezone")]
+        [Summary("Tells you your timezone from the database")]
+        public async Task ShowTimezoneAsync(SocketUser user = null)
+        {
+            User local;
+            if (user is null)
+            {
+                local = DbHandler.GetFromDb(Context.User); 
+            } else
+            {
+                local = DbHandler.GetFromDb(user);
+            }
+
+            if (local.TimezoneOffset is null)
+            {
+                await ReplyAsync(Message.Error.TimezoneNotSet);
+                return;
+            }
+
+            await ReplyAsync(Message.Info.Timezone(local));
         }
 
         [Command("joke", RunMode = RunMode.Async)]
@@ -287,16 +309,30 @@ namespace Inquisition.Modules
 
         [Command("reminder", RunMode = RunMode.Async)]
         [Summary("Add a new reminder")]
-        public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = null)
+        public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
-            await ReplyAsync($"Reminders are created relative to UTC 0 time, so you need to calculate it based on your timezone");
+            User author = DbHandler.GetFromDb(Context.User);
+            DateTimeOffset dateTime = DateTimeOffset.Parse(dueDate);
+            DateTimeOffset userLocalTime = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset));
+
+            if (author.TimezoneOffset is null)
+            {
+                await ReplyAsync(Message.Error.TimezoneNotSet);
+                return;
+            }
+
+            if (dateTime < userLocalTime)
+            {
+                await ReplyAsync(Message.Error.InvalidDateTime);
+                return;
+            }
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.UtcNow,
-                DueDate = DateTimeOffset.Parse(dueDate),
+                DueDate = DateTimeOffset.Parse(dueDate).ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset)),
                 Message = remainder,
-                User = DbHandler.GetFromDb(Context.User)
+                User = author
             };
 
             if (DbHandler.AddToDb(reminder))
@@ -348,12 +384,14 @@ namespace Inquisition.Modules
         [Summary("Remove a reminder")]
         public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
+            User author = DbHandler.GetFromDb(Context.User);
+
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.Now,
-                DueDate = DateTimeOffset.Parse(dueDate),
+                DueDate = DateTimeOffset.Parse(dueDate).ToOffset(TimeSpan.FromHours((int)author.TimezoneOffset)),
                 Message = remainder,
-                User = DbHandler.GetFromDb(Context.User)
+                User = author
             };
 
             if (DbHandler.RemoveFromDb(reminder))
@@ -395,6 +433,26 @@ namespace Inquisition.Modules
             {
                 await ReplyAsync(Message.Error.DatabaseAccess);
             }
+        }
+    }
+
+    [Group("set")]
+    public class SetModule : ModuleBase<SocketCommandContext>
+    {
+        [Command("timezone")]
+        [Summary("Set your timezone")]
+        public async Task SetTimezoneAsync(int offset)
+        {
+            User local = DbHandler.GetFromDb(Context.User);
+            if (local.TimezoneOffset != null)
+            {
+                await ReplyAsync($"Your timezone is set to {local.TimezoneOffset} in the database");
+                return;
+            }
+
+            local.TimezoneOffset = offset;
+            DbHandler.UpdateInDb(local);
+            await ReplyAsync(Message.Info.Timezone(local));
         }
     }
 }

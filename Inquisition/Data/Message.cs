@@ -9,6 +9,8 @@ namespace Inquisition.Data
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
             public static string DatabaseAccess = $"There was an error while trying to access the database, please let the Admin know about this, thanks";
             public static string NotInVoiceChannel = $"You have to be in a voice channel first";
+            public static string TimezoneNotSet = $"You have to set your timezone relative to UTC, use: ```@Inquisition set timezone n```\nHere's a usefull map that can help you: https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png";
+            public static string InvalidDateTime = $"The DateTime specified is not valid";
 
             #region NoContent
 
@@ -54,6 +56,7 @@ namespace Inquisition.Data
         public class Info
         {
             public static string Generic = $"Here you go:";
+            public static string Timezone(User user) => $"Your timezone is set to UTC+{user.TimezoneOffset}";
 
             #region Successfully Added
 

@@ -621,6 +621,15 @@ namespace Inquisition.Data
             db.SaveChanges();
         }
 
+        public static void UpdateInDb(User user)
+        {
+            if (!Exists(user))
+                AddToDb(user);
+
+            db.Users.Update(user);
+            db.SaveChanges();
+        }
+
         public static void UpdateInDb(Playlist playlist)
         {
             if (!Exists(playlist))

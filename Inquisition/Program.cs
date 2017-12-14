@@ -48,16 +48,16 @@ namespace Inquisition
     {
         #region Properties
 
-        private DiscordSocketClient _client;
-        private CommandService _commands;
-        private IServiceProvider _services;
+        private DiscordSocketClient Client;
+        private CommandService Commands;
+        private IServiceProvider Services;
 
-        private string token;
-        private ulong channel;
+        private string Token;
+        private ulong ChannelId;
 
-        private SocketTextChannel members_log;
+        private SocketTextChannel MembersLogTextChannel;
 
-        private Thread reminderLoopThread;
+        private Thread ReminderLoopThread;
 
         #endregion
 
@@ -71,12 +71,12 @@ namespace Inquisition
 
             #region Properties assignment
 
-            _client = new DiscordSocketClient();
-            _commands = new CommandService();
+            Client = new DiscordSocketClient();
+            Commands = new CommandService();
 
-            _services = new ServiceCollection()
-                .AddSingleton(_client)
-                .AddSingleton(_commands)
+            Services = new ServiceCollection()
+                .AddSingleton(Client)
+                .AddSingleton(Commands)
                 .AddSingleton(new AudioService())
                 .BuildServiceProvider();
 
@@ -87,12 +87,12 @@ namespace Inquisition
             try
             {
                 System.IO.StreamReader file = new System.IO.StreamReader("Data/TextFiles/token.txt");
-                token = file.ReadLine();
+                Token = file.ReadLine();
 
                 file = new System.IO.StreamReader("Data/TextFiles/channel.txt");
-                channel = ulong.Parse(file.ReadLine());
+                ChannelId = ulong.Parse(file.ReadLine());
 
-                members_log = _client.GetChannel(channel) as SocketTextChannel;
+                MembersLogTextChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
             }
             catch (Exception ex)
             {
@@ -104,26 +104,26 @@ namespace Inquisition
 
             #region Events
 
-            _client.Log += Log;
-            _client.UserJoined += UserJoined;
-            _client.UserLeft += UserLeftAsync;
-            _client.UserBanned += UserBannedAsync;
-            _client.GuildMemberUpdated += OnGuildMemberUpdated;
-            await _client.SetGameAsync($"@Inquisition help");
+            Client.Log += Log;
+            Client.UserJoined += UserJoined;
+            Client.UserLeft += UserLeftAsync;
+            Client.UserBanned += UserBannedAsync;
+            Client.GuildMemberUpdated += OnGuildMemberUpdated;
+            await Client.SetGameAsync($"@Inquisition help");
 
             #endregion
 
             await RegisterCommandsAsync();
-            HelpModule.Create(_commands);
+            HelpModule.Create(Commands);
 
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
+            await Client.LoginAsync(TokenType.Bot, Token);
+            await Client.StartAsync();
 
             #region Reminder loop thread
 
-            reminderLoopThread = new Thread(ReminderLoop);
-            reminderLoopThread.IsBackground = true;
-            reminderLoopThread.Start();
+            ReminderLoopThread = new Thread(ReminderLoop);
+            ReminderLoopThread.IsBackground = true;
+            ReminderLoopThread.Start();
 
             #endregion
 
@@ -149,12 +149,12 @@ namespace Inquisition
 
         private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
         {
-            await members_log.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
+            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
         }
 
         private async Task UserLeftAsync(SocketGuildUser arg)
         {
-            await members_log.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
+            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
 
         private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
@@ -168,9 +168,9 @@ namespace Inquisition
                 DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
                 foreach (var n in nList)
                 {
-                    if (n.TargetUser == target && _client.GetUser(Convert.ToUInt64(n.User.Id)).Status == UserStatus.Online)
+                    if (n.TargetUser == target && Client.GetUser(Convert.ToUInt64(n.User.Id)).Status == UserStatus.Online)
                     {
-                        SocketUser socketUser = _client.GetUser(Convert.ToUInt64(n.User.Id));
+                        SocketUser socketUser = Client.GetUser(Convert.ToUInt64(n.User.Id));
                         await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
                         if (!n.IsPermanent)
                         {
@@ -204,9 +204,9 @@ namespace Inquisition
 
         private async Task RegisterCommandsAsync()
         {
-            _client.MessageReceived += HandleCommands;
+            Client.MessageReceived += HandleCommands;
 
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            await Commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
         private async Task HandleCommands(SocketMessage msg)
@@ -224,14 +224,14 @@ namespace Inquisition
 
             int argPos = 0;
 
-            if (message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
+            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos) ||
                 message.HasStringPrefix(prefix, ref argPos) ||
                 message.Channel.GetType() == typeof(SocketDMChannel))
             {
                 Console.WriteLine($"{DateTimeOffset.UtcNow} - {message.Author}: {message.Content}");
 
-                SocketCommandContext context = new SocketCommandContext(_client, message);
-                IResult result = await _commands.ExecuteAsync(context, argPos, _services);
+                SocketCommandContext context = new SocketCommandContext(Client, message);
+                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
 
                 if (!result.IsSuccess)
                 {
@@ -256,27 +256,27 @@ namespace Inquisition
 
         public void ReminderLoop()
         {
-            List<Reminder> Reminders;
+            List<Reminder> RemindersList;
 
             while (true)
             {
-                Reminders = DbHandler.ListAll(new Reminder());
-                List<Reminder> FinishedReminders = new List<Reminder>();
+                RemindersList = DbHandler.ListAll(new Reminder());
+                List<Reminder> FinishedRemindersList = new List<Reminder>();
 
-                foreach (Reminder r in Reminders)
+                foreach (Reminder r in RemindersList)
                 {
                     if (DateTimeOffset.UtcNow >= r.DueDate)
                     {
-                        _client
-                            .GetUser(Convert.ToUInt64(r.User.Id))
-                            .SendMessageAsync($"Reminder: {r.Message}");
-                        FinishedReminders.Add(r);
+                        Client.GetUser(Convert.ToUInt64(r.User.Id))
+                               .SendMessageAsync($"Reminder: {r.Message}");
+
+                        FinishedRemindersList.Add(r);
                     }
                 }
 
-                if (FinishedReminders.Count != 0)
+                if (FinishedRemindersList.Count != 0)
                 {
-                    DbHandler.RemoveRangeFromDb(FinishedReminders);
+                    DbHandler.RemoveRangeFromDb(FinishedRemindersList);
                 }
 
                 Thread.Sleep(5000);
