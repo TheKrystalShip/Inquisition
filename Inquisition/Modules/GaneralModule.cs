@@ -321,12 +321,12 @@ namespace Inquisition.Modules
                 return;
             }
 
-            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
+            DateTimeOffset dueDateOffset = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.UtcNow,
-                DueDate = dueDateUtc,
+                DueDate = dueDateOffset,
                 Message = remainder,
                 User = user
             };
