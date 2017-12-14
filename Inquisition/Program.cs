@@ -9,10 +9,9 @@ using System.Collections.Generic;
 using Inquisition.Data;
 using System.Threading;
 using Inquisition.Modules;
-using Inquisition.Services;
 
 /*
- * Required packages for the porject:
+ * Required packages for the porject just in case they don't automatically download:
  *  1. Discord.Net v1.0.2
  *  2. Discord.Net.Commands v1.0.2
  *  3. Discord.Net.WebSocket v1.0.2
@@ -63,10 +62,9 @@ namespace Inquisition
 
         #region Main Execution
 
-        public static void Main(string[] args)
-            => new Program().MainAsync().GetAwaiter().GetResult();
+        public static void Main(string[] args) => new Program().RunAsync().GetAwaiter().GetResult();
 
-        public async Task MainAsync()
+        public async Task RunAsync()
         {
 
             #region Properties assignment
@@ -113,17 +111,40 @@ namespace Inquisition
 
             #endregion
 
+            await _client.SetGameAsync($"@Inquisition help");
             await RegisterCommandsAsync();
             HelpModule.Create(Commands);
 
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
+            #region Login
+
+            try
+            {
+                await _client.LoginAsync(TokenType.Bot, token);
+                await _client.StartAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{DateTimeOffset.Now} - CONNECTION FAILED");
+                Console.WriteLine(e);
+            }
+
+            #endregion
 
             #region Reminder loop thread
 
-            ReminderLoopThread = new Thread(ReminderLoop);
-            ReminderLoopThread.IsBackground = true;
-            ReminderLoopThread.Start();
+            try
+            {
+                reminderLoopThread = new Thread(ReminderLoop)
+                {
+                    IsBackground = true
+                };
+                reminderLoopThread.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{DateTimeOffset.Now} - FAILED TO CREATE REMINDER LOOP THREAD");
+                Console.WriteLine(e);
+            }
 
             #endregion
 
@@ -147,25 +168,25 @@ namespace Inquisition
             return null;
         }
 
-        private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
+        private async Task UserBannedAsync(SocketUser user, SocketGuild guild)
         {
             await MembersLogTextChannel.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
         }
 
-        private async Task UserLeftAsync(SocketGuildUser arg)
+        private async Task UserLeftAsync(SocketGuildUser user)
         {
             await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
 
-        private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        private async Task OnGuildMemberUpdated(SocketGuildUser userBefore, SocketGuildUser userAfter)
         {
-            if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
+            if (userBefore.Status == UserStatus.Offline && userAfter.Status == UserStatus.Online)
             {
                 List<Notification> nList = DbHandler.ListAll(new Notification());
                 List<Notification> finished = new List<Notification>();
-                User target = DbHandler.GetFromDb(after);
+                User target = DbHandler.GetFromDb(userAfter);
 
-                DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
+                DbHandler.GetFromDb(userAfter).LastSeenOnline = DateTimeOffset.UtcNow;
                 foreach (var n in nList)
                 {
                     if (n.TargetUser == target && Client.GetUser(Convert.ToUInt64(n.User.Id)).Status == UserStatus.Online)
@@ -185,14 +206,14 @@ namespace Inquisition
                 }
             }
 
-            if (before.Nickname != before.Nickname)
+            if (userBefore.Nickname != userAfter.Nickname)
             {
-                DbHandler.GetFromDb(before).Nickname = after.Nickname;
+                DbHandler.GetFromDb(userBefore).Nickname = userAfter.Nickname;
             }
 
-            if (before.GetAvatarUrl() != after.GetAvatarUrl())
+            if (userBefore.GetAvatarUrl() != userAfter.GetAvatarUrl())
             {
-                DbHandler.GetFromDb(before).AvatarUrl = after.GetAvatarUrl();
+                DbHandler.GetFromDb(userBefore).AvatarUrl = userAfter.GetAvatarUrl();
             }
 
             DbHandler.Save();

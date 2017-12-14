@@ -26,21 +26,43 @@ namespace Inquisition.Modules
 
         [Command("ban", RunMode = RunMode.Async)]
         [Summary("[Admin] Bans a user from the server")]
-        public async Task BanMemberAsync(SocketUser user)
+        public async Task BanMemberAsync(IGuildUser user = null)
         {
-            await ReplyAsync($"1/3 - I READ THAT THANKS");
-            
-            await ReplyAsync("2/3 - I BANNED HIM");
+            if (user is null)
+            {
+                await ReplyAsync(Message.Error.NoUserSpecified);
+                return;
+            }
 
+            await user.Guild.AddBanAsync(user);
             await ReplyAsync(Message.Info.UserBanned(user.Username));
-            await ReplyAsync("3/3 - FUCK YOU");
+        }
+
+        [Command("kick")]
+        [Summary("Kicks a user")]
+        public async Task KickMemberAsync(IGuildUser user = null)
+        {
+            if (user is null)
+            {
+                await ReplyAsync(Message.Error.NoUserSpecified);
+                return;
+            }
+
+            await user.KickAsync("Because get fucked that's why", RequestOptions.Default);
+            await ReplyAsync(Message.Info.UserKicked(user.Username));
         }
 
         [Command("unban", RunMode = RunMode.Async)]
         [Summary("[Admin] Unbans a user")]
-        public async Task UnbanMemberAsync(SocketGuildUser user)
+        public async Task UnbanMemberAsync(IGuildUser user)
         {
-            await Context.Guild.RemoveBanAsync(user);
+            if (user is null)
+            {
+                await ReplyAsync(Message.Error.NoUserSpecified);
+                return;
+            }
+
+            await user.Guild.RemoveBanAsync(user);
             await ReplyAsync(Message.Info.UserUnbanned(user.Username));
         }
 
