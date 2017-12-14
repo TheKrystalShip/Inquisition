@@ -24,12 +24,6 @@ namespace Inquisition
     /*
      * TODO: 
      * 
-     * [Bugs]
-     * Reminders are only based on UTC 0 timezone, add timezone
-     *  field in User model and automate the reminder config upon creation
-     *  based on the user's timezone.
-     *  Ask the user to specify timezone if field is null in db.
-     * 
      * [Developer branch]
      * Make Inquisition play music, create and save playlists
      *  in the database.
@@ -75,7 +69,6 @@ namespace Inquisition
             Services = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton(Commands)
-                .AddSingleton(new AudioService())
                 .BuildServiceProvider();
 
             #endregion
@@ -111,7 +104,7 @@ namespace Inquisition
 
             #endregion
 
-            await _client.SetGameAsync($"@Inquisition help");
+            await Client.SetGameAsync($"@Inquisition help");
             await RegisterCommandsAsync();
             HelpModule.Create(Commands);
 
@@ -119,8 +112,8 @@ namespace Inquisition
 
             try
             {
-                await _client.LoginAsync(TokenType.Bot, token);
-                await _client.StartAsync();
+                await Client.LoginAsync(TokenType.Bot, Token);
+                await Client.StartAsync();
             }
             catch (Exception e)
             {
@@ -134,11 +127,11 @@ namespace Inquisition
 
             try
             {
-                reminderLoopThread = new Thread(ReminderLoop)
+                ReminderLoopThread = new Thread(ReminderLoop)
                 {
                     IsBackground = true
                 };
-                reminderLoopThread.Start();
+                ReminderLoopThread.Start();
             }
             catch (Exception e)
             {
@@ -170,12 +163,12 @@ namespace Inquisition
 
         private async Task UserBannedAsync(SocketUser user, SocketGuild guild)
         {
-            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
+            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserBanned(user.Mention));
         }
 
         private async Task UserLeftAsync(SocketGuildUser user)
         {
-            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
+            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(user.Mention));
         }
 
         private async Task OnGuildMemberUpdated(SocketGuildUser userBefore, SocketGuildUser userAfter)
