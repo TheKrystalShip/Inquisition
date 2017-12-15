@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using Inquisition.Data;
 using System.Threading;
 using Inquisition.Modules;
-using Inquisition.Services;
 
 /*
  * Required packages for the porject:

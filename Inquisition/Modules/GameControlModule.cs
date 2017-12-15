@@ -32,10 +32,11 @@ namespace Inquisition.Modules
                     return;
                 }
 
-                Process p = new Process();
-                p.StartInfo.FileName = $"C:\\Windows\\system32\\notepad.exe";
-                p.StartInfo.Arguments = game.LaunchArgs;
-                p.Start();
+                Process p = Process.Start(new ProcessStartInfo
+                {
+                    FileName = Path + game.Exe,
+                    Arguments = game.LaunchArgs
+                });
 
                 ProcessDictionary.Instance.Add(game.Name, p);
 
