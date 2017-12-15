@@ -26,11 +26,11 @@ namespace Inquisition.Modules
             foreach (var c in _commands.Commands)
             {
                 string str = "";
-                foreach (var a in c.Aliases)
+                foreach (var a in c.Aliases.Skip(1))
                 {
                     if (a != null)
                     {
-                        str += a + " | "; 
+                        str += a + " | ";
                     }
                 }
                 embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");

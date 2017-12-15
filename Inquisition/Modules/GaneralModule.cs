@@ -32,17 +32,19 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("timezone")]
+        [Command("timezone", RunMode = RunMode.Async)]
         [Summary("Tells you your timezone from the database")]
         public async Task ShowTimezoneAsync(SocketUser user = null)
         {
             User local;
-            if (user is null)
+            switch (user)
             {
-                local = DbHandler.GetFromDb(Context.User); 
-            } else
-            {
-                local = DbHandler.GetFromDb(user);
+                case null:
+                    local = DbHandler.GetFromDb(Context.User);
+                    break;
+                default:
+                    local = DbHandler.GetFromDb(user);
+                    break;
             }
 
             if (local.TimezoneOffset is null)
@@ -61,17 +63,17 @@ namespace Inquisition.Modules
         {
             List<Joke> Jokes;
             Random rn = new Random();
-            User local;
+            User localUser;
 
             switch (user)
             {
                 case null:
+                    localUser = DbHandler.GetFromDb(Context.User);
                     Jokes = DbHandler.ListAll(new Joke());
-                    local = DbHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    local = DbHandler.GetFromDb(user);
-                    Jokes = DbHandler.ListAll(new Joke(), local);
+                    localUser = DbHandler.GetFromDb(user);
+                    Jokes = DbHandler.ListAll(new Joke(), localUser);
                     break;
             }
 
@@ -86,7 +88,7 @@ namespace Inquisition.Modules
             }
             else
             {
-                await ReplyAsync(Message.Error.NoContent(local));
+                await ReplyAsync(Message.Error.NoContent(localUser));
             }
         }
 
@@ -96,17 +98,17 @@ namespace Inquisition.Modules
         public async Task ListJokesAsync(SocketUser user = null)
         {
             List<Joke> Jokes;
-            User local;
+            User localUser;
 
             switch (user)
             {
                 case null:
                     Jokes = DbHandler.ListAll(new Joke());
-                    local = DbHandler.GetFromDb(Context.User);
+                    localUser = DbHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    local = DbHandler.GetFromDb(user);
-                    Jokes = DbHandler.ListAll(new Joke(), local);
+                    localUser = DbHandler.GetFromDb(user);
+                    Jokes = DbHandler.ListAll(new Joke(), localUser);
                     break;
             }
 
@@ -123,7 +125,7 @@ namespace Inquisition.Modules
             }
             else
             {
-                await ReplyAsync(Message.Error.NoContent(local));
+                await ReplyAsync(Message.Error.NoContent(localUser));
             }
         }
 
@@ -134,17 +136,17 @@ namespace Inquisition.Modules
         {
             List<Meme> Memes;
             Random rn = new Random();
-            User local;
+            User localUser;
 
             switch (user)
             {
                 case null:
+                    localUser = DbHandler.GetFromDb(Context.User);
                     Memes = DbHandler.ListAll(new Meme());
-                    local = DbHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    local = DbHandler.GetFromDb(user);
-                    Memes = DbHandler.ListAll(new Meme(), local);
+                    localUser = DbHandler.GetFromDb(user);
+                    Memes = DbHandler.ListAll(new Meme(), localUser);
                     break;
             }
 
@@ -156,11 +158,11 @@ namespace Inquisition.Modules
                 embed.WithImageUrl(meme.Url);
                 embed.WithTitle(meme.Url);
 
-                await ReplyAsync($"Here you go:", false, embed.Build());
+                await ReplyAsync(Message.Info.Generic, false, embed.Build());
             }
             else
             {
-                await ReplyAsync(Message.Error.NoContent(local));
+                await ReplyAsync(Message.Error.NoContent(localUser));
             }
         }
 
@@ -190,7 +192,7 @@ namespace Inquisition.Modules
 
                 foreach (Meme meme in Memes)
                 {
-                    embed.AddField($"{meme.Url}", $"Shitposted by {meme.User.Username} on {meme.CreatedAt}");
+                    embed.AddField($"{meme.Url}", $"Submitted by {meme.User.Username} on {meme.CreatedAt}");
                 }
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
@@ -201,12 +203,12 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminders")]
+        [Command("reminders", RunMode = RunMode.Async)]
         [Summary("Displays a list with all of your reminders")]
         public async Task ListRemindersAsync()
         {
-            User user = DbHandler.GetFromDb(Context.User);
-            List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), user);
+            User localUser = DbHandler.GetFromDb(Context.User);
+            List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), localUser);
 
             if (Reminders.Count > 0)
             {
@@ -229,7 +231,8 @@ namespace Inquisition.Modules
         [Summary("Displays a list of all of your notifications")]
         public async Task ListNotificationsAsync()
         {
-            List<Notification> Notifications = DbHandler.ListAll(new Notification(), DbHandler.GetFromDb(Context.User));
+            User localUser = DbHandler.GetFromDb(Context.User);
+            List<Notification> Notifications = DbHandler.ListAll(new Notification(), localUser);
 
             if (Notifications.Count > 0)
             {
@@ -253,82 +256,83 @@ namespace Inquisition.Modules
     [Group("add")]
     public class AddModule : ModuleBase<SocketCommandContext>
     {
-        [Command("joke")]
+        [Command("joke", RunMode = RunMode.Async)]
         [Summary("Adds a new joke")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
+            User localUser = DbHandler.GetFromDb(Context.User);
+
             if (jokeText is null)
             {
                 await ReplyAsync(Message.Error.IncorrectStructure(new Joke()));
                 return;
             }
+
+            Joke joke = new Joke
+            {
+                Text = jokeText,
+                User = localUser
+            };
+
+            if (DbHandler.AddToDb(joke))
+            {
+                await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
+            }
             else
             {
-                Joke joke = new Joke
-                {
-                    Text = jokeText,
-                    User = DbHandler.GetFromDb(Context.User)
-                };
-
-                if (DbHandler.AddToDb(joke))
-                {
-                    await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
-                }
-                else
-                {
-                    await ReplyAsync(Message.Error.DatabaseAccess);
-                }
+                await ReplyAsync(Message.Error.Generic);
             }
         }
 
-        [Command("meme")]
+        [Command("meme", RunMode = RunMode.Async)]
         [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
+            User localUser = DbHandler.GetFromDb(Context.User);
+
             if (url is null)
             {
                 await ReplyAsync(Message.Error.IncorrectStructure(new Meme()));
                 return;
             }
+
+            Meme meme = new Meme
+            {
+                Url = url,
+                User = localUser
+            };
+
+            if (DbHandler.AddToDb(meme))
+            {
+                await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
+            }
             else
             {
-                Meme meme = new Meme
-                {
-                    Url = url,
-                    User = DbHandler.GetFromDb(Context.User)
-                };
-
-                if (DbHandler.AddToDb(meme))
-                {
-                    await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
-                }
-                else
-                {
-                    await ReplyAsync(Message.Error.DatabaseAccess);
-                }
+                await ReplyAsync(Message.Error.Generic);
             }
         }
 
-        [Command("reminder")]
+        [Command("reminder", RunMode = RunMode.Async)]
         [Summary("Add a new reminder")]
         public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
-            User user = DbHandler.GetFromDb(Context.User);
+            User localUser = DbHandler.GetFromDb(Context.User);
 
-            if (user.TimezoneOffset is null)
+            if (localUser.TimezoneOffset is null)
             {
                 await ReplyAsync(Message.Error.TimezoneNotSet);
                 return;
             }
 
-            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
+            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), 
+                                                           new TimeSpan((int)localUser.TimezoneOffset, 0, 0));
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.UtcNow,
                 DueDate = dueDateUtc,
                 Message = remainder,
-                User = user
+                User = localUser
             };
 
             if (DbHandler.AddToDb(reminder))
@@ -337,7 +341,7 @@ namespace Inquisition.Modules
             }
             else
             {
-                await ReplyAsync(Message.Error.DatabaseAccess);
+                await ReplyAsync(Message.Error.Generic);
             }
         }
 
@@ -345,30 +349,32 @@ namespace Inquisition.Modules
         [Summary("Add a new notifications, must specify a target user")]
         public async Task AddNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
         {
+            User localUserAuthor = DbHandler.GetFromDb(Context.User);
+
             if (user is null)
             {
                 await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
                 return;
             }
 
-            User author = DbHandler.GetFromDb(Context.User);
-            User target = DbHandler.GetFromDb(user);
+            User localUserTarget = DbHandler.GetFromDb(user);
 
             bool permanent = etc.Equals("permanent");
 
             Notification n = new Notification
             {
-                User = author,
-                TargetUser = target,
+                User = localUserAuthor,
+                TargetUser = localUserTarget,
                 IsPermanent = permanent
             };
+
             if (DbHandler.AddToDb(n))
             {
                 await ReplyAsync(Message.Info.SuccessfullyAdded(n));
             }
             else
             {
-                await ReplyAsync(Message.Error.DatabaseAccess);
+                await ReplyAsync(Message.Error.Generic);
             }
         }
     }
@@ -380,16 +386,17 @@ namespace Inquisition.Modules
         [Summary("Remove a reminder")]
         public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
-            User user = DbHandler.GetFromDb(Context.User);
+            User localUser = DbHandler.GetFromDb(Context.User);
 
-            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate), new TimeSpan((int)user.TimezoneOffset, 0, 0));
+            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate),
+                                                           new TimeSpan((int)localUser.TimezoneOffset, 0, 0));
 
             Reminder reminder = new Reminder
             {
                 CreateDate = DateTimeOffset.Now,
                 DueDate = dueDateUtc,
                 Message = remainder,
-                User = user
+                User = localUser
             };
 
             if (DbHandler.RemoveFromDb(reminder))
@@ -398,7 +405,7 @@ namespace Inquisition.Modules
             }
             else
             {
-                await ReplyAsync(Message.Error.DatabaseAccess);
+                await ReplyAsync(Message.Error.Generic);
             }
         }
 
@@ -406,30 +413,29 @@ namespace Inquisition.Modules
         [Summary("Removes a notification, must specify a target user")]
         public async Task RemoveNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
         {
+            User localUserAuthor = DbHandler.GetFromDb(Context.User);
+
             if (user is null)
             {
                 await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
                 return;
             }
 
-            User author = DbHandler.GetFromDb(Context.User);
-            User target = DbHandler.GetFromDb(user);
-
-            bool permanent = etc.Equals("permanent");
+            User localUserTarget = DbHandler.GetFromDb(user);
 
             Notification n = new Notification
             {
-                User = author,
-                TargetUser = target,
-                IsPermanent = permanent
+                User = localUserAuthor,
+                TargetUser = localUserTarget
             };
+
             if (DbHandler.RemoveFromDb(n))
             {
                 await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
             }
             else
             {
-                await ReplyAsync(Message.Error.DatabaseAccess);
+                await ReplyAsync(Message.Error.Generic);
             }
         }
     }
@@ -437,14 +443,16 @@ namespace Inquisition.Modules
     [Group("set")]
     public class SetModule : ModuleBase<SocketCommandContext>
     {
-        [Command("timezone")]
+        [Command("timezone", RunMode = RunMode.Async)]
         [Summary("Set your timezone")]
         public async Task SetTimezoneAsync(int offset)
         {
-            User local = DbHandler.GetFromDb(Context.User);
-            local.TimezoneOffset = offset;
-            DbHandler.UpdateInDb(local);
-            await ReplyAsync(Message.Info.Timezone(local));
+            User localUser = DbHandler.GetFromDb(Context.User);
+
+            localUser.TimezoneOffset = offset;
+            DbHandler.UpdateInDb(localUser);
+
+            await ReplyAsync(Message.Info.Timezone(localUser));
         }
     }
 }

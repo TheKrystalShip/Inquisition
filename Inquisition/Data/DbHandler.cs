@@ -723,34 +723,28 @@ namespace Inquisition.Data
 
         public static List<Notification> ListAll(Notification notification)
         {
-            List<Notification> Notifications = 
-                db.Notifications
-                .Include(x => x.User)
-                .Include(x => x.TargetUser)
-                .ToList();
-
+            List<Notification> Notifications = db.Notifications
+                                                 .Include(x => x.User)
+                                                 .Include(x => x.TargetUser)
+                                                 .ToList();
             return Notifications;
         }
 
         public static List<Playlist> ListAll(Playlist playlist)
         {
-            List<Playlist> Playlists =
-                db.Playlists
-                .Include(x => x.Songs)
-                .Include(x => x.Author)
-                .ToList();
-
+            List<Playlist> Playlists = db.Playlists
+                                         .Include(x => x.Songs)
+                                         .Include(x => x.Author)
+                                         .ToList();
             return Playlists;
         }
 
         public static List<Song> ListAll(Song song)
         {
-            List<Song> Songs =
-                db.Songs
-                .Include(x => x.Playlists)
-                .Include(x => x.Author)
-                .ToList();
-
+            List<Song> Songs = db.Songs
+                                 .Include(x => x.Playlists)
+                                 .Include(x => x.Author)
+                                 .ToList();
             return Songs;
         }
 
@@ -763,7 +757,10 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(joke);
 
-            List<Joke> Jokes = db.Jokes.Where(x => x.User == user).Include(x => x.User).ToList();
+            List<Joke> Jokes = db.Jokes
+                                 .Where(x => x.User == user)
+                                 .Include(x => x.User)
+                                 .ToList();
             return Jokes;
         }
 
@@ -772,7 +769,10 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(meme);
 
-            List<Meme> Memes = db.Memes.Where(x => x.User == user).Include(x => x.User).ToList();
+            List<Meme> Memes = db.Memes
+                                 .Where(x => x.User == user)
+                                 .Include(x => x.User)
+                                 .ToList();
             return Memes;
         }
 
@@ -781,7 +781,10 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(reminder);
 
-            List<Reminder> Reminders = db.Reminders.Where(x => x.User == user).Include(x => x.User).ToList();
+            List<Reminder> Reminders = db.Reminders
+                                         .Where(x => x.User == user)
+                                         .Include(x => x.User)
+                                         .ToList();
             return Reminders;
         }
 
@@ -790,13 +793,11 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(notification);
             
-            List<Notification> Notifications = 
-                db.Notifications
-                .Where(x => x.User == user)
-                .Include(x => x.User)
-                .Include(x => x.TargetUser)
-                .ToList();
-
+            List<Notification> Notifications = db.Notifications
+                                                 .Where(x => x.User == user)
+                                                 .Include(x => x.User)
+                                                 .Include(x => x.TargetUser)
+                                                 .ToList();
             return Notifications;
         }
 
@@ -805,13 +806,11 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(playlist);
 
-            List<Playlist> Playlists =
-                db.Playlists
-                .Where(x => x.Author == user)
-                .Include(x => x.Songs)
-                .Include(x => x.Author)
-                .ToList();
-
+            List<Playlist> Playlists = db.Playlists
+                                         .Where(x => x.Author == user)
+                                         .Include(x => x.Songs)
+                                         .Include(x => x.Author)
+                                         .ToList();
             return Playlists;
         }
 
@@ -820,12 +819,11 @@ namespace Inquisition.Data
             if (user is null)
                 return ListAll(song);
 
-            List<Song> Songs =
-                db.Songs.Where(x => x.Author == user)
-                .Include(x => x.Playlists)
-                .Include(x => x.Author)
-                .ToList();
-
+            List<Song> Songs = db.Songs
+                                 .Where(x => x.Author == user)
+                                 .Include(x => x.Playlists)
+                                 .Include(x => x.Author)
+                                 .ToList();
             return Songs;
         }
 

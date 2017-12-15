@@ -25,12 +25,6 @@ namespace Inquisition
     /*
      * TODO: 
      * 
-     * [Bugs]
-     * Reminders are only based on UTC 0 timezone, add timezone
-     *  field in User model and automate the reminder config upon creation
-     *  based on the user's timezone.
-     *  Ask the user to specify timezone if field is null in db.
-     * 
      * [Developer branch]
      * Make Inquisition play music, create and save playlists
      *  in the database.
@@ -260,16 +254,14 @@ namespace Inquisition
 
         public void ReminderLoop()
         {
-            List<Reminder> RemindersList;
-
             while (true)
             {
-                RemindersList = DbHandler.ListAll(new Reminder());
+                List<Reminder> RemindersList = DbHandler.ListAll(new Reminder());
 
                 foreach (Reminder r in RemindersList)
                 {
-                    Client.GetUser(Convert.ToUInt64(r.User.Id)) .SendMessageAsync($"Reminder: {r.Message}");   
-                }                
+                    Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
+                }
 
                 DbHandler.RemoveRangeFromDb(RemindersList);
 
