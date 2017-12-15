@@ -32,7 +32,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("timezone", RunMode = RunMode.Async)]
+        [Command("timezone")]
         [Summary("Tells you your timezone from the database")]
         public async Task ShowTimezoneAsync(SocketUser user = null)
         {
@@ -56,7 +56,7 @@ namespace Inquisition.Modules
             await ReplyAsync(Message.Info.Timezone(local));
         }
 
-        [Command("joke", RunMode = RunMode.Async)]
+        [Command("joke")]
         [Alias("joke by")]
         [Summary("Displays a random joke by random user unless user is specified")]
         public async Task ShowJokeAsync(SocketUser user = null)
@@ -92,7 +92,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("jokes", RunMode = RunMode.Async)]
+        [Command("jokes")]
         [Alias("jokes by")]
         [Summary("Shows a list of all jokes from all users unless user is specified")]
         public async Task ListJokesAsync(SocketUser user = null)
@@ -129,7 +129,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("meme", RunMode = RunMode.Async)]
+        [Command("meme")]
         [Alias("meme by")]
         [Summary("Displays a random meme by random user unless user is specified")]
         public async Task ShowMemeAsync(SocketUser user = null)
@@ -166,7 +166,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("memes", RunMode = RunMode.Async)]
+        [Command("memes")]
         [Alias("memes by")]
         [Summary("Shows a list of all memes from all users unless user is specified")]
         public async Task ListMemesAsync(SocketUser user = null)
@@ -203,7 +203,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminders", RunMode = RunMode.Async)]
+        [Command("reminders")]
         [Summary("Displays a list with all of your reminders")]
         public async Task ListRemindersAsync()
         {
@@ -227,7 +227,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notifications", RunMode = RunMode.Async)]
+        [Command("notifications")]
         [Summary("Displays a list of all of your notifications")]
         public async Task ListNotificationsAsync()
         {
@@ -256,7 +256,7 @@ namespace Inquisition.Modules
     [Group("add")]
     public class AddModule : ModuleBase<SocketCommandContext>
     {
-        [Command("joke", RunMode = RunMode.Async)]
+        [Command("joke")]
         [Summary("Adds a new joke")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
@@ -284,7 +284,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("meme", RunMode = RunMode.Async)]
+        [Command("meme")]
         [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
@@ -312,7 +312,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("reminder", RunMode = RunMode.Async)]
+        [Command("reminder")]
         [Summary("Add a new reminder")]
         public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
@@ -345,7 +345,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notification", RunMode = RunMode.Async)]
+        [Command("notification")]
         [Summary("Add a new notifications, must specify a target user")]
         public async Task AddNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
         {
@@ -382,7 +382,7 @@ namespace Inquisition.Modules
     [Group("remove")]
     public class RemoveModule : ModuleBase<SocketCommandContext>
     {
-        [Command("reminder", RunMode = RunMode.Async)]
+        [Command("reminder")]
         [Summary("Remove a reminder")]
         public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
         {
@@ -411,7 +411,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notification", RunMode = RunMode.Async)]
+        [Command("notification")]
         [Summary("Removes a notification, must specify a target user")]
         public async Task RemoveNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
         {
@@ -445,7 +445,7 @@ namespace Inquisition.Modules
     [Group("set")]
     public class SetModule : ModuleBase<SocketCommandContext>
     {
-        [Command("timezone", RunMode = RunMode.Async)]
+        [Command("timezone")]
         [Summary("Set your timezone")]
         public async Task SetTimezoneAsync(int offset)
         {

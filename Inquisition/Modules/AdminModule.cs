@@ -23,7 +23,7 @@ namespace Inquisition.Modules
             await ReplyAsync(Message.Info.UsersPruned(n, d));
         }
 
-        [Command("ban", RunMode = RunMode.Async)]
+        [Command("ban")]
         [Summary("[Admin] Bans a user from the server")]
         public async Task BanMemberAsync(SocketGuildUser user, [Remainder] string reason = "")
         {
@@ -51,7 +51,7 @@ namespace Inquisition.Modules
         [Alias("delete")]
         public class RemoveModule : ModuleBase<SocketCommandContext>
         {
-            [Command("game", RunMode = RunMode.Async)]
+            [Command("game")]
             [Summary("[Admin] Remove a game from db")]
             public async Task DeleteGameAsync(string name)
             {

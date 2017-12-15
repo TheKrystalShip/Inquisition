@@ -16,7 +16,7 @@ namespace Inquisition.Modules
             _commands = commandService;
         }
 
-        [Command, Summary("List of all available commands.")]
+        [Command(RunMode = RunMode.Async), Summary("List of all available commands.")]
         public async Task Help()
         {
             var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
