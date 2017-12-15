@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace Inquisition.Data
 {
@@ -30,7 +31,17 @@ namespace Inquisition.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;");
+            string connectionString = "";
+            try
+            {
+                StreamReader reader = new StreamReader("Data/TextFiles/connectionString.txt");
+                connectionString = reader.ReadLine();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            optionsBuilder.UseSqlServer(connectionString);
             optionsBuilder.EnableSensitiveDataLogging(true);
         }
 
