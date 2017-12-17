@@ -8,6 +8,16 @@ namespace Inquisition.Data
 {
     public class DbHandler
     {
+        public enum Result
+        {
+            Failed,
+            Successful,
+            AlreadyExists,
+            DoesNotExist
+        }
+
+        public static Queue<Action> Queue { get; set; } = new Queue<Action>();
+
         private static InquisitionContext db = new InquisitionContext();
 
         private static User ConvertToLocalUser(SocketGuildUser user)
@@ -40,186 +50,187 @@ namespace Inquisition.Data
             return local;
         }
 
-        public static void Save()
+        public static Result Save()
         {
             db.SaveChanges();
+            return Result.Successful;
         }
 
         #region AddToDb
 
-        public static bool AddToDb(SocketGuildUser user)
+        public static Result AddToDb(SocketGuildUser user)
         {
             try
             {
                 User local = ConvertToLocalUser(user);
                 if (Exists(local))
                 {
-                    return false;
+                    return Result.AlreadyExists;
                 } else
                 {
                     db.Users.Add(local);
                     db.SaveChanges();
-                    return true;
+                    return Result.Successful;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
         
-        public static bool AddToDb(SocketUser user)
+        public static Result AddToDb(SocketUser user)
         {
             try
             {
                 User local = ConvertToLocalUser(user);
                 if (Exists(local))
                 {
-                    return false;
+                    return Result.AlreadyExists;
                 } else
                 {
                     db.Users.Add(local);
                     db.SaveChanges();
-                    return true;
+                    return Result.Successful;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
         
-        public static bool AddToDb(User user)
+        public static Result AddToDb(User user)
         {
             try
             {
                 if (Exists(user))
                 {
-                    return false;
+                    return Result.AlreadyExists;
                 } else
                 {
                     db.Users.Add(user);
                     db.SaveChanges();
-                    return true;
+                    return Result.Successful;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Game game)
+        public static Result AddToDb(Game game)
         {
             try
             {
                 if (Exists(game))
                 {
-                    return false;
+                    return Result.AlreadyExists;
                 } else
                 {
                     db.Games.Add(game);
                     db.SaveChanges();
-                    return true;
+                    return Result.Successful;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Joke joke)
+        public static Result AddToDb(Joke joke)
         {
             try
             {
                 db.Jokes.Add(joke);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Meme meme)
+        public static Result AddToDb(Meme meme)
         {
             try
             {
                 db.Memes.Add(meme);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Reminder reminder)
+        public static Result AddToDb(Reminder reminder)
         {
             try
             {
                 db.Reminders.Add(reminder);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Notification notification)
+        public static Result AddToDb(Notification notification)
         {
             try
             {
                 db.Notifications.Add(notification);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Playlist playlist)
+        public static Result AddToDb(Playlist playlist)
         {
             try
             {
                 db.Playlists.Add(playlist);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddToDb(Song song)
+        public static Result AddToDb(Song song)
         {
             try
             {
                 db.Songs.Add(song);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                return false;
+                return Result.Failed;
             }
         }
 
@@ -227,7 +238,7 @@ namespace Inquisition.Data
 
         #region AddRangeToDb
 
-        public static bool AddRangeToDb(List<SocketGuildUser> users)
+        public static Result AddRangeToDb(List<SocketGuildUser> users)
         {
             try
             {
@@ -235,28 +246,22 @@ namespace Inquisition.Data
                 foreach (SocketGuildUser user in users)
                 {
                     User local = ConvertToLocalUser(user);
-                    if (Exists(local))
-                    {
-                        continue;
-                    }
-                    else
-                    {
+                    if (!Exists(local))
                         list.Add(local);
-                    }
                 }
 
                 db.Users.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         } 
 
-        public static bool AddRangeToDb(List<SocketUser> users)
+        public static Result AddRangeToDb(List<SocketUser> users)
         {
             try
             {
@@ -264,133 +269,106 @@ namespace Inquisition.Data
                 foreach (SocketUser user in users)
                 {
                     User local = ConvertToLocalUser(user);
-                    if (Exists(local))
-                    {
-                        continue;
-                    }
-                    else
-                    {
+                    if (!Exists(local))
                         list.Add(local);
-                    }
                 }
 
                 db.Users.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddRangeToDb(List<User> users)
+        public static Result AddRangeToDb(List<User> users)
         {
             try
             {
                 List<User> list = new List<User>();
                 foreach (User user in users)
                 {
-                    if (Exists(user))
-                    {
-                        continue;
-                    }
-                    else
-                    {
+                    if (!Exists(user))
                         list.Add(user);
-                    }
                 }
 
                 db.Users.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddRangeToDb(List<Game> games)
+        public static Result AddRangeToDb(List<Game> games)
         {
             try
             {
                 List<Game> list = new List<Game>();
                 foreach (Game game in games)
                 {
-                    if (Exists(game))
-                    {
-                        continue;
-                    } else
-                    {
+                    if (!Exists(game))
                         list.Add(game);
-                    }
                 }
 
                 db.Games.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddRangeToDb(List<Playlist> playlists)
+        public static Result AddRangeToDb(List<Playlist> playlists)
         {
             try
             {
                 List<Playlist> list = new List<Playlist>();
                 foreach (Playlist p in playlists)
                 {
-                    if (Exists(p))
-                    {
-                        continue;
-                    } else
-                    {
+                    if (!Exists(p))
                         list.Add(p);
-                    }
                 }
 
                 db.Playlists.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool AddRangeToDb(List<Song> songs)
+        public static Result AddRangeToDb(List<Song> songs)
         {
             try
             {
                 List<Song> list = new List<Song>();
                 foreach (Song s in songs)
                 {
-                    if (Exists(s))
-                    {
-                        continue;
-                    } else
-                    {
+                    if (!Exists(s))
                         list.Add(s);
-                    }
                 }
 
                 db.Songs.AddRange(list);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
@@ -398,115 +376,115 @@ namespace Inquisition.Data
 
         #region RemoveFromDb
 
-        public static bool RemoveFromDb(SocketGuildUser user)
+        public static Result RemoveFromDb(SocketGuildUser user)
         {
             try
             {
                 User temp = ConvertToLocalUser(user);
                 db.Users.Remove(temp);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(SocketUser user)
+        public static Result RemoveFromDb(SocketUser user)
         {
             try
             {
                 User temp = ConvertToLocalUser(user);
                 db.Users.Remove(temp);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(User user)
+        public static Result RemoveFromDb(User user)
         {
             try
             {
                 db.Users.Remove(user);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Game game)
+        public static Result RemoveFromDb(Game game)
         {
             try
             {
                 db.Games.Remove(game);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Joke joke)
+        public static Result RemoveFromDb(Joke joke)
         {
             try
             {
                 db.Jokes.Remove(joke);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Meme meme)
+        public static Result RemoveFromDb(Meme meme)
         {
             try
             {
                 db.Memes.Remove(meme);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Reminder reminder)
+        public static Result RemoveFromDb(Reminder reminder)
         {
             try
             {
                 Reminder temp = db.Reminders.Where(x => x.DueDate == reminder.DueDate).FirstOrDefault();
                 db.Reminders.Remove(temp);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Notification notification)
+        public static Result RemoveFromDb(Notification notification)
         {
             try
             {
@@ -517,42 +495,42 @@ namespace Inquisition.Data
 
                 db.Notifications.Remove(temp);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Playlist playlist)
+        public static Result RemoveFromDb(Playlist playlist)
         {
             try
             {
                 db.Playlists.Remove(playlist);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
-        public static bool RemoveFromDb(Song song)
+        public static Result RemoveFromDb(Song song)
         {
             try
             {
                 db.Songs.Remove(song);
                 db.SaveChanges();
-                return true;
+                return Result.Successful;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return false;
+                return Result.Failed;
             }
         }
 
@@ -560,92 +538,200 @@ namespace Inquisition.Data
 
         #region RemoveRangeFromDb
 
-        public static void RemoveRangeFromDb(List<User> users)
+        public static Result RemoveRangeFromDb(List<User> users)
         {
-            db.Users.RemoveRange(users);
-            db.SaveChanges();
+            try
+            {
+                db.Users.RemoveRange(users);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Game> games)
+        public static Result RemoveRangeFromDb(List<Game> games)
         {
-            db.Games.RemoveRange(games);
-            db.SaveChanges();
+            try
+            {
+                db.Games.RemoveRange(games);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Joke> jokes)
+        public static Result RemoveRangeFromDb(List<Joke> jokes)
         {
-            db.Jokes.RemoveRange(jokes);
-            db.SaveChanges();
+            try
+            {
+                db.Jokes.RemoveRange(jokes);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Meme> memes)
+        public static Result RemoveRangeFromDb(List<Meme> memes)
         {
-            db.Memes.RemoveRange(memes);
-            db.SaveChanges();
+            try
+            {
+                db.Memes.RemoveRange(memes);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Reminder> reminders)
+        public static Result RemoveRangeFromDb(List<Reminder> reminders)
         {
-            db.Reminders.RemoveRange(reminders);
-            db.SaveChanges();
+            try
+            {
+                db.Reminders.RemoveRange(reminders);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Notification> notifications)
+        public static Result RemoveRangeFromDb(List<Notification> notifications)
         {
-            db.Notifications.RemoveRange(notifications);
-            db.SaveChanges();
+            try
+            {
+                db.Notifications.RemoveRange(notifications);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Playlist> playlists)
+        public static Result RemoveRangeFromDb(List<Playlist> playlists)
         {
-            db.Playlists.RemoveRange(playlists);
-            db.SaveChanges();
+            try
+            {
+                db.Playlists.RemoveRange(playlists);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void RemoveRangeFromDb(List<Song> songs)
+        public static Result RemoveRangeFromDb(List<Song> songs)
         {
-            db.Songs.RemoveRange(songs);
-            db.SaveChanges();
+            try
+            {
+                db.Songs.RemoveRange(songs);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
         #endregion
 
         #region UpdateInDb
 
-        public static void UpdateInDb(Game game)
+        public static Result UpdateInDb(Game game)
         {
-            if (!Exists(game))
-                AddToDb(game);
+            try
+            {
+                if (!Exists(game))
+                    return Result.DoesNotExist;
 
-            db.Games.Update(game);
-            db.SaveChanges();
+                db.Games.Update(game);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void UpdateInDb(User user)
+        public static Result UpdateInDb(User user)
         {
-            if (!Exists(user))
-                AddToDb(user);
+            try
+            {
+                if (!Exists(user))
+                    return Result.DoesNotExist;
 
-            db.Users.Update(user);
-            db.SaveChanges();
+                db.Users.Update(user);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void UpdateInDb(Playlist playlist)
+        public static Result UpdateInDb(Playlist playlist)
         {
-            if (!Exists(playlist))
-                AddToDb(playlist);
+            try
+            {
+                if (!Exists(playlist))
+                    return Result.DoesNotExist;
 
-            db.Playlists.Update(playlist);
-            db.SaveChanges();
+                db.Playlists.Update(playlist);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
-        public static void UpdateInDb(Song song)
+        public static Result UpdateInDb(Song song)
         {
-            if (!Exists(song))
-                AddToDb(song);
+            try
+            {
+                if (!Exists(song))
+                    return Result.DoesNotExist;
 
-            db.Songs.Update(song);
-            db.SaveChanges();
+                db.Songs.Update(song);
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
         #endregion
@@ -696,19 +782,24 @@ namespace Inquisition.Data
 
         public static List<Game> ListAll(Game game)
         {
-            List<Game> Games = db.Games.ToList();
+            List<Game> Games = db.Games
+                                 .ToList();
             return Games;
         }
 
         public static List<Joke> ListAll(Joke joke)
         {
-            List<Joke> Jokes = db.Jokes.Include(x => x.User).ToList();
+            List<Joke> Jokes = db.Jokes
+                                 .Include(x => x.User)
+                                 .ToList();
             return Jokes;
         }
 
         public static List<Meme> ListAll(Meme meme)
         {
-            List<Meme> Memes = db.Memes.Include(x => x.User).ToList();
+            List<Meme> Memes = db.Memes
+                                 .Include(x => x.User)
+                                 .ToList();
             return Memes;
         }
 

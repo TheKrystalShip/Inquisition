@@ -63,8 +63,15 @@ namespace Inquisition.Modules
                 }
                 else
                 {
-                    DbHandler.RemoveFromDb(game);
-                    await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
+                    switch (DbHandler.RemoveFromDb(game))
+                    {
+                        case DbHandler.Result.Failed:
+                            await ReplyAsync(Message.Error.Generic);
+                            break;
+                        case DbHandler.Result.Successful:
+                            await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
+                            break;
+                    }
                 }
             }
         }

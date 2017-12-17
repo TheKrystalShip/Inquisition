@@ -274,13 +274,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(joke))
+            switch (DbHandler.AddToDb(joke))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -302,13 +303,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(meme))
+            switch (DbHandler.AddToDb(meme))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -335,13 +337,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(reminder))
+            switch (DbHandler.AddToDb(reminder))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -368,13 +371,14 @@ namespace Inquisition.Modules
                 IsPermanent = permanent
             };
 
-            if (DbHandler.AddToDb(n))
+            switch (DbHandler.AddToDb(n))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(n));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(n));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
     }
@@ -399,13 +403,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.RemoveFromDb(reminder))
+            switch (DbHandler.RemoveFromDb(reminder))
             {
-                await ReplyAsync(Message.Info.SuccessfullyRemoved(reminder));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(reminder));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -429,13 +434,14 @@ namespace Inquisition.Modules
                 TargetUser = localUserTarget
             };
 
-            if (DbHandler.RemoveFromDb(n))
+            switch (DbHandler.RemoveFromDb(n))
             {
-                await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
     }
