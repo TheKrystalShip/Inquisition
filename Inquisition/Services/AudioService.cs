@@ -1,7 +1,10 @@
-﻿using Discord.Audio;
+﻿using Discord;
+using Discord.Audio;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,28 +13,27 @@ namespace Inquisition.Services
 {
     public class AudioService
     {
-        private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels = new ConcurrentDictionary<ulong, IAudioClient>();
+        private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels = 
+            new ConcurrentDictionary<ulong, IAudioClient>();
 
-        public async Task JoinAudio(SocketGuild guild, SocketVoiceChannel target)
+        public async Task JoinChannel(IVoiceChannel channel, ulong guildID)
         {
-            if (ConnectedChannels.TryGetValue(guild.Id, out IAudioClient client))
-            {
-                return;
-            }
-            if (target.Guild.Id != guild.Id)
-            {
-                return;
-            }
-
-            var audioClient = await target.ConnectAsync();
+            var audioClient = await channel.ConnectAsync();
+            ConnectedChannels.TryAdd(guildID, audioClient);
         }
 
-        public async Task LeaveAudio(SocketGuild guild)
+        public async Task LeaveChannel(SocketCommandContext Context)
         {
-            if (ConnectedChannels.TryRemove(guild.Id, out IAudioClient client))
+            ConnectedChannels.TryGetValue(Context.Guild.Id, out IAudioClient aClient);
+
+            if (aClient is null)
             {
-                await client.StopAsync();
+                await Context.Channel.SendMessageAsync("Bot is not connected to any Voice Channels");
+                return;
             }
+
+            await aClient.StopAsync();
+            ConnectedChannels.TryRemove(Context.Guild.Id, out aClient);
         }
 
         public async Task SendAudioAsync(SocketGuild guild, ISocketMessageChannel channel, string path)

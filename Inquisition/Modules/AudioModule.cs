@@ -1,56 +1,49 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Audio;
 using Inquisition.Data;
 using Inquisition.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Threading;
 
 namespace Inquisition.Modules
 {
     public class AudioModule : ModuleBase<SocketCommandContext>
     {
-        private readonly AudioService _service;
+        private readonly AudioService audioService;
 
         public AudioModule(AudioService service)
         {
-            _service = service;
+            audioService = service;
         }
 
         [Command("join", RunMode = RunMode.Async)]
-        [Summary("Make the bot join your voice channel")]
-        public async Task JoinVoiceChannelAsync()
+        [Summary("Joines the channel of the User or the one passed as an argument")]
+        public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
-
-            if (voiceChannel is null)
+            channel = channel ?? (Context.Message.Author as IGuildUser)?.VoiceChannel;
+            if (channel == null)
             {
-                await ReplyAsync(Message.Error.NotInVoiceChannel);
+                await Context.Channel.SendMessageAsync(
+                    "User must be in a voice channel, or a voice channel must be passed as an argument");
                 return;
             }
 
-            var audioClient = await voiceChannel.ConnectAsync();
+            await audioService.JoinChannel(channel, Context.Guild.Id);
         }
-
+        
         [Command("leave")]
         [Alias("fuck off")]
         [Summary("Kick the bot from the voice channel")]
-        public async Task LeaveVoiceChannelAsync()
+        public async Task LeaveChannel(IVoiceChannel channel = null)
         {
-            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
-
-            if (voiceChannel is null)
+            channel = channel ?? (Context.Message.Author as IGuildUser)?.VoiceChannel;
+            if (channel == null)
             {
                 await ReplyAsync(Message.Error.NotInVoiceChannel);
                 return;
             }
 
-            await _service.LeaveAudio(Context.Guild);
+            await audioService.LeaveChannel(Context);
         }
 
         [Command("play", RunMode = RunMode.Async)]
@@ -64,9 +57,8 @@ namespace Inquisition.Modules
                 await ReplyAsync(Message.Error.NotInVoiceChannel);
                 return;
             }
-
-            await JoinVoiceChannelAsync();
-            await _service.SendAudioAsync(Context.Guild, Context.Channel, song);
+            
+            await audioService.SendAudioAsync(Context.Guild, Context.Channel, song);
         }
     }
 }
