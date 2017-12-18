@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 using Inquisition.Data;
 using Inquisition.Modules;
-using Inquisition.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -28,7 +27,6 @@ namespace Inquisition
             Services = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton(Commands)
-                .AddSingleton(new AudioService())
                 .BuildServiceProvider();
 
             Commands.AddModulesAsync(Assembly.GetEntryAssembly());

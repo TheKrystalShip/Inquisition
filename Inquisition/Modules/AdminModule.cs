@@ -49,7 +49,7 @@ namespace Inquisition.Modules
 
         [Group("remove")]
         [Alias("delete")]
-        public class RemoveModule : ModuleBase<SocketCommandContext>
+        public class RemoveAdminModule : ModuleBase<SocketCommandContext>
         {
             [Command("game", RunMode = RunMode.Async)]
             [Summary("[Admin] Remove a game from db")]
