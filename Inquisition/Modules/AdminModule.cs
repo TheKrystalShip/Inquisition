@@ -49,7 +49,7 @@ namespace Inquisition.Modules
 
         [Group("remove")]
         [Alias("delete")]
-        public class RemoveModule : ModuleBase<SocketCommandContext>
+        public class RemoveAdminModule : ModuleBase<SocketCommandContext>
         {
             [Command("game")]
             [Summary("[Admin] Remove a game from db")]
@@ -63,8 +63,15 @@ namespace Inquisition.Modules
                 }
                 else
                 {
-                    DbHandler.RemoveFromDb(game);
-                    await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
+                    switch (DbHandler.RemoveFromDb(game))
+                    {
+                        case DbHandler.Result.Failed:
+                            await ReplyAsync(Message.Error.Generic);
+                            break;
+                        case DbHandler.Result.Successful:
+                            await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
+                            break;
+                    }
                 }
             }
         }
