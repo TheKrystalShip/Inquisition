@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace Inquisition.Modules
 {
@@ -21,7 +22,7 @@ namespace Inquisition.Modules
             _service = service;
         }
 
-        [Command("join")]
+        [Command("join", RunMode = RunMode.Async)]
         [Summary("Make the bot join your voice channel")]
         public async Task JoinVoiceChannelAsync()
         {
@@ -33,10 +34,11 @@ namespace Inquisition.Modules
                 return;
             }
 
-            await voiceChannel.ConnectAsync();
+            var audioClient = await voiceChannel.ConnectAsync();
         }
 
         [Command("leave")]
+        [Alias("fuck off")]
         [Summary("Kick the bot from the voice channel")]
         public async Task LeaveVoiceChannelAsync()
         {

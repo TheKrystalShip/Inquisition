@@ -11,6 +11,7 @@ namespace Inquisition.Data
             public static string NotInVoiceChannel = $"You have to be in a voice channel first";
             public static string TimezoneNotSet = $"You have to set your timezone relative to UTC, use: ```@Inquisition set timezone n```\nHere's a usefull map that can help you: https://upload.wikimedia.org/wikipedia/commons/e/e8/Standard_World_Time_Zones.png";
             public static string InvalidDateTime = $"The DateTime specified is not valid";
+            public static string NotTheOwner = $"You're not the author";
 
             #region NoContent
 

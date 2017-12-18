@@ -50,10 +50,9 @@ namespace Inquisition.Data
             return local;
         }
 
-        public static Result Save()
+        public static void Save()
         {
             db.SaveChanges();
-            return Result.Successful;
         }
 
         #region AddToDb
@@ -472,7 +471,7 @@ namespace Inquisition.Data
         {
             try
             {
-                Reminder temp = db.Reminders.Where(x => x.DueDate == reminder.DueDate).FirstOrDefault();
+                Reminder temp = db.Reminders.Where(x => x.Id == reminder.Id).FirstOrDefault();
                 db.Reminders.Remove(temp);
                 db.SaveChanges();
                 return Result.Successful;
@@ -783,6 +782,7 @@ namespace Inquisition.Data
         public static List<Game> ListAll(Game game)
         {
             List<Game> Games = db.Games
+                                 .Take(10)
                                  .ToList();
             return Games;
         }
@@ -791,6 +791,7 @@ namespace Inquisition.Data
         {
             List<Joke> Jokes = db.Jokes
                                  .Include(x => x.User)
+                                 .Take(10)
                                  .ToList();
             return Jokes;
         }
@@ -799,6 +800,7 @@ namespace Inquisition.Data
         {
             List<Meme> Memes = db.Memes
                                  .Include(x => x.User)
+                                 .Take(10)
                                  .ToList();
             return Memes;
         }
@@ -808,6 +810,16 @@ namespace Inquisition.Data
             List<Reminder> Reminders = db.Reminders
                                          .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
                                          .Include(x => x.User)
+                                         .ToList();
+            return Reminders;
+        }
+
+        public static List<Reminder> ListLastTen(Reminder reminder)
+        {
+            List<Reminder> Reminders = db.Reminders
+                                         .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+                                         .Include(x => x.User)
+                                         .Take(10)
                                          .ToList();
             return Reminders;
         }
@@ -851,6 +863,7 @@ namespace Inquisition.Data
             List<Joke> Jokes = db.Jokes
                                  .Where(x => x.User == user)
                                  .Include(x => x.User)
+                                 .Take(10)
                                  .ToList();
             return Jokes;
         }
@@ -863,6 +876,7 @@ namespace Inquisition.Data
             List<Meme> Memes = db.Memes
                                  .Where(x => x.User == user)
                                  .Include(x => x.User)
+                                 .Take(10)
                                  .ToList();
             return Memes;
         }
@@ -922,42 +936,78 @@ namespace Inquisition.Data
 
         #region GetFromDb
 
-        public static User GetFromDb(SocketUser user)
-        {
-            User local = ConvertToLocalUser(user);
-            User u = db.Users.Where(x => x == local).FirstOrDefault();
-            return u;
-        }
-
         public static User GetFromDb(SocketGuildUser user)
         {
             User local = ConvertToLocalUser(user);
-            User u = db.Users.Where(x => x == local).FirstOrDefault();
+            User u = db.Users
+                       .Where(x => x == local)
+                       .FirstOrDefault();
             return u;
         }
 
-        public static User GetFromDb(User user)
+        public static User GetFromDb(SocketUser user)
         {
-            User u = db.Users.Where(x => x == user).FirstOrDefault();
+            User local = ConvertToLocalUser(user);
+            User u = db.Users
+                       .Where(x => x == local)
+                       .FirstOrDefault();
             return u;
         }
 
         public static Game GetFromDb(Game game)
         {
-            Game g = db.Games.Where(x => x.Name == game.Name).FirstOrDefault();
+            Game g = db.Games
+                       .Where(x => x.Name == game.Name)
+                       .FirstOrDefault();
             return g;
         }
 
-        public static Playlist GetFromDb(Playlist playlist)
+        public static User GetFromDb(User user)
         {
-            Playlist local = db.Playlists.Where(x => x.Name == playlist.Name).FirstOrDefault();
-            return local;
+            User u = db.Users
+                       .Where(x => x == user)
+                       .FirstOrDefault();
+            return u;
         }
 
-        public static Song GetFromDb(Song song)
+        public static Joke GetFromDb(Joke joke, User user)
         {
-            Song local = db.Songs.Where(x => x.Name == song.Name).FirstOrDefault();
-            return local;
+            Joke j = db.Jokes
+                       .Where(x => x.Id == joke.Id && x.User == user)
+                       .FirstOrDefault();
+            return j;
+        }
+
+        public static Meme GetFromDb(Meme meme, User user)
+        {
+            Meme m = db.Memes
+                       .Where(x => x.Id == meme.Id && x.User == user)
+                       .FirstOrDefault();
+            return m;
+        }
+
+        public static Reminder GetFromDb(Reminder reminder, User user)
+        {
+            Reminder r = db.Reminders
+                           .Where(x => x.Id == reminder.Id && x.User == user)
+                           .FirstOrDefault();
+            return r;
+        }
+
+        public static Playlist GetFromDb(Playlist playlist, User user)
+        {
+            Playlist p = db.Playlists
+                           .Where(x => x.Name == playlist.Name && x.Author == user)
+                           .FirstOrDefault();
+            return p;
+        }
+
+        public static Song GetFromDb(Song song, User user)
+        {
+            Song s = db.Songs
+                       .Where(x => x.Name == song.Name && x.Author == user)
+                       .FirstOrDefault();
+            return s;
         }
 
         #endregion
