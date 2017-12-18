@@ -81,7 +81,7 @@ namespace Inquisition.Modules
             {
                 Joke joke = Jokes[rn.Next(Jokes.Count)];
                 EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-                embed.WithTitle(joke.Text);
+                embed.WithTitle($"{joke.Id} - {joke.Text}");
                 embed.WithFooter($"Submitted by: {joke.User.Username}#{joke.User.Discriminator}", joke.User.AvatarUrl);
 
                 await ReplyAsync($"Here you go:", false, embed.Build());
@@ -118,7 +118,7 @@ namespace Inquisition.Modules
 
                 foreach (Joke joke in Jokes)
                 {
-                    embed.AddField($"{joke.Text}", $"Submitted by {joke.User.Username} on {joke.CreatedAt}");
+                    embed.AddField($"{joke.Id} - {joke.Text}", $"Submitted by {joke.User.Username} on {joke.CreatedAt}");
                 }
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
@@ -156,7 +156,7 @@ namespace Inquisition.Modules
                 EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
                 embed.WithFooter($"Submitted by: {meme.User.Username}#{meme.User.Discriminator}", meme.User.AvatarUrl);
                 embed.WithImageUrl(meme.Url);
-                embed.WithTitle(meme.Url);
+                embed.WithTitle($"{meme.Id} - {meme.Url}");
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
             }
@@ -164,6 +164,25 @@ namespace Inquisition.Modules
             {
                 await ReplyAsync(Message.Error.NoContent(localUser));
             }
+        }
+
+        [Command("meme random", RunMode = RunMode.Async)]
+        [Alias("random meme")]
+        [Summary("Shows a random meme")]
+        public async Task ShowRandomMemeAsync()
+        {
+            Random rn = new Random();
+            int limit = 33000;
+
+            string Path(int n) => $"http://images.memes.com/meme/{n}.jpg";
+            
+            string meme = Path(rn.Next(limit));
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            embed.WithImageUrl(meme);
+            embed.WithTitle(meme);
+
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
 
         [Command("memes", RunMode = RunMode.Async)]
@@ -192,7 +211,7 @@ namespace Inquisition.Modules
 
                 foreach (Meme meme in Memes)
                 {
-                    embed.AddField($"{meme.Url}", $"Submitted by {meme.User.Username} on {meme.CreatedAt}");
+                    embed.AddField($"{meme.Id} - {meme.Url}", $"Submitted by {meme.User.Username} on {meme.CreatedAt}");
                 }
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
@@ -216,7 +235,7 @@ namespace Inquisition.Modules
 
                 foreach (Reminder reminder in Reminders)
                 {
-                    embed.AddField($"{reminder.Message ?? "No message"}", $"{reminder.DueDate}");
+                    embed.AddField($"{reminder.Id} - {reminder.Message ?? "No message"}", $"{reminder.DueDate}");
                 }
 
                 await ReplyAsync(Message.Info.Generic, false, embed.Build());
@@ -254,7 +273,7 @@ namespace Inquisition.Modules
     }
 
     [Group("add")]
-    public class AddModule : ModuleBase<SocketCommandContext>
+    public class AddGeneralModule : ModuleBase<SocketCommandContext>
     {
         [Command("joke", RunMode = RunMode.Async)]
         [Summary("Adds a new joke")]
@@ -274,13 +293,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(joke))
+            switch (DbHandler.AddToDb(joke))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -302,13 +322,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(meme))
+            switch (DbHandler.AddToDb(meme))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -335,13 +356,14 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            if (DbHandler.AddToDb(reminder))
+            switch (DbHandler.AddToDb(reminder))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -368,44 +390,84 @@ namespace Inquisition.Modules
                 IsPermanent = permanent
             };
 
-            if (DbHandler.AddToDb(n))
+            switch (DbHandler.AddToDb(n))
             {
-                await ReplyAsync(Message.Info.SuccessfullyAdded(n));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyAdded(n));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
     }
 
     [Group("remove")]
-    public class RemoveModule : ModuleBase<SocketCommandContext>
+    public class RemoveGeneralModule : ModuleBase<SocketCommandContext>
     {
-        [Command("reminder", RunMode = RunMode.Async)]
-        [Summary("Remove a reminder")]
-        public async Task RemoveReminderAsync(string dueDate, [Remainder] string remainder = null)
+        [Command("joke")]
+        [Summary("Delete a joke")]
+        public async Task RemoveJokeAsync(int id)
         {
             User localUser = DbHandler.GetFromDb(Context.User);
+            Joke joke = DbHandler.GetFromDb(new Joke { Id = id }, localUser);
 
-            DateTimeOffset dueDateUtc = new DateTimeOffset(DateTime.Parse(dueDate),
-                                                           new TimeSpan((int)localUser.TimezoneOffset, 0, 0));
-
-            Reminder reminder = new Reminder
+            if (joke is null)
             {
-                CreateDate = DateTimeOffset.Now,
-                DueDate = dueDateUtc,
-                Message = remainder,
-                User = localUser
-            };
-
-            if (DbHandler.RemoveFromDb(reminder))
-            {
-                await ReplyAsync(Message.Info.SuccessfullyRemoved(reminder));
+                await ReplyAsync(Message.Error.NotTheOwner);
+                return;
             }
-            else
+
+            switch (DbHandler.RemoveFromDb(joke))
             {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(new Meme()));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
+            }
+        }
+
+        [Command("meme")]
+        [Summary("Delete a meme")]
+        public async Task RemoveMemeAsync(int id)
+        {
+            User localUser = DbHandler.GetFromDb(Context.User);
+            Meme meme = DbHandler.GetFromDb(new Meme() { Id = id }, localUser);
+
+            if (meme is null)
+            {
+                await ReplyAsync(Message.Error.NotTheOwner);
+                return;
+            }
+
+            switch (DbHandler.RemoveFromDb(meme))
+            {
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(new Meme()));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
+            }
+        }
+
+        [Command("reminder", RunMode = RunMode.Async)]
+        [Summary("Remove a reminder")]
+        public async Task RemoveReminderAsync(int id)
+        {
+            User localUser = DbHandler.GetFromDb(Context.User);
+            Reminder localReminder = DbHandler.GetFromDb(new Reminder() { Id = id }, localUser);
+
+            switch (DbHandler.RemoveFromDb(localReminder))
+            {
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(new Reminder()));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
 
@@ -429,19 +491,20 @@ namespace Inquisition.Modules
                 TargetUser = localUserTarget
             };
 
-            if (DbHandler.RemoveFromDb(n))
+            switch (DbHandler.RemoveFromDb(n))
             {
-                await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
-            }
-            else
-            {
-                await ReplyAsync(Message.Error.Generic);
+                case DbHandler.Result.Successful:
+                    await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
+                    break;
+                default:
+                    await ReplyAsync(Message.Error.Generic);
+                    break;
             }
         }
     }
 
     [Group("set")]
-    public class SetModule : ModuleBase<SocketCommandContext>
+    public class SetGeneralModule : ModuleBase<SocketCommandContext>
     {
         [Command("timezone", RunMode = RunMode.Async)]
         [Summary("Set your timezone")]
