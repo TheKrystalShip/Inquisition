@@ -33,6 +33,8 @@ namespace Inquisition
 
             Commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
+            Directory.CreateDirectory("Data/Logs");
+
             logFilePath = String.Format("Data/Logs/{0:yyyy-MM-dd}.log", DateTime.Now);
 
             if (!File.Exists(logFilePath))

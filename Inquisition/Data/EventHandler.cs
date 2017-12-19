@@ -73,58 +73,40 @@ namespace Inquisition
             await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
         }
 
-        private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        private async Task OnGuildMemberUpdated(SocketGuildUser BeforeGuildUser, SocketGuildUser AfterGuildUser)
         {
-            if (before.Status == UserStatus.Offline && after.Status == UserStatus.Online)
+            User BeforeLocalUser = DbHandler.GetFromDb(BeforeGuildUser);
+
+            if (BeforeGuildUser.Username != AfterGuildUser.Username)
             {
-                List<Notification> nList = DbHandler.ListAll(new Notification());
-                List<Notification> finished = new List<Notification>();
-                User target = DbHandler.GetFromDb(after);
-
-                DbHandler.GetFromDb(after).LastSeenOnline = DateTimeOffset.UtcNow;
-                foreach (var n in nList)
-                {
-                    if (n.TargetUser == target && Client.GetUser(Convert.ToUInt64(n.User.Id)).Status == UserStatus.Online)
-                    {
-                        SocketUser socketUser = Client.GetUser(Convert.ToUInt64(n.User.Id));
-                        await socketUser.SendMessageAsync($"Notification: {target.Username} is now online");
-                        if (!n.IsPermanent)
-                        {
-                            finished.Add(n);
-                        }
-                    }
-                }
-
-                if (finished.Count > 0)
-                {
-                    DbHandler.RemoveRangeFromDb(finished);
-                }
+                BeforeLocalUser.Username = AfterGuildUser.Username;
             }
 
-            User beforeLocalUser = DbHandler.GetFromDb(before);
-            User afterLocalUser = DbHandler.GetFromDb(after);
-
-            if (beforeLocalUser != afterLocalUser)
+            if (BeforeGuildUser.Nickname != BeforeGuildUser.Nickname)
             {
-                DbHandler.UpdateInDb(afterLocalUser);
+                BeforeLocalUser.Nickname = AfterGuildUser.Nickname;
             }
 
-            if (before.Username != after.Username)
+            if (BeforeGuildUser.GetAvatarUrl() != AfterGuildUser.GetAvatarUrl())
             {
-                DbHandler.GetFromDb(before).Username = after.Username;
-            }
-
-            if (before.Nickname != before.Nickname)
-            {
-                DbHandler.GetFromDb(before).Nickname = after.Nickname;
-            }
-
-            if (before.GetAvatarUrl() != after.GetAvatarUrl())
-            {
-                DbHandler.GetFromDb(before).AvatarUrl = after.GetAvatarUrl();
+                BeforeLocalUser.AvatarUrl = AfterGuildUser.GetAvatarUrl();
             }
 
             DbHandler.Save();
+
+            if (BeforeGuildUser.Status == UserStatus.Offline && AfterGuildUser.Status == UserStatus.Online)
+            {
+                List<Alert> Notifications = 
+                    DbHandler.ListAllTargetAlerts(new Alert(), BeforeLocalUser);
+
+                BeforeLocalUser.LastSeenOnline = DateTimeOffset.UtcNow;
+
+                foreach (Alert n in Notifications)
+                {
+                    SocketUser NotificationAuthor = Client.GetUser(Convert.ToUInt64(n.User.Id));
+                    await NotificationAuthor.SendMessageAsync($"Notification: {BeforeLocalUser.Username} is now online");
+                }
+            }
         }
 
         public void ReminderLoop()

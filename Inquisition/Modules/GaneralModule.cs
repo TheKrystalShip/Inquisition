@@ -246,29 +246,27 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notifications", RunMode = RunMode.Async)]
+        [Command("alerts", RunMode = RunMode.Async)]
         [Summary("Displays a list of all of your notifications")]
-        public async Task ListNotificationsAsync()
+        public async Task ListAlertsAsync()
         {
             User localUser = DbHandler.GetFromDb(Context.User);
-            List<Notification> Notifications = DbHandler.ListAll(new Notification(), localUser);
+            List<Alert> Alerts = DbHandler.ListAll(new Alert(), localUser);
 
-            if (Notifications.Count > 0)
-            {
-                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-
-                foreach (Notification n in Notifications)
-                {
-                    string p = n.IsPermanent ? "**Permanent** - " : "";
-                    embed.AddField($"By {n.User.Username}", $"{p}For when {n.TargetUser.Username} joins");
-                }
-
-                await ReplyAsync(Message.Info.Generic, false, embed.Build());
-            }
-            else
+            if (Alerts.Count == 0)
             {
                 await ReplyAsync(Message.Error.NoContentGeneric);
+                return;
             }
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+            foreach (Alert n in Alerts)
+            {
+                embed.AddField($"For when {n.TargetUser.Username} joins", $"Created: {n.CreatedAt}");
+            }
+
+            await ReplyAsync(Message.Info.Generic, false, embed.Build());
         }
     }
 
@@ -367,27 +365,34 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notification", RunMode = RunMode.Async)]
-        [Summary("Add a new notifications, must specify a target user")]
-        public async Task AddNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
+        [Command("alert", RunMode = RunMode.Async)]
+        [Summary("Add a new alert, must specify a target user")]
+        public async Task AddAlertAsync(SocketUser user = null)
         {
             User localUserAuthor = DbHandler.GetFromDb(Context.User);
 
+            if (localUserAuthor.TimezoneOffset is null)
+            {
+                await ReplyAsync(Message.Error.TimezoneNotSet);
+                return;
+            }
+
             if (user is null)
             {
-                await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
+                await ReplyAsync(Message.Error.IncorrectStructure(new Alert()));
                 return;
             }
 
             User localUserTarget = DbHandler.GetFromDb(user);
 
-            bool permanent = etc.Equals("permanent");
+            DateTimeOffset creationDate = 
+                new DateTimeOffset(DateTime.Now, new TimeSpan((int) localUserAuthor.TimezoneOffset, 0, 0));
 
-            Notification n = new Notification
+            Alert n = new Alert
             {
                 User = localUserAuthor,
                 TargetUser = localUserTarget,
-                IsPermanent = permanent
+                CreatedAt = creationDate
             };
 
             switch (DbHandler.AddToDb(n))
@@ -471,21 +476,21 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("notification", RunMode = RunMode.Async)]
-        [Summary("Removes a notification, must specify a target user")]
-        public async Task RemoveNotificationAsync(SocketUser user = null, [Remainder] string etc = "")
+        [Command("alert", RunMode = RunMode.Async)]
+        [Summary("Removes an alert, must specify a target user")]
+        public async Task RemoveAlertAsync(SocketUser user = null, [Remainder] string etc = "")
         {
             User localUserAuthor = DbHandler.GetFromDb(Context.User);
 
             if (user is null)
             {
-                await ReplyAsync(Message.Error.IncorrectStructure(new Notification()));
+                await ReplyAsync(Message.Error.IncorrectStructure(new Alert()));
                 return;
             }
 
             User localUserTarget = DbHandler.GetFromDb(user);
 
-            Notification n = new Notification
+            Alert n = new Alert
             {
                 User = localUserAuthor,
                 TargetUser = localUserTarget

@@ -48,7 +48,7 @@ namespace Inquisition.Data
             public static string IncorrectStructure(Joke joke) => Common + "\"[Joke text]\"*";
             public static string IncorrectStructure(Meme meme) => Common + "[Url/Link]*";
             public static string IncorrectStructure(Reminder reminder) => Common + "\"[dd/mm/yyyy hh:mm:ss]\"* \"[_Message_]\"";
-            public static string IncorrectStructure(Notification n) => $"[Username]* [_permanent_]";
+            public static string IncorrectStructure(Alert n) => $"[Username]* [_permanent_]";
             public static string IncorrectStructure(Playlist n) => $"[playlist]*/[song-name]*";
 
             #endregion
@@ -67,7 +67,7 @@ namespace Inquisition.Data
             public static string SuccessfullyAdded(Game game) => $"{game.Name} has been successfully added, version {game.Version}, on port {game.Port}";
             public static string SuccessfullyAdded(Reminder reminder) => SuccessfullyAdded("reminder");
             public static string SuccessfullyAdded(SocketGuildUser user) => $"{user} has been successfully added";
-            public static string SuccessfullyAdded(Notification notification) => SuccessfullyAdded("notification");
+            public static string SuccessfullyAdded(Alert notification) => SuccessfullyAdded("alert");
 
             #endregion
 
@@ -78,7 +78,7 @@ namespace Inquisition.Data
             public static string SuccessfullyRemoved(Joke joke) => SuccessfullyRemoved("joke");
             public static string SuccessfullyRemoved(Game game) => SuccessfullyRemoved("game");
             public static string SuccessfullyRemoved(Reminder reminder) => SuccessfullyRemoved("reminder");
-            public static string SuccessfullyRemoved(Notification notification) => SuccessfullyRemoved("notification");
+            public static string SuccessfullyRemoved(Alert notification) => SuccessfullyRemoved("alert");
             public static string SuccessfullyRemoved(Playlist playlist) => SuccessfullyRemoved("playlist");
             public static string SuccessfullyRemoved(Song song) => SuccessfullyRemoved("song");
 

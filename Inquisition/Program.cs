@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Inquisition.Data;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inquisition
 {
@@ -19,15 +20,12 @@ namespace Inquisition
 
         public async Task MainAsync()
         {
-            using (InquisitionContext db = new InquisitionContext())
+            using (DbContext context = new InquisitionContext())
             {
-                db.Database.EnsureCreated();
+                context.Database.Migrate();
             }
 
-            Client = new DiscordSocketClient(new DiscordSocketConfig() {
-                LogLevel = LogSeverity.Debug,
-            });
-
+            Client = new DiscordSocketClient();
             Commands = new CommandHandler(Client);
             EventHandler = new EventHandler(Client);
 

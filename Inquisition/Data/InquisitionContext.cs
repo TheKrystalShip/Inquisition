@@ -5,18 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inquisition.Data
 {
-    /*
-     * All info is stored locally for now, maybe will end up using azure database
-     * at some point if needed, for now it works like this.
-     * 
-     * To be able to store info in the database you need to have installed the two
-     * EntityFramework packages (See Program.cs for info)
-     * 
-     * Once the packages installed, open up the Package Manager Console and type:
-     *      update-database
-     *      
-     * This will create a local database for the program to use.
-     */
     public class InquisitionContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
@@ -24,7 +12,7 @@ namespace Inquisition.Data
         public DbSet<Meme> Memes { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Alert> Alerts { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<Song> Songs { get; set; }
 
@@ -51,17 +39,17 @@ namespace Inquisition.Data
                 .WithMany(x => x.Reminders)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Notification>()
+            modelBuilder.Entity<Alert>()
                 .HasOne(x => x.User)
-                .WithMany(x => x.Notifications)
+                .WithMany(x => x.Alerts)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Notification>()
+            modelBuilder.Entity<Alert>()
                 .HasOne(x => x.TargetUser)
-                .WithMany(x => x.TargetNotifications);
+                .WithMany(x => x.TargetAlerts);
 
             modelBuilder.Entity<Playlist>()
-                .HasOne(x => x.Author)
+                .HasOne(x => x.User)
                 .WithMany(x => x.Playlists)
                 .OnDelete(DeleteBehavior.SetNull);
 
@@ -69,7 +57,7 @@ namespace Inquisition.Data
                 .HasMany(x => x.Songs);
 
             modelBuilder.Entity<Song>()
-                .HasOne(x => x.Author)
+                .HasOne(x => x.User)
                 .WithMany(x => x.Songs)
                 .OnDelete(DeleteBehavior.SetNull);
 
@@ -78,11 +66,11 @@ namespace Inquisition.Data
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Playlists)
-                .WithOne(x => x.Author);
+                .WithOne(x => x.User);
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Songs)
-                .WithOne(x => x.Author);
+                .WithOne(x => x.User);
         }
     }
 
@@ -171,16 +159,16 @@ namespace Inquisition.Data
 
         public virtual List<Reminder> Reminders { get; set; } = new List<Reminder>();
 
-        public virtual List<Notification> Notifications { get; set; } = new List<Notification>();
+        public virtual List<Alert> Alerts { get; set; } = new List<Alert>();
 
-        public virtual List<Notification> TargetNotifications { get; set; } = new List<Notification>();
+        public virtual List<Alert> TargetAlerts { get; set; } = new List<Alert>();
 
         public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();
 
         public virtual List<Song> Songs { get; set; } = new List<Song>();
     }
 
-    public class Notification
+    public class Alert
     {
         [Key]
         public int Id { get; set; }
@@ -188,8 +176,6 @@ namespace Inquisition.Data
         public virtual User User { get; set; }
 
         public virtual User TargetUser { get; set; }
-
-        public bool IsPermanent { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
@@ -203,7 +189,7 @@ namespace Inquisition.Data
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-        public virtual User Author { get; set; }
+        public virtual User User { get; set; }
 
         public virtual List<Song> Songs { get; set; } = new List<Song>();
     }
@@ -219,7 +205,7 @@ namespace Inquisition.Data
 
         public string Url { get; set; } = null;
 
-        public virtual User Author { get; set; }
+        public virtual User User { get; set; }
 
         public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();
     }

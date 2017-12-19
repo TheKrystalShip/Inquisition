@@ -16,11 +16,9 @@ namespace Inquisition.Data
             DoesNotExist
         }
 
-        public static Queue<Action> Queue { get; set; } = new Queue<Action>();
-
         private static InquisitionContext db = new InquisitionContext();
 
-        private static User ConvertToLocalUser(SocketGuildUser user)
+        public static User ConvertToLocalUser(SocketGuildUser user)
         {
             User local = new User
             {
@@ -36,7 +34,7 @@ namespace Inquisition.Data
             return local;
         }
 
-        private static User ConvertToLocalUser(SocketUser user)
+        public static User ConvertToLocalUser(SocketUser user)
         {
             User local = new User
             {
@@ -188,11 +186,11 @@ namespace Inquisition.Data
             }
         }
 
-        public static Result AddToDb(Notification notification)
+        public static Result AddToDb(Alert notification)
         {
             try
             {
-                db.Notifications.Add(notification);
+                db.Alerts.Add(notification);
                 db.SaveChanges();
                 return Result.Successful;
             }
@@ -483,16 +481,16 @@ namespace Inquisition.Data
             }
         }
 
-        public static Result RemoveFromDb(Notification notification)
+        public static Result RemoveFromDb(Alert notification)
         {
             try
             {
-                Notification temp = 
-                    db.Notifications
+                Alert temp = 
+                    db.Alerts
                     .Where(x => x.TargetUser == notification.TargetUser && x.User == notification.User)
                     .FirstOrDefault();
 
-                db.Notifications.Remove(temp);
+                db.Alerts.Remove(temp);
                 db.SaveChanges();
                 return Result.Successful;
             }
@@ -612,11 +610,11 @@ namespace Inquisition.Data
             }
         }
 
-        public static Result RemoveRangeFromDb(List<Notification> notifications)
+        public static Result RemoveRangeFromDb(List<Alert> notifications)
         {
             try
             {
-                db.Notifications.RemoveRange(notifications);
+                db.Alerts.RemoveRange(notifications);
                 db.SaveChanges();
                 return Result.Successful;
             }
@@ -765,13 +763,13 @@ namespace Inquisition.Data
 
         public static bool Exists(Playlist playlist)
         {
-            bool exists = db.Playlists.Any(x => x.Name == playlist.Name && x.Author == playlist.Author);
+            bool exists = db.Playlists.Any(x => x.Name == playlist.Name && x.User == playlist.User);
             return exists;
         }
 
         public static bool Exists(Song song)
         {
-            bool exists = db.Songs.Any(x => x.Name == song.Name && x.Author == song.Author);
+            bool exists = db.Songs.Any(x => x.Name == song.Name && x.User == song.User);
             return exists;
         }
 
@@ -824,20 +822,30 @@ namespace Inquisition.Data
             return Reminders;
         }
 
-        public static List<Notification> ListAll(Notification notification)
+        public static List<Alert> ListAll(Alert alert)
         {
-            List<Notification> Notifications = db.Notifications
-                                                 .Include(x => x.User)
-                                                 .Include(x => x.TargetUser)
-                                                 .ToList();
-            return Notifications;
+            List<Alert> Alerts = db.Alerts
+                                   .Include(x => x.User)
+                                   .Include(x => x.TargetUser)
+                                   .ToList();
+            return Alerts;
+        }
+
+        public static List<Alert> ListAllTargetAlerts(Alert notification, User target)
+        {
+            List<Alert> Alerts = db.Alerts
+                                   .Where(x => x.TargetUser == target)
+                                   .Include(x => x.User)
+                                   .Include(x => x.TargetUser)
+                                   .ToList();
+            return Alerts;
         }
 
         public static List<Playlist> ListAll(Playlist playlist)
         {
             List<Playlist> Playlists = db.Playlists
                                          .Include(x => x.Songs)
-                                         .Include(x => x.Author)
+                                         .Include(x => x.User)
                                          .ToList();
             return Playlists;
         }
@@ -846,7 +854,7 @@ namespace Inquisition.Data
         {
             List<Song> Songs = db.Songs
                                  .Include(x => x.Playlists)
-                                 .Include(x => x.Author)
+                                 .Include(x => x.User)
                                  .ToList();
             return Songs;
         }
@@ -893,17 +901,17 @@ namespace Inquisition.Data
             return Reminders;
         }
 
-        public static List<Notification> ListAll(Notification notification, User user)
+        public static List<Alert> ListAll(Alert alert, User user)
         {
             if (user is null)
-                return ListAll(notification);
+                return ListAll(alert);
             
-            List<Notification> Notifications = db.Notifications
-                                                 .Where(x => x.User == user)
-                                                 .Include(x => x.User)
-                                                 .Include(x => x.TargetUser)
-                                                 .ToList();
-            return Notifications;
+            List<Alert> Alerts = db.Alerts
+                                   .Where(x => x.User == user)
+                                   .Include(x => x.User)
+                                   .Include(x => x.TargetUser)
+                                   .ToList();
+            return Alerts;
         }
 
         public static List<Playlist> ListAll(Playlist playlist, User user)
@@ -912,9 +920,9 @@ namespace Inquisition.Data
                 return ListAll(playlist);
 
             List<Playlist> Playlists = db.Playlists
-                                         .Where(x => x.Author == user)
+                                         .Where(x => x.User == user)
                                          .Include(x => x.Songs)
-                                         .Include(x => x.Author)
+                                         .Include(x => x.User)
                                          .ToList();
             return Playlists;
         }
@@ -925,9 +933,9 @@ namespace Inquisition.Data
                 return ListAll(song);
 
             List<Song> Songs = db.Songs
-                                 .Where(x => x.Author == user)
+                                 .Where(x => x.User == user)
                                  .Include(x => x.Playlists)
-                                 .Include(x => x.Author)
+                                 .Include(x => x.User)
                                  .ToList();
             return Songs;
         }
@@ -997,7 +1005,7 @@ namespace Inquisition.Data
         public static Playlist GetFromDb(Playlist playlist, User user)
         {
             Playlist p = db.Playlists
-                           .Where(x => x.Name == playlist.Name && x.Author == user)
+                           .Where(x => x.Name == playlist.Name && x.User == user)
                            .FirstOrDefault();
             return p;
         }
@@ -1005,7 +1013,7 @@ namespace Inquisition.Data
         public static Song GetFromDb(Song song, User user)
         {
             Song s = db.Songs
-                       .Where(x => x.Name == song.Name && x.Author == user)
+                       .Where(x => x.Name == song.Name && x.User == user)
                        .FirstOrDefault();
             return s;
         }
