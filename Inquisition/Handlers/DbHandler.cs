@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
+using Inquisition.Data;
 
-namespace Inquisition.Data
+namespace Inquisition.Handlers
 {
     public class DbHandler
     {

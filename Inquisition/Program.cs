@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System;
 using System.Threading.Tasks;
-using Inquisition.Data;
-using System.IO;
+using Inquisition.Handlers;
 using Microsoft.EntityFrameworkCore;
+using Inquisition.Properties;
+using Inquisition.Data;
 
 namespace Inquisition
 {
@@ -13,7 +13,7 @@ namespace Inquisition
         private DiscordSocketClient Client;
         private CommandHandler Commands;
         private EventHandler EventHandler;
-        private string Token;
+        private string Token = Resources.Token;
 
         public static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
@@ -28,18 +28,6 @@ namespace Inquisition
             Client = new DiscordSocketClient();
             Commands = new CommandHandler(Client);
             EventHandler = new EventHandler(Client);
-
-            try
-            {
-                using (StreamReader file = new StreamReader("Data/TextFiles/token.txt"))
-                {
-                    Token = file.ReadLine();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
 
             await Client.SetGameAsync($"@Inquisition help");
             

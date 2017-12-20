@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
-using Inquisition.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
 namespace Inquisition.Modules
 {

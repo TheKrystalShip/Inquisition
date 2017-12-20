@@ -1,6 +1,5 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using Inquisition.Data;
 using Inquisition.Modules;
 using Inquisition.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +7,9 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
-namespace Inquisition
+namespace Inquisition.Handlers
 {
     public class CommandHandler
     {

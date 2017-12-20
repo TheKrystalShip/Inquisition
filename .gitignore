@@ -263,3 +263,4 @@ __pycache__/
 /Inquisition/channel.txt
 *.txt
 *.exe
+*.resx

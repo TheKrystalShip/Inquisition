@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Inquisition.Properties;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +19,7 @@ namespace Inquisition.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(Resources.ConnectionString);
             optionsBuilder.EnableSensitiveDataLogging(true);
         }
 

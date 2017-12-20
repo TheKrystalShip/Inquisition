@@ -4,7 +4,6 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;

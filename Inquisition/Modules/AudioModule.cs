@@ -1,9 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Inquisition.Data;
 using Inquisition.Services;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
 namespace Inquisition.Modules
 {

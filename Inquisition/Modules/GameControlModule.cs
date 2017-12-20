@@ -1,10 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
-using Inquisition.Data;
+using Inquisition.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
 namespace Inquisition.Modules
 {

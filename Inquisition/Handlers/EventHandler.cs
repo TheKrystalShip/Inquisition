@@ -1,20 +1,20 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Inquisition.Data;
+using Inquisition.Properties;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Inquisition.Data;
 
-namespace Inquisition
+namespace Inquisition.Handlers
 {
     public class EventHandler
     {
         private DiscordSocketClient Client;
         private SocketTextChannel MembersLogTextChannel;
         private Thread ReminderLoopThread;
-        private ulong ChannelId;
+        private ulong ChannelId = Convert.ToUInt64(Resources.MembersLogChannel);
 
         public EventHandler(DiscordSocketClient client)
         {
@@ -30,18 +30,7 @@ namespace Inquisition
             ReminderLoopThread.IsBackground = true;
             ReminderLoopThread.Start();
 
-            try
-            {
-                using (StreamReader file = new StreamReader("Data/TextFiles/channel.txt"))
-                {
-                    ChannelId = ulong.Parse(file.ReadLine());
-                    MembersLogTextChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            MembersLogTextChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
         }
 
         private Task Log(LogMessage msg)
