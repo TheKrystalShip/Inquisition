@@ -59,37 +59,25 @@ namespace Inquisition.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server=tcp:sierra.database.windows.net,1433;Initial Catalog=inquisition;Persist Security Info=False;User ID=cristian;Password=OperationHusky99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;.
-        /// </summary>
+
         internal static string AzureDB {
             get {
                 return ResourceManager.GetString("AzureDB", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;.
-        /// </summary>
+
         internal static string ConnectionString {
             get {
                 return ResourceManager.GetString("ConnectionString", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 385731729274568714.
-        /// </summary>
+
         internal static string MembersLogChannel {
             get {
                 return ResourceManager.GetString("MembersLogChannel", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MzA0MzUzMTIyMDE5NzA0ODQy.DRJ6hQ.8h7bB5YnuAzHU_QGiIGfFrFTXkw.
-        /// </summary>
+
         internal static string Token {
             get {
                 return ResourceManager.GetString("Token", resourceCulture);
