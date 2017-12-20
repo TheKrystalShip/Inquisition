@@ -264,3 +264,5 @@ __pycache__/
 *.txt
 *.exe
 *.resx
+/Inquisition/Properties/Resources.resx
+/Inquisition/Properties/Resources.resx/Resources.Designer.cs

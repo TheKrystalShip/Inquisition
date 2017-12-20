@@ -56,7 +56,7 @@ namespace Inquisition.Modules
             [Summary("[Admin] Remove a game from db")]
             public async Task DeleteGameAsync(string name)
             {
-                Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+                Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
 
                 if (game is null)
                 {
@@ -64,12 +64,12 @@ namespace Inquisition.Modules
                 }
                 else
                 {
-                    switch (DbHandler.RemoveFromDb(game))
+                    switch (DatabaseHandler.RemoveFromDb(game))
                     {
-                        case DbHandler.Result.Failed:
+                        case DatabaseHandler.Result.Failed:
                             await ReplyAsync(Message.Error.Generic);
                             break;
-                        case DbHandler.Result.Successful:
+                        case DatabaseHandler.Result.Successful:
                             await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
                             break;
                     }

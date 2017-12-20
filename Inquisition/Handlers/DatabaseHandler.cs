@@ -7,7 +7,7 @@ using Inquisition.Data;
 
 namespace Inquisition.Handlers
 {
-    public class DbHandler
+    public class DatabaseHandler
     {
         public enum Result
         {

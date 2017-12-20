@@ -41,10 +41,10 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    local = DbHandler.GetFromDb(Context.User);
+                    local = DatabaseHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    local = DbHandler.GetFromDb(user);
+                    local = DatabaseHandler.GetFromDb(user);
                     break;
             }
 
@@ -69,12 +69,12 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    localUser = DbHandler.GetFromDb(Context.User);
-                    Jokes = DbHandler.ListAll(new Joke());
+                    localUser = DatabaseHandler.GetFromDb(Context.User);
+                    Jokes = DatabaseHandler.ListAll(new Joke());
                     break;
                 default:
-                    localUser = DbHandler.GetFromDb(user);
-                    Jokes = DbHandler.ListAll(new Joke(), localUser);
+                    localUser = DatabaseHandler.GetFromDb(user);
+                    Jokes = DatabaseHandler.ListAll(new Joke(), localUser);
                     break;
             }
 
@@ -104,12 +104,12 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Jokes = DbHandler.ListAll(new Joke());
-                    localUser = DbHandler.GetFromDb(Context.User);
+                    Jokes = DatabaseHandler.ListAll(new Joke());
+                    localUser = DatabaseHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    localUser = DbHandler.GetFromDb(user);
-                    Jokes = DbHandler.ListAll(new Joke(), localUser);
+                    localUser = DatabaseHandler.GetFromDb(user);
+                    Jokes = DatabaseHandler.ListAll(new Joke(), localUser);
                     break;
             }
 
@@ -142,12 +142,12 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    localUser = DbHandler.GetFromDb(Context.User);
-                    Memes = DbHandler.ListAll(new Meme());
+                    localUser = DatabaseHandler.GetFromDb(Context.User);
+                    Memes = DatabaseHandler.ListAll(new Meme());
                     break;
                 default:
-                    localUser = DbHandler.GetFromDb(user);
-                    Memes = DbHandler.ListAll(new Meme(), localUser);
+                    localUser = DatabaseHandler.GetFromDb(user);
+                    Memes = DatabaseHandler.ListAll(new Meme(), localUser);
                     break;
             }
 
@@ -197,12 +197,12 @@ namespace Inquisition.Modules
             switch (user)
             {
                 case null:
-                    Memes = DbHandler.ListAll(new Meme());
-                    local = DbHandler.GetFromDb(Context.User);
+                    Memes = DatabaseHandler.ListAll(new Meme());
+                    local = DatabaseHandler.GetFromDb(Context.User);
                     break;
                 default:
-                    local = DbHandler.GetFromDb(user);
-                    Memes = DbHandler.ListAll(new Meme(), local);
+                    local = DatabaseHandler.GetFromDb(user);
+                    Memes = DatabaseHandler.ListAll(new Meme(), local);
                     break;
             }
 
@@ -227,8 +227,8 @@ namespace Inquisition.Modules
         [Summary("Displays a list with all of your reminders")]
         public async Task ListRemindersAsync()
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
-            List<Reminder> Reminders = DbHandler.ListAll(new Reminder(), localUser);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
+            List<Reminder> Reminders = DatabaseHandler.ListAll(new Reminder(), localUser);
 
             if (Reminders.Count > 0)
             {
@@ -251,8 +251,8 @@ namespace Inquisition.Modules
         [Summary("Displays a list of all of your notifications")]
         public async Task ListAlertsAsync()
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
-            List<Alert> Alerts = DbHandler.ListAll(new Alert(), localUser);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
+            List<Alert> Alerts = DatabaseHandler.ListAll(new Alert(), localUser);
 
             if (Alerts.Count == 0)
             {
@@ -278,7 +278,7 @@ namespace Inquisition.Modules
         [Summary("Adds a new joke")]
         public async Task AddJokeAsync([Remainder] string jokeText)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
 
             if (jokeText is null)
             {
@@ -292,9 +292,9 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            switch (DbHandler.AddToDb(joke))
+            switch (DatabaseHandler.AddToDb(joke))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyAdded(joke));
                     break;
                 default:
@@ -307,7 +307,7 @@ namespace Inquisition.Modules
         [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
 
             if (url is null)
             {
@@ -321,9 +321,9 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            switch (DbHandler.AddToDb(meme))
+            switch (DatabaseHandler.AddToDb(meme))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyAdded(meme));
                     break;
                 default:
@@ -336,7 +336,7 @@ namespace Inquisition.Modules
         [Summary("Add a new reminder")]
         public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
 
             if (localUser.TimezoneOffset is null)
             {
@@ -355,9 +355,9 @@ namespace Inquisition.Modules
                 User = localUser
             };
 
-            switch (DbHandler.AddToDb(reminder))
+            switch (DatabaseHandler.AddToDb(reminder))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyAdded(reminder));
                     break;
                 default:
@@ -370,7 +370,7 @@ namespace Inquisition.Modules
         [Summary("Add a new alert, must specify a target user")]
         public async Task AddAlertAsync(SocketUser user = null)
         {
-            User localUserAuthor = DbHandler.GetFromDb(Context.User);
+            User localUserAuthor = DatabaseHandler.GetFromDb(Context.User);
 
             if (localUserAuthor.TimezoneOffset is null)
             {
@@ -384,7 +384,7 @@ namespace Inquisition.Modules
                 return;
             }
 
-            User localUserTarget = DbHandler.GetFromDb(user);
+            User localUserTarget = DatabaseHandler.GetFromDb(user);
 
             DateTimeOffset creationDate = 
                 new DateTimeOffset(DateTime.Now, new TimeSpan((int) localUserAuthor.TimezoneOffset, 0, 0));
@@ -396,9 +396,9 @@ namespace Inquisition.Modules
                 CreatedAt = creationDate
             };
 
-            switch (DbHandler.AddToDb(n))
+            switch (DatabaseHandler.AddToDb(n))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyAdded(n));
                     break;
                 default:
@@ -415,8 +415,8 @@ namespace Inquisition.Modules
         [Summary("Delete a joke")]
         public async Task RemoveJokeAsync(int id)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
-            Joke joke = DbHandler.GetFromDb(new Joke { Id = id }, localUser);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
+            Joke joke = DatabaseHandler.GetFromDb(new Joke { Id = id }, localUser);
 
             if (joke is null)
             {
@@ -424,9 +424,9 @@ namespace Inquisition.Modules
                 return;
             }
 
-            switch (DbHandler.RemoveFromDb(joke))
+            switch (DatabaseHandler.RemoveFromDb(joke))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyRemoved(new Meme()));
                     break;
                 default:
@@ -439,8 +439,8 @@ namespace Inquisition.Modules
         [Summary("Delete a meme")]
         public async Task RemoveMemeAsync(int id)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
-            Meme meme = DbHandler.GetFromDb(new Meme() { Id = id }, localUser);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
+            Meme meme = DatabaseHandler.GetFromDb(new Meme() { Id = id }, localUser);
 
             if (meme is null)
             {
@@ -448,9 +448,9 @@ namespace Inquisition.Modules
                 return;
             }
 
-            switch (DbHandler.RemoveFromDb(meme))
+            switch (DatabaseHandler.RemoveFromDb(meme))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyRemoved(new Meme()));
                     break;
                 default:
@@ -463,12 +463,12 @@ namespace Inquisition.Modules
         [Summary("Remove a reminder")]
         public async Task RemoveReminderAsync(int id)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
-            Reminder localReminder = DbHandler.GetFromDb(new Reminder() { Id = id }, localUser);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
+            Reminder localReminder = DatabaseHandler.GetFromDb(new Reminder() { Id = id }, localUser);
 
-            switch (DbHandler.RemoveFromDb(localReminder))
+            switch (DatabaseHandler.RemoveFromDb(localReminder))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyRemoved(new Reminder()));
                     break;
                 default:
@@ -481,7 +481,7 @@ namespace Inquisition.Modules
         [Summary("Removes an alert, must specify a target user")]
         public async Task RemoveAlertAsync(SocketUser user = null, [Remainder] string etc = "")
         {
-            User localUserAuthor = DbHandler.GetFromDb(Context.User);
+            User localUserAuthor = DatabaseHandler.GetFromDb(Context.User);
 
             if (user is null)
             {
@@ -489,7 +489,7 @@ namespace Inquisition.Modules
                 return;
             }
 
-            User localUserTarget = DbHandler.GetFromDb(user);
+            User localUserTarget = DatabaseHandler.GetFromDb(user);
 
             Alert n = new Alert
             {
@@ -497,9 +497,9 @@ namespace Inquisition.Modules
                 TargetUser = localUserTarget
             };
 
-            switch (DbHandler.RemoveFromDb(n))
+            switch (DatabaseHandler.RemoveFromDb(n))
             {
-                case DbHandler.Result.Successful:
+                case DatabaseHandler.Result.Successful:
                     await ReplyAsync(Message.Info.SuccessfullyRemoved(n));
                     break;
                 default:
@@ -516,10 +516,10 @@ namespace Inquisition.Modules
         [Summary("Set your timezone")]
         public async Task SetTimezoneAsync(int offset)
         {
-            User localUser = DbHandler.GetFromDb(Context.User);
+            User localUser = DatabaseHandler.GetFromDb(Context.User);
 
             localUser.TimezoneOffset = offset;
-            DbHandler.UpdateInDb(localUser);
+            DatabaseHandler.UpdateInDb(localUser);
 
             await ReplyAsync(Message.Info.Timezone(localUser));
         }

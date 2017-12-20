@@ -61,6 +61,15 @@ namespace Inquisition.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Server=tcp:sierra.database.windows.net,1433;Initial Catalog=inquisition;Persist Security Info=False;User ID=cristian;Password=OperationHusky99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;.
+        /// </summary>
+        internal static string AzureDB {
+            get {
+                return ResourceManager.GetString("AzureDB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server=(localdb)\mssqllocaldb;Database=InquisitionDB;Trusted_Connection=True;.
         /// </summary>
         internal static string ConnectionString {

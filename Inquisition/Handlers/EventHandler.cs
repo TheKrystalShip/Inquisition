@@ -43,9 +43,9 @@ namespace Inquisition.Handlers
         {
             if (!user.IsBot)
             {
-                if (!DbHandler.Exists(user))
+                if (!DatabaseHandler.Exists(user))
                 {
-                    DbHandler.AddToDb(user);
+                    DatabaseHandler.AddToDb(user);
                     return Task.CompletedTask;
                 }
             }
@@ -64,7 +64,7 @@ namespace Inquisition.Handlers
 
         private async Task OnGuildMemberUpdated(SocketGuildUser BeforeGuildUser, SocketGuildUser AfterGuildUser)
         {
-            User BeforeLocalUser = DbHandler.GetFromDb(BeforeGuildUser);
+            User BeforeLocalUser = DatabaseHandler.GetFromDb(BeforeGuildUser);
 
             if (BeforeGuildUser.Username != AfterGuildUser.Username)
             {
@@ -81,12 +81,12 @@ namespace Inquisition.Handlers
                 BeforeLocalUser.AvatarUrl = AfterGuildUser.GetAvatarUrl();
             }
 
-            DbHandler.Save();
+            DatabaseHandler.Save();
 
             if (BeforeGuildUser.Status == UserStatus.Offline && AfterGuildUser.Status == UserStatus.Online)
             {
                 List<Alert> Notifications = 
-                    DbHandler.ListAllTargetAlerts(new Alert(), BeforeLocalUser);
+                    DatabaseHandler.ListAllTargetAlerts(new Alert(), BeforeLocalUser);
 
                 BeforeLocalUser.LastSeenOnline = DateTimeOffset.UtcNow;
 
@@ -104,7 +104,7 @@ namespace Inquisition.Handlers
             {
                 int SleepTime = 10000;
 
-                List<Reminder> RemindersList = DbHandler.ListLastTen(new Reminder());
+                List<Reminder> RemindersList = DatabaseHandler.ListLastTen(new Reminder());
 
                 if (RemindersList.Count > 0)
                 {
@@ -116,7 +116,7 @@ namespace Inquisition.Handlers
                     Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
                 }
 
-                DbHandler.RemoveRangeFromDb(RemindersList);
+                DatabaseHandler.RemoveRangeFromDb(RemindersList);
 
                 Thread.Sleep(SleepTime);
             }

@@ -57,11 +57,11 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-            User localUser = DbHandler.GetFromDb(msg.Author);
+            User localUser = DatabaseHandler.GetFromDb(msg.Author);
 
             if (localUser is null)
             {
-                DbHandler.AddToDb(localUser);
+                DatabaseHandler.AddToDb(localUser);
             }
 
             using (StreamWriter sw = new StreamWriter(logFilePath, true))

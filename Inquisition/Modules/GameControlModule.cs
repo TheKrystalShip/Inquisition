@@ -16,7 +16,7 @@ namespace Inquisition.Modules
         [Summary("Starts up a game server")]
         public async Task StartGameAsync(string name)
         {
-            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+            Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
             string Path = ProcessDictionary.Path;
 
             if (game is null)
@@ -41,7 +41,7 @@ namespace Inquisition.Modules
                 ProcessDictionary.Instance.Add(game.Name, p);
 
                 game.IsOnline = true;
-                DbHandler.UpdateInDb(game);
+                DatabaseHandler.UpdateInDb(game);
 
                 await ReplyAsync(Message.Info.GameStartingUp(game));
             }
@@ -56,7 +56,7 @@ namespace Inquisition.Modules
         [Summary("Stops a game server")]
         public async Task StopGameAsync(string name)
         {
-            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+            Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
                 await ReplyAsync(Message.Error.GameNotFound(game));
@@ -72,7 +72,7 @@ namespace Inquisition.Modules
                     ProcessDictionary.Instance.Remove(game.Name);
 
                     game.IsOnline = false;
-                    DbHandler.UpdateInDb(game);
+                    DatabaseHandler.UpdateInDb(game);
 
                     await ReplyAsync(Message.Info.GameShuttingDown(game.Name));
                     return;
@@ -92,7 +92,7 @@ namespace Inquisition.Modules
         [Summary("Returns if a game server is online")]
         public async Task StatusAsync(string name)
         {
-            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+            Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
                 await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
@@ -127,7 +127,7 @@ namespace Inquisition.Modules
         [Summary("Returns a game's version")]
         public async Task GameVersionAsync(string name)
         {
-            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+            Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
                 await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
@@ -141,7 +141,7 @@ namespace Inquisition.Modules
         [Summary("Returns a game's port")]
         public async Task GamePortAsync(string name)
         {
-            Data.Game game = DbHandler.GetFromDb(new Data.Game { Name = name });
+            Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
             if (game is null)
             {
                 await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
@@ -155,7 +155,7 @@ namespace Inquisition.Modules
         [Summary("Returns list of all games in the database")]
         public async Task ListAllGamesAsync()
         {
-            List<Data.Game> Games = DbHandler.ListAll(new Data.Game());
+            List<Data.Game> Games = DatabaseHandler.ListAll(new Data.Game());
 
             if (Games.Count > 0)
             {
