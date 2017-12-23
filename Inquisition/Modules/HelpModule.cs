@@ -9,11 +9,11 @@ namespace Inquisition.Modules
     [Group("help")]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
-        private static CommandService _commands;
+        private static CommandService CommandService;
 
         public static void Create(CommandService commandService)
         {
-            _commands = commandService;
+            CommandService = commandService;
         }
 
         [Command, Summary("List of all available commands.")]
@@ -23,7 +23,7 @@ namespace Inquisition.Modules
 
             embed.Title = "Inquisition Help:";
 
-            foreach (var c in _commands.Commands)
+            foreach (var c in CommandService.Commands)
             {
                 string str = "";
                 foreach (var a in c.Aliases.Skip(1))

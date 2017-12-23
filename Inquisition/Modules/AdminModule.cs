@@ -48,32 +48,48 @@ namespace Inquisition.Modules
             await m.DeleteAsync();
         }
 
+        [Group("add")]
+        public class AddAdminModule : ModuleBase<SocketCommandContext>
+        {
+            [Command("game")]
+            public async Task AddGameAsync(string name, string port = "", string version = "")
+            {
+                Data.Game game = new Data.Game
+                {
+                    Name = name,
+                    Port = port,
+                    Version = version
+                };
+
+                if (DbHandler.Exists(game))
+                {
+                    await ReplyAsync(Message.Error.AlreadyExists(game));
+                    return;
+                }
+
+                DbHandler.Result result = DbHandler.Insert.Game(game);
+                await ReplyAsync(Message.Context(result));
+            }
+        }
+
         [Group("remove")]
         [Alias("delete")]
-        public class RemoveModule : ModuleBase<SocketCommandContext>
+        public class RemoveAdminModule : ModuleBase<SocketCommandContext>
         {
             [Command("game", RunMode = RunMode.Async)]
             [Summary("[Admin] Remove a game from db")]
             public async Task DeleteGameAsync(string name)
             {
-                Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
+                Data.Game game = DbHandler.Select.Game(name);
 
                 if (game is null)
                 {
                     await ReplyAsync(Message.Error.GameNotFound(game));
+                    return;
                 }
-                else
-                {
-                    switch (DatabaseHandler.RemoveFromDb(game))
-                    {
-                        case DatabaseHandler.Result.Failed:
-                            await ReplyAsync(Message.Error.Generic);
-                            break;
-                        case DatabaseHandler.Result.Successful:
-                            await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
-                            break;
-                    }
-                }
+
+                DbHandler.Result result = DbHandler.Delete.Game(game);
+                await ReplyAsync(Message.Context(result));
             }
         }
     }

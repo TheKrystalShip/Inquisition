@@ -31,13 +31,22 @@ namespace Inquisition.Services
                 return;
             }
 
-            await aClient.StopAsync();
-            ConnectedChannels.TryRemove(Context.Guild.Id, out aClient);
+            try
+            {
+                await aClient.StopAsync();
+                ConnectedChannels.TryRemove(Context.Guild.Id, out aClient);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Disconnected");
+            }
         }
 
         public async Task SendAudioAsync(SocketGuild guild, ISocketMessageChannel channel, string path)
         {
-            if (!File.Exists(path))
+            string filePath = $"Data/Music/{path}.mp3";
+
+            if (!File.Exists(filePath))
             {
                 await channel.SendMessageAsync("File does not exist.");
                 return;
@@ -45,16 +54,16 @@ namespace Inquisition.Services
 
             if (ConnectedChannels.TryGetValue(guild.Id, out IAudioClient client))
             {
-                using (var output = CreateStream(path).StandardOutput.BaseStream)
+                using (var output = CreateStream(filePath).StandardOutput.BaseStream)
                 using (var stream = client.CreatePCMStream(AudioApplication.Music))
                 {
                     try
                     {
                         await output.CopyToAsync(stream);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        Console.WriteLine(e);
+                        Console.WriteLine("Stopped audio stream");
                     }
                     finally
                     {
@@ -68,7 +77,7 @@ namespace Inquisition.Services
         {
             return Process.Start(new ProcessStartInfo
             {
-                FileName = "ffmpeg.exe",
+                FileName = "Programs/ffmpeg.exe",
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true

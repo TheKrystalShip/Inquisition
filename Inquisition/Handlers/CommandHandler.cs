@@ -29,6 +29,7 @@ namespace Inquisition.Handlers
                 .AddSingleton(Client)
                 .AddSingleton(Commands)
                 .AddSingleton(new AudioService())
+                .AddSingleton(new GameService())
                 .BuildServiceProvider();
 
             Commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -41,7 +42,6 @@ namespace Inquisition.Handlers
             {
                 Console.WriteLine($"Creating log file {logFilePath}...");
                 File.Create(logFilePath);
-                Task.Delay(2000);
                 Console.WriteLine("Done.");
             }
 
@@ -57,11 +57,11 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-            User localUser = DatabaseHandler.GetFromDb(msg.Author);
+            User localUser = DbHandler.Select.User(msg.Author);
 
             if (localUser is null)
             {
-                DatabaseHandler.AddToDb(localUser);
+                DbHandler.Insert.User(localUser);
             }
 
             using (StreamWriter sw = new StreamWriter(logFilePath, true))

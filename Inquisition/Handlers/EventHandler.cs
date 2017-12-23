@@ -43,9 +43,9 @@ namespace Inquisition.Handlers
         {
             if (!user.IsBot)
             {
-                if (!DatabaseHandler.Exists(user))
+                if (!DbHandler.Exists(user))
                 {
-                    DatabaseHandler.AddToDb(user);
+                    DbHandler.Insert.User(user);
                     return Task.CompletedTask;
                 }
             }
@@ -64,7 +64,7 @@ namespace Inquisition.Handlers
 
         private async Task OnGuildMemberUpdated(SocketGuildUser BeforeGuildUser, SocketGuildUser AfterGuildUser)
         {
-            User BeforeLocalUser = DatabaseHandler.GetFromDb(BeforeGuildUser);
+            User BeforeLocalUser = DbHandler.Select.User(BeforeGuildUser);
 
             if (BeforeGuildUser.Username != AfterGuildUser.Username)
             {
@@ -81,19 +81,19 @@ namespace Inquisition.Handlers
                 BeforeLocalUser.AvatarUrl = AfterGuildUser.GetAvatarUrl();
             }
 
-            DatabaseHandler.Save();
+            DbHandler.Save();
 
             if (BeforeGuildUser.Status == UserStatus.Offline && AfterGuildUser.Status == UserStatus.Online)
             {
-                List<Alert> Notifications =
-                    DatabaseHandler.ListAllTargetAlerts(new Alert(), BeforeLocalUser);
+                List<Alert> Alerts =
+                    DbHandler.Select.TargetAlerts(0, BeforeLocalUser);
 
                 BeforeLocalUser.LastSeenOnline = DateTimeOffset.UtcNow;
 
-                foreach (Alert n in Notifications)
+                foreach (Alert n in Alerts)
                 {
-                    SocketUser NotificationAuthor = Client.GetUser(Convert.ToUInt64(n.User.Id));
-                    await NotificationAuthor.SendMessageAsync($"Notification: {BeforeLocalUser.Username} is now online");
+                    SocketUser AlertAuthor = Client.GetUser(Convert.ToUInt64(n.User.Id));
+                    await AlertAuthor.SendMessageAsync($"Notification: {BeforeLocalUser.Username} is now online");
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace Inquisition.Handlers
             {
                 int SleepTime = 10000;
 
-                List<Reminder> RemindersList = DatabaseHandler.ListLastTen(new Reminder());
+                List<Reminder> RemindersList = DbHandler.Select.Reminders(10);
 
                 if (RemindersList.Count > 0)
                 {
@@ -116,7 +116,7 @@ namespace Inquisition.Handlers
                     Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
                 }
 
-                DatabaseHandler.RemoveRangeFromDb(RemindersList);
+                DbHandler.Delete.ReminderList(RemindersList);
 
                 Thread.Sleep(SleepTime);
             }
