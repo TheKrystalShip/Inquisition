@@ -206,6 +206,8 @@ namespace Inquisition.Data
 
         public string Url { get; set; } = null;
 
+        public string LocalPath { get; set; } = null;
+
         public virtual User User { get; set; }
 
         public virtual List<Playlist> Playlists { get; set; } = new List<Playlist>();

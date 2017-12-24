@@ -7,19 +7,11 @@ using Inquisition.Data;
 
 namespace Inquisition.Handlers
 {
-    public class DatabaseHandler
+    public class DbHandler
     {
-        public enum Result
-        {
-            Failed,
-            Successful,
-            AlreadyExists,
-            DoesNotExist
-        }
-
         private static DatabaseContext db = new DatabaseContext();
 
-        public static User ConvertToLocalUser(SocketGuildUser user)
+        public static User ConvertToUser(SocketGuildUser user)
         {
             User local = new User
             {
@@ -34,8 +26,7 @@ namespace Inquisition.Handlers
 
             return local;
         }
-
-        public static User ConvertToLocalUser(SocketUser user)
+        public static User ConvertToUser(SocketUser user)
         {
             User local = new User
             {
@@ -48,169 +39,10 @@ namespace Inquisition.Handlers
 
             return local;
         }
-
-        public static void Save()
-        {
-            db.SaveChanges();
-        }
-
-        #region AddToDb
-
-        public static Result AddToDb(SocketGuildUser user)
+        public static Result Save()
         {
             try
             {
-                User local = ConvertToLocalUser(user);
-                if (Exists(local))
-                {
-                    return Result.AlreadyExists;
-                }
-                else
-                {
-                    db.Users.Add(local);
-                    db.SaveChanges();
-                    return Result.Successful;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(SocketUser user)
-        {
-            try
-            {
-                User local = ConvertToLocalUser(user);
-                if (Exists(local))
-                {
-                    return Result.AlreadyExists;
-                }
-                else
-                {
-                    db.Users.Add(local);
-                    db.SaveChanges();
-                    return Result.Successful;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(User user)
-        {
-            try
-            {
-                if (Exists(user))
-                {
-                    return Result.AlreadyExists;
-                }
-                else
-                {
-                    db.Users.Add(user);
-                    db.SaveChanges();
-                    return Result.Successful;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Game game)
-        {
-            try
-            {
-                if (Exists(game))
-                {
-                    return Result.AlreadyExists;
-                }
-                else
-                {
-                    db.Games.Add(game);
-                    db.SaveChanges();
-                    return Result.Successful;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Joke joke)
-        {
-            try
-            {
-                db.Jokes.Add(joke);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Meme meme)
-        {
-            try
-            {
-                db.Memes.Add(meme);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Reminder reminder)
-        {
-            try
-            {
-                db.Reminders.Add(reminder);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Alert notification)
-        {
-            try
-            {
-                db.Alerts.Add(notification);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddToDb(Playlist playlist)
-        {
-            try
-            {
-                db.Playlists.Add(playlist);
                 db.SaveChanges();
                 return Result.Successful;
             }
@@ -221,808 +53,1034 @@ namespace Inquisition.Handlers
             }
         }
 
-        public static Result AddToDb(Song song)
+        public static class Select
         {
-            try
+            #region Single
+            public static User User(SocketGuildUser user)
             {
-                db.Songs.Add(song);
-                db.SaveChanges();
-                return Result.Successful;
+                User local = ConvertToUser(user);
+                User u = db.Users
+                           .Where(x => x == local)
+                           .FirstOrDefault();
+                return u;
             }
-            catch (Exception ex)
+            public static User User(SocketUser user)
             {
-                Console.WriteLine(ex);
-                return Result.Failed;
+                User local = ConvertToUser(user);
+                User u = db.Users
+                           .Where(x => x == local)
+                           .FirstOrDefault();
+                return u;
             }
+            public static User User(User user)
+            {
+                User u = db.Users
+                           .Where(x => x == user)
+                           .FirstOrDefault();
+                return u;
+            }
+            public static Game Game(string name)
+            {
+                Game g = db.Games
+                           .Where(x => x.Name == name)
+                           .FirstOrDefault();
+                return g;
+            }
+            public static Joke Joke(int id, User user)
+            {
+                Joke j = db.Jokes
+                           .Where(x => x.Id == id && x.User == user)
+                           .FirstOrDefault();
+                return j;
+            }
+            public static Meme Meme(int id, User user)
+            {
+                Meme m = db.Memes
+                           .Where(x => x.Id == id && x.User == user)
+                           .FirstOrDefault();
+                return m;
+            }
+            public static Reminder Reminder(int id, User user)
+            {
+                Reminder r = db.Reminders
+                               .Where(x => x.Id == id && x.User == user)
+                               .FirstOrDefault();
+                return r;
+            }
+            public static Alert Alert(int id, User user)
+            {
+                Alert a = db.Alerts
+                            .Where(x => x.Id == id && x.User == user)
+                            .FirstOrDefault();
+                return a;
+            }
+            public static Alert Alert(User author, User target)
+            {
+                Alert a = db.Alerts
+                            .Where(x => x.User == author && x.TargetUser == target)
+                            .FirstOrDefault();
+                return a;
+            }
+            public static Playlist Playlist(int id)
+            {
+                Playlist p = db.Playlists
+                               .Where(x => x.Id == id)
+                               .Include(x => x.User)
+                               .Include(x => x.Songs)
+                               .FirstOrDefault();
+                return p;
+            }
+            public static Playlist Playlist(int id, User user)
+            {
+                Playlist p = db.Playlists
+                               .Where(x => x.Id == id && x.User == user)
+                               .Include(x => x.User)
+                               .Include(x => x.Songs)
+                               .FirstOrDefault();
+                return p;
+            }
+            public static Song Song(int id)
+            {
+                Song s = db.Songs
+                           .Where(x => x.Id == id)
+                           .Include(x => x.Playlists)
+                           .Include(x => x.User)
+                           .FirstOrDefault();
+                return s;
+            }
+            public static Song Song(int id, User user)
+            {
+                Song s = db.Songs
+                           .Where(x => x.Id == id && x.User == user)
+                           .Include(x => x.Playlists)
+                           .Include(x => x.User)
+                           .FirstOrDefault();
+                return s;
+            }
+            #endregion
+
+            #region List
+            public static List<Game> Games()
+            {
+                List<Game> Games = db.Games
+                                     .ToList();
+                return Games;
+            }
+            public static List<Game> Games(int amount)
+            {
+                List<Game> Games = db.Games
+                                     .Take(amount)
+                                     .ToList();
+                return Games;
+            }
+            public static List<Joke> Jokes()
+            {
+                List<Joke> Jokes = db.Jokes
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Joke> Jokes(int amount)
+            {
+                List<Joke> Jokes = db.Jokes
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Joke> Jokes(User user)
+            {
+                List<Joke> Jokes = db.Jokes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Joke> Jokes(int amount, User user)
+            {
+                List<Joke> Jokes = db.Jokes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Meme> Memes()
+            {
+                List<Meme> Memes = db.Memes
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Meme> Memes(int amount)
+            {
+                List<Meme> Memes = db.Memes
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Meme> Memes(User user)
+            {
+                List<Meme> Memes = db.Memes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Meme> Memes(int amount, User user)
+            {
+                List<Meme> Memes = db.Memes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Reminder> Reminders()
+            {
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Reminder> Reminders(int amount)
+            {
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+                                             .Include(x => x.User)
+                                             .Take(amount)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Reminder> Reminders(User user)
+            {
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Reminder> Reminders(int amount, User user)
+            {
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.User)
+                                             .Take(amount)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Alert> Alerts()
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> Alerts(int amount)
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .Take(amount)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> Alerts(User user)
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.User == user)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> Alerts(int amount, User user)
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.User == user)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .Take(amount)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> TargetAlerts(User targetUser)
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.TargetUser == targetUser)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> TargetAlerts(int amount, User targetUser)
+            {
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.TargetUser == targetUser)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .Take(amount)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Playlist> Playlists()
+            {
+                List<Playlist> Playlists = db.Playlists
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Playlist> Playlists(int amount)
+            {
+                List<Playlist> Playlists = db.Playlists
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .Take(amount)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Playlist> Playlists(User user)
+            {
+                List<Playlist> Playlists = db.Playlists
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Playlist> Playlists(int amount, User user)
+            {
+                List<Playlist> Playlists = db.Playlists
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .Take(amount)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Song> Songs()
+            {
+                List<Song> Songs = db.Songs
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Songs;
+            }
+            public static List<Song> Songs(int amount)
+            {
+                List<Song> Songs = db.Songs
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Songs;
+            }
+            public static List<Song> Songs(User user)
+            {
+                List<Song> Songs = db.Songs
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Songs;
+            }
+            public static List<Song> Songs(int amount, User user)
+            {
+                List<Song> Songs = db.Songs
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .Take(amount)
+                                     .ToList();
+                return Songs;
+            }
+            #endregion
         }
 
-        #endregion
-
-        #region AddRangeToDb
-
-        public static Result AddRangeToDb(List<SocketGuildUser> users)
+        public static class Insert
         {
-            try
+            #region Single
+            public static Result User(SocketGuildUser user)
             {
-                List<User> list = new List<User>();
-                foreach (SocketGuildUser user in users)
+                try
                 {
-                    User local = ConvertToLocalUser(user);
-                    if (!Exists(local))
-                        list.Add(local);
+                    User local = ConvertToUser(user);
+                    if (Exists(local))
+                    {
+                        return Result.AlreadyExists;
+                    }
+                    else
+                    {
+                        db.Users.Add(local);
+                        db.SaveChanges();
+                        return Result.Successful;
+                    }
                 }
-
-                db.Users.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddRangeToDb(List<SocketUser> users)
-        {
-            try
-            {
-                List<User> list = new List<User>();
-                foreach (SocketUser user in users)
+                catch (Exception ex)
                 {
-                    User local = ConvertToLocalUser(user);
-                    if (!Exists(local))
-                        list.Add(local);
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
                 }
-
-                db.Users.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
             }
-            catch (Exception ex)
+            public static Result User(SocketUser user)
             {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddRangeToDb(List<User> users)
-        {
-            try
-            {
-                List<User> list = new List<User>();
-                foreach (User user in users)
+                try
                 {
-                    if (!Exists(user))
-                        list.Add(user);
+                    User local = ConvertToUser(user);
+                    if (Exists(local))
+                    {
+                        return Result.AlreadyExists;
+                    }
+                    else
+                    {
+                        db.Users.Add(local);
+                        db.SaveChanges();
+                        return Result.Successful;
+                    }
                 }
-
-                db.Users.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
             }
-            catch (Exception ex)
+            public static Result User(User user)
             {
-                Console.WriteLine(ex.Message);
-                return Result.Failed;
+                try
+                {
+                    if (Exists(user))
+                    {
+                        return Result.AlreadyExists;
+                    }
+                    else
+                    {
+                        db.Users.Add(user);
+                        db.SaveChanges();
+                        return Result.Successful;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
             }
+            public static Result Game(Game game)
+            {
+                try
+                {
+                    if (Exists(game))
+                    {
+                        return Result.AlreadyExists;
+                    }
+                    else
+                    {
+                        db.Games.Add(game);
+                        db.SaveChanges();
+                        return Result.Successful;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result Joke(Joke joke)
+            {
+                try
+                {
+                    db.Jokes.Add(joke);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result Meme(Meme meme)
+            {
+                try
+                {
+                    db.Memes.Add(meme);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result Reminder(Reminder reminder)
+            {
+                try
+                {
+                    db.Reminders.Add(reminder);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result Alert(Alert alert)
+            {
+                try
+                {
+                    db.Alerts.Add(alert);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result Playlist(Playlist playlist)
+            {
+                try
+                {
+                    db.Playlists.Add(playlist);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Song(Song song)
+            {
+                try
+                {
+                    db.Songs.Add(song);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    return Result.Failed;
+                }
+            }
+            #endregion
+
+            #region List
+            public static Result UserList(List<SocketGuildUser> users)
+            {
+                try
+                {
+                    List<User> list = new List<User>();
+                    foreach (SocketGuildUser user in users)
+                    {
+                        User local = ConvertToUser(user);
+                        if (!Exists(local))
+                            list.Add(local);
+                    }
+
+                    db.Users.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result UserList(List<SocketUser> users)
+            {
+                try
+                {
+                    List<User> list = new List<User>();
+                    foreach (SocketUser user in users)
+                    {
+                        User local = ConvertToUser(user);
+                        if (!Exists(local))
+                            list.Add(local);
+                    }
+
+                    db.Users.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result UserList(List<User> users)
+            {
+                try
+                {
+                    List<User> list = new List<User>();
+                    foreach (User user in users)
+                    {
+                        if (!Exists(user))
+                            list.Add(user);
+                    }
+
+                    db.Users.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Result.Failed;
+                }
+            }
+            public static Result GameList(List<Game> games)
+            {
+                try
+                {
+                    List<Game> list = new List<Game>();
+                    foreach (Game game in games)
+                    {
+                        if (!Exists(game))
+                            list.Add(game);
+                    }
+
+                    db.Games.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result PlaylistList(List<Playlist> playlists)
+            {
+                try
+                {
+                    List<Playlist> list = new List<Playlist>();
+                    foreach (Playlist p in playlists)
+                    {
+                        if (!Exists(p))
+                            list.Add(p);
+                    }
+
+                    db.Playlists.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result SongList(List<Song> songs)
+            {
+                try
+                {
+                    List<Song> list = new List<Song>();
+                    foreach (Song s in songs)
+                    {
+                        if (!Exists(s))
+                            list.Add(s);
+                    }
+
+                    db.Songs.AddRange(list);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            #endregion
         }
 
-        public static Result AddRangeToDb(List<Game> games)
+        public static class Delete
         {
-            try
+            #region Single
+            public static Result SocketGuildUser(SocketGuildUser user)
             {
-                List<Game> list = new List<Game>();
-                foreach (Game game in games)
+                try
+                {
+                    User temp = ConvertToUser(user);
+                    db.Users.Remove(temp);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result SoketUser(SocketUser user)
+            {
+                try
+                {
+                    User temp = ConvertToUser(user);
+                    db.Users.Remove(temp);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result User(User user)
+            {
+                try
+                {
+                    db.Users.Remove(user);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Game(Game game)
+            {
+                try
+                {
+                    db.Games.Remove(game);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Joke(Joke joke)
+            {
+                try
+                {
+                    db.Jokes.Remove(joke);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Meme(Meme meme)
+            {
+                try
+                {
+                    db.Memes.Remove(meme);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Reminder(Reminder reminder)
+            {
+                try
+                {
+                    db.Reminders.Remove(reminder);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Alert(Alert alert)
+            {
+                try
+                {
+                    Alert temp =
+                        db.Alerts
+                        .Where(x => x.TargetUser == alert.TargetUser && x.User == alert.User)
+                        .FirstOrDefault();
+
+                    db.Alerts.Remove(temp);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Playlist(Playlist playlist)
+            {
+                try
+                {
+                    db.Playlists.Remove(playlist);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Song(Song song)
+            {
+                try
+                {
+                    db.Songs.Remove(song);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            #endregion
+
+            #region List
+            public static Result UserList(List<User> users)
+            {
+                try
+                {
+                    db.Users.RemoveRange(users);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result GameList(List<Game> games)
+            {
+                try
+                {
+                    db.Games.RemoveRange(games);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result JokeList(List<Joke> jokes)
+            {
+                try
+                {
+                    db.Jokes.RemoveRange(jokes);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result MemeList(List<Meme> memes)
+            {
+                try
+                {
+                    db.Memes.RemoveRange(memes);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result ReminderList(List<Reminder> reminders)
+            {
+                try
+                {
+                    db.Reminders.RemoveRange(reminders);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result AlertList(List<Alert> notifications)
+            {
+                try
+                {
+                    db.Alerts.RemoveRange(notifications);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result PlaylistList(List<Playlist> playlists)
+            {
+                try
+                {
+                    db.Playlists.RemoveRange(playlists);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result SongList(List<Song> songs)
+            {
+                try
+                {
+                    db.Songs.RemoveRange(songs);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            #endregion
+        }
+
+        public static class Update
+        {
+            public static Result Game(Game game)
+            {
+                try
                 {
                     if (!Exists(game))
-                        list.Add(game);
+                        return Result.DoesNotExist;
+
+                    db.Games.Update(game);
+                    db.SaveChanges();
+                    return Result.Successful;
                 }
-
-                db.Games.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddRangeToDb(List<Playlist> playlists)
-        {
-            try
-            {
-                List<Playlist> list = new List<Playlist>();
-                foreach (Playlist p in playlists)
+                catch (Exception e)
                 {
-                    if (!Exists(p))
-                        list.Add(p);
+                    Console.WriteLine(e);
+                    return Result.Failed;
                 }
-
-                db.Playlists.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
             }
-            catch (Exception e)
+            public static Result User(User user)
             {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result AddRangeToDb(List<Song> songs)
-        {
-            try
-            {
-                List<Song> list = new List<Song>();
-                foreach (Song s in songs)
+                try
                 {
-                    if (!Exists(s))
-                        list.Add(s);
+                    if (!Exists(user))
+                        return Result.DoesNotExist;
+
+                    db.Users.Update(user);
+                    db.SaveChanges();
+                    return Result.Successful;
                 }
-
-                db.Songs.AddRange(list);
-                db.SaveChanges();
-                return Result.Successful;
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
             }
-            catch (Exception e)
+            public static Result Playlist(Playlist playlist)
             {
-                Console.WriteLine(e);
-                return Result.Failed;
+                try
+                {
+                    if (!Exists(playlist))
+                        return Result.DoesNotExist;
+
+                    db.Playlists.Update(playlist);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
+            }
+            public static Result Song(Song song)
+            {
+                try
+                {
+                    if (!Exists(song))
+                        return Result.DoesNotExist;
+
+                    db.Songs.Update(song);
+                    db.SaveChanges();
+                    return Result.Successful;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return Result.Failed;
+                }
             }
         }
-
-        #endregion
-
-        #region RemoveFromDb
-
-        public static Result RemoveFromDb(SocketGuildUser user)
-        {
-            try
-            {
-                User temp = ConvertToLocalUser(user);
-                db.Users.Remove(temp);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(SocketUser user)
-        {
-            try
-            {
-                User temp = ConvertToLocalUser(user);
-                db.Users.Remove(temp);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(User user)
-        {
-            try
-            {
-                db.Users.Remove(user);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Game game)
-        {
-            try
-            {
-                db.Games.Remove(game);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Joke joke)
-        {
-            try
-            {
-                db.Jokes.Remove(joke);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Meme meme)
-        {
-            try
-            {
-                db.Memes.Remove(meme);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Reminder reminder)
-        {
-            try
-            {
-                Reminder temp = db.Reminders.Where(x => x.Id == reminder.Id).FirstOrDefault();
-                db.Reminders.Remove(temp);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Alert notification)
-        {
-            try
-            {
-                Alert temp =
-                    db.Alerts
-                    .Where(x => x.TargetUser == notification.TargetUser && x.User == notification.User)
-                    .FirstOrDefault();
-
-                db.Alerts.Remove(temp);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Playlist playlist)
-        {
-            try
-            {
-                db.Playlists.Remove(playlist);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveFromDb(Song song)
-        {
-            try
-            {
-                db.Songs.Remove(song);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        #endregion
-
-        #region RemoveRangeFromDb
-
-        public static Result RemoveRangeFromDb(List<User> users)
-        {
-            try
-            {
-                db.Users.RemoveRange(users);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Game> games)
-        {
-            try
-            {
-                db.Games.RemoveRange(games);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Joke> jokes)
-        {
-            try
-            {
-                db.Jokes.RemoveRange(jokes);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Meme> memes)
-        {
-            try
-            {
-                db.Memes.RemoveRange(memes);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Reminder> reminders)
-        {
-            try
-            {
-                db.Reminders.RemoveRange(reminders);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Alert> notifications)
-        {
-            try
-            {
-                db.Alerts.RemoveRange(notifications);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Playlist> playlists)
-        {
-            try
-            {
-                db.Playlists.RemoveRange(playlists);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result RemoveRangeFromDb(List<Song> songs)
-        {
-            try
-            {
-                db.Songs.RemoveRange(songs);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        #endregion
-
-        #region UpdateInDb
-
-        public static Result UpdateInDb(Game game)
-        {
-            try
-            {
-                if (!Exists(game))
-                    return Result.DoesNotExist;
-
-                db.Games.Update(game);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result UpdateInDb(User user)
-        {
-            try
-            {
-                if (!Exists(user))
-                    return Result.DoesNotExist;
-
-                db.Users.Update(user);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result UpdateInDb(Playlist playlist)
-        {
-            try
-            {
-                if (!Exists(playlist))
-                    return Result.DoesNotExist;
-
-                db.Playlists.Update(playlist);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        public static Result UpdateInDb(Song song)
-        {
-            try
-            {
-                if (!Exists(song))
-                    return Result.DoesNotExist;
-
-                db.Songs.Update(song);
-                db.SaveChanges();
-                return Result.Successful;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return Result.Failed;
-            }
-        }
-
-        #endregion
 
         #region Exists
-
         public static bool Exists(SocketGuildUser user)
         {
-            User local = ConvertToLocalUser(user);
+            User local = ConvertToUser(user);
             bool exists = db.Users.Any(x => x.Id == local.Id);
             return exists;
         }
-
         public static bool Exists(SocketUser user)
         {
-            User local = ConvertToLocalUser(user);
+            User local = ConvertToUser(user);
             bool exists = db.Users.Any(x => x.Id == local.Id);
             return exists;
         }
-
         public static bool Exists(User user)
         {
             bool exists = db.Users.Any(x => x.Id == user.Id);
             return exists;
         }
-
         public static bool Exists(Game game)
         {
             bool exists = db.Games.Any(x => x.Name == game.Name);
             return exists;
         }
-
         public static bool Exists(Playlist playlist)
         {
             bool exists = db.Playlists.Any(x => x.Name == playlist.Name && x.User == playlist.User);
             return exists;
         }
-
         public static bool Exists(Song song)
         {
             bool exists = db.Songs.Any(x => x.Name == song.Name && x.User == song.User);
             return exists;
         }
-
-        #endregion
-
-        #region List (No user specified)
-
-        public static List<Game> ListAll(Game game)
-        {
-            List<Game> Games = db.Games
-                                 .Take(10)
-                                 .ToList();
-            return Games;
-        }
-
-        public static List<Joke> ListAll(Joke joke)
-        {
-            List<Joke> Jokes = db.Jokes
-                                 .Include(x => x.User)
-                                 .Take(10)
-                                 .ToList();
-            return Jokes;
-        }
-
-        public static List<Meme> ListAll(Meme meme)
-        {
-            List<Meme> Memes = db.Memes
-                                 .Include(x => x.User)
-                                 .Take(10)
-                                 .ToList();
-            return Memes;
-        }
-
-        public static List<Reminder> ListAll(Reminder reminder)
-        {
-            List<Reminder> Reminders = db.Reminders
-                                         .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
-                                         .Include(x => x.User)
-                                         .ToList();
-            return Reminders;
-        }
-
-        public static List<Reminder> ListLastTen(Reminder reminder)
-        {
-            List<Reminder> Reminders = db.Reminders
-                                         .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
-                                         .Include(x => x.User)
-                                         .Take(10)
-                                         .ToList();
-            return Reminders;
-        }
-
-        public static List<Alert> ListAll(Alert alert)
-        {
-            List<Alert> Alerts = db.Alerts
-                                   .Include(x => x.User)
-                                   .Include(x => x.TargetUser)
-                                   .ToList();
-            return Alerts;
-        }
-
-        public static List<Alert> ListAllTargetAlerts(Alert notification, User target)
-        {
-            List<Alert> Alerts = db.Alerts
-                                   .Where(x => x.TargetUser == target)
-                                   .Include(x => x.User)
-                                   .Include(x => x.TargetUser)
-                                   .ToList();
-            return Alerts;
-        }
-
-        public static List<Playlist> ListAll(Playlist playlist)
-        {
-            List<Playlist> Playlists = db.Playlists
-                                         .Include(x => x.Songs)
-                                         .Include(x => x.User)
-                                         .ToList();
-            return Playlists;
-        }
-
-        public static List<Song> ListAll(Song song)
-        {
-            List<Song> Songs = db.Songs
-                                 .Include(x => x.Playlists)
-                                 .Include(x => x.User)
-                                 .ToList();
-            return Songs;
-        }
-
-        #endregion
-
-        #region List (User specified)
-
-        public static List<Joke> ListAll(Joke joke, User user)
-        {
-            if (user is null)
-                return ListAll(joke);
-
-            List<Joke> Jokes = db.Jokes
-                                 .Where(x => x.User == user)
-                                 .Include(x => x.User)
-                                 .Take(10)
-                                 .ToList();
-            return Jokes;
-        }
-
-        public static List<Meme> ListAll(Meme meme, User user)
-        {
-            if (user is null)
-                return ListAll(meme);
-
-            List<Meme> Memes = db.Memes
-                                 .Where(x => x.User == user)
-                                 .Include(x => x.User)
-                                 .Take(10)
-                                 .ToList();
-            return Memes;
-        }
-
-        public static List<Reminder> ListAll(Reminder reminder, User user)
-        {
-            if (user is null)
-                return ListAll(reminder);
-
-            List<Reminder> Reminders = db.Reminders
-                                         .Where(x => x.User == user)
-                                         .Include(x => x.User)
-                                         .ToList();
-            return Reminders;
-        }
-
-        public static List<Alert> ListAll(Alert alert, User user)
-        {
-            if (user is null)
-                return ListAll(alert);
-
-            List<Alert> Alerts = db.Alerts
-                                   .Where(x => x.User == user)
-                                   .Include(x => x.User)
-                                   .Include(x => x.TargetUser)
-                                   .ToList();
-            return Alerts;
-        }
-
-        public static List<Playlist> ListAll(Playlist playlist, User user)
-        {
-            if (user is null)
-                return ListAll(playlist);
-
-            List<Playlist> Playlists = db.Playlists
-                                         .Where(x => x.User == user)
-                                         .Include(x => x.Songs)
-                                         .Include(x => x.User)
-                                         .ToList();
-            return Playlists;
-        }
-
-        public static List<Song> ListAll(Song song, User user)
-        {
-            if (user is null)
-                return ListAll(song);
-
-            List<Song> Songs = db.Songs
-                                 .Where(x => x.User == user)
-                                 .Include(x => x.Playlists)
-                                 .Include(x => x.User)
-                                 .ToList();
-            return Songs;
-        }
-
-        #endregion
-
-        #region GetFromDb
-
-        public static User GetFromDb(SocketGuildUser user)
-        {
-            User local = ConvertToLocalUser(user);
-            User u = db.Users
-                       .Where(x => x == local)
-                       .FirstOrDefault();
-            return u;
-        }
-
-        public static User GetFromDb(SocketUser user)
-        {
-            User local = ConvertToLocalUser(user);
-            User u = db.Users
-                       .Where(x => x == local)
-                       .FirstOrDefault();
-            return u;
-        }
-
-        public static Game GetFromDb(Game game)
-        {
-            Game g = db.Games
-                       .Where(x => x.Name == game.Name)
-                       .FirstOrDefault();
-            return g;
-        }
-
-        public static User GetFromDb(User user)
-        {
-            User u = db.Users
-                       .Where(x => x == user)
-                       .FirstOrDefault();
-            return u;
-        }
-
-        public static Joke GetFromDb(Joke joke, User user)
-        {
-            Joke j = db.Jokes
-                       .Where(x => x.Id == joke.Id && x.User == user)
-                       .FirstOrDefault();
-            return j;
-        }
-
-        public static Meme GetFromDb(Meme meme, User user)
-        {
-            Meme m = db.Memes
-                       .Where(x => x.Id == meme.Id && x.User == user)
-                       .FirstOrDefault();
-            return m;
-        }
-
-        public static Reminder GetFromDb(Reminder reminder, User user)
-        {
-            Reminder r = db.Reminders
-                           .Where(x => x.Id == reminder.Id && x.User == user)
-                           .FirstOrDefault();
-            return r;
-        }
-
-        public static Playlist GetFromDb(Playlist playlist, User user)
-        {
-            Playlist p = db.Playlists
-                           .Where(x => x.Name == playlist.Name && x.User == user)
-                           .FirstOrDefault();
-            return p;
-        }
-
-        public static Song GetFromDb(Song song, User user)
-        {
-            Song s = db.Songs
-                       .Where(x => x.Name == song.Name && x.User == user)
-                       .FirstOrDefault();
-            return s;
-        }
-
         #endregion
     }
 }

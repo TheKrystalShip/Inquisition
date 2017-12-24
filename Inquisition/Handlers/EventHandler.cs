@@ -12,7 +12,7 @@ namespace Inquisition.Handlers
     public class EventHandler
     {
         private DiscordSocketClient Client;
-        private SocketTextChannel MembersLogTextChannel;
+        private SocketTextChannel MembersLogChannel;
         private Thread ReminderLoopThread;
         private ulong ChannelId = Convert.ToUInt64(Resources.MembersLogChannel);
 
@@ -30,7 +30,7 @@ namespace Inquisition.Handlers
             ReminderLoopThread.IsBackground = true;
             ReminderLoopThread.Start();
 
-            MembersLogTextChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
+            MembersLogChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
         }
 
         private Task Log(LogMessage msg)
@@ -39,61 +39,61 @@ namespace Inquisition.Handlers
             return Task.CompletedTask;
         }
 
-        private Task UserJoined(SocketGuildUser user)
+        private Task UserJoined(SocketGuildUser guildUser)
         {
-            if (!user.IsBot)
+            if (!guildUser.IsBot)
             {
-                if (!DatabaseHandler.Exists(user))
+                if (!DbHandler.Exists(guildUser))
                 {
-                    DatabaseHandler.AddToDb(user);
+                    DbHandler.Insert.User(guildUser);
                     return Task.CompletedTask;
                 }
             }
             return null;
         }
 
-        private async Task UserBannedAsync(SocketUser arg1, SocketGuild arg2)
+        private async Task UserBannedAsync(SocketUser user, SocketGuild guild)
         {
-            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserBanned(arg1.Mention));
+            await MembersLogChannel.SendMessageAsync(Reply.Info.UserBanned(user));
         }
 
-        private async Task UserLeftAsync(SocketGuildUser arg)
+        private async Task UserLeftAsync(SocketGuildUser guildUser)
         {
-            await MembersLogTextChannel.SendMessageAsync(Message.Info.UserLeft(arg.Mention));
+            await MembersLogChannel.SendMessageAsync(Reply.Info.UserLeft(guildUser));
         }
 
-        private async Task OnGuildMemberUpdated(SocketGuildUser BeforeGuildUser, SocketGuildUser AfterGuildUser)
+        private async Task OnGuildMemberUpdated(SocketGuildUser beforeGuildUser, SocketGuildUser afterGuildUser)
         {
-            User BeforeLocalUser = DatabaseHandler.GetFromDb(BeforeGuildUser);
+            User beforeLocalUser = DbHandler.Select.User(beforeGuildUser);
 
-            if (BeforeGuildUser.Username != AfterGuildUser.Username)
+            if (beforeGuildUser.Username != afterGuildUser.Username)
             {
-                BeforeLocalUser.Username = AfterGuildUser.Username;
+                beforeLocalUser.Username = afterGuildUser.Username;
             }
 
-            if (BeforeGuildUser.Nickname != BeforeGuildUser.Nickname)
+            if (beforeGuildUser.Nickname != beforeGuildUser.Nickname)
             {
-                BeforeLocalUser.Nickname = AfterGuildUser.Nickname;
+                beforeLocalUser.Nickname = afterGuildUser.Nickname;
             }
 
-            if (BeforeGuildUser.GetAvatarUrl() != AfterGuildUser.GetAvatarUrl())
+            if (beforeGuildUser.GetAvatarUrl() != afterGuildUser.GetAvatarUrl())
             {
-                BeforeLocalUser.AvatarUrl = AfterGuildUser.GetAvatarUrl();
+                beforeLocalUser.AvatarUrl = afterGuildUser.GetAvatarUrl();
             }
 
-            DatabaseHandler.Save();
+            DbHandler.Save();
 
-            if (BeforeGuildUser.Status == UserStatus.Offline && AfterGuildUser.Status == UserStatus.Online)
+            if (beforeGuildUser.Status == UserStatus.Offline && afterGuildUser.Status == UserStatus.Online)
             {
-                List<Alert> Notifications =
-                    DatabaseHandler.ListAllTargetAlerts(new Alert(), BeforeLocalUser);
+                List<Alert> Alerts =
+                    DbHandler.Select.TargetAlerts(beforeLocalUser);
 
-                BeforeLocalUser.LastSeenOnline = DateTimeOffset.UtcNow;
+                beforeLocalUser.LastSeenOnline = DateTimeOffset.UtcNow;
 
-                foreach (Alert n in Notifications)
+                foreach (Alert n in Alerts)
                 {
-                    SocketUser NotificationAuthor = Client.GetUser(Convert.ToUInt64(n.User.Id));
-                    await NotificationAuthor.SendMessageAsync($"Notification: {BeforeLocalUser.Username} is now online");
+                    SocketUser AlertAuthor = Client.GetUser(Convert.ToUInt64(n.User.Id));
+                    await AlertAuthor.SendMessageAsync($"Notification: {beforeLocalUser.Username} is now online");
                 }
             }
         }
@@ -102,13 +102,13 @@ namespace Inquisition.Handlers
         {
             while (true)
             {
-                int SleepTime = 10000;
+                int sleepTime = 10000;
 
-                List<Reminder> RemindersList = DatabaseHandler.ListLastTen(new Reminder());
+                List<Reminder> RemindersList = DbHandler.Select.Reminders(10);
 
                 if (RemindersList.Count > 0)
                 {
-                    SleepTime = 1000;
+                    sleepTime = 1000;
                 }
 
                 foreach (Reminder r in RemindersList)
@@ -116,9 +116,9 @@ namespace Inquisition.Handlers
                     Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
                 }
 
-                DatabaseHandler.RemoveRangeFromDb(RemindersList);
+                DbHandler.Delete.ReminderList(RemindersList);
 
-                Thread.Sleep(SleepTime);
+                Thread.Sleep(sleepTime);
             }
         }
     }

@@ -2,9 +2,9 @@
 using Discord.WebSocket;
 using Inquisition.Data;
 using Inquisition.Handlers;
-using Inquisition.Properties;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Inquisition.Properties;
 
 namespace Inquisition
 {

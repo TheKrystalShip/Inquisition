@@ -12,16 +12,16 @@ namespace Inquisition.Modules
     {
         [Command("prune", RunMode = RunMode.Async)]
         [Summary("[Admin] Prunes all inactive members from the server")]
-        public async Task PruneMembersAsync(int d)
+        public async Task PruneMembersAsync(int days)
         {
-            if (d < 7)
+            if (days < 7)
             {
                 await ReplyAsync("Minimum is 7 days of innactivity");
                 return;
             }
 
-            var n = await Context.Guild.PruneUsersAsync(d);
-            await ReplyAsync(Message.Info.UsersPruned(n, d));
+            var members = await Context.Guild.PruneUsersAsync(days);
+            await ReplyAsync(Reply.Info.UsersPruned(members, days));
         }
 
         [Command("ban", RunMode = RunMode.Async)]
@@ -30,7 +30,7 @@ namespace Inquisition.Modules
         {
             await user.SendMessageAsync($"You've been banned from {Context.Guild}, reason: {reason}.");
             await Context.Guild.AddBanAsync(user, 0, reason);
-            await ReplyAsync(Message.Info.UserBanned(user.Username));
+            await ReplyAsync(Reply.Info.UserBanned(user));
         }
 
         [Command("wipe", RunMode = RunMode.Async)]
@@ -48,32 +48,42 @@ namespace Inquisition.Modules
             await m.DeleteAsync();
         }
 
+        [Group("add")]
+        public class AddAdminModule : ModuleBase<SocketCommandContext>
+        {
+            [Command("game", RunMode = RunMode.Async)]
+            public async Task AddGameAsync(string name, string port = "", string version = "")
+            {
+                Data.Game game = new Data.Game
+                {
+                    Name = name,
+                    Port = port,
+                    Version = version
+                };
+
+                Result result = DbHandler.Insert.Game(game);
+                await ReplyAsync(Reply.Context(result));
+            }
+        }
+
         [Group("remove")]
         [Alias("delete")]
-        public class RemoveModule : ModuleBase<SocketCommandContext>
+        public class RemoveAdminModule : ModuleBase<SocketCommandContext>
         {
             [Command("game", RunMode = RunMode.Async)]
             [Summary("[Admin] Remove a game from db")]
             public async Task DeleteGameAsync(string name)
             {
-                Data.Game game = DatabaseHandler.GetFromDb(new Data.Game { Name = name });
+                Data.Game game = DbHandler.Select.Game(name);
 
                 if (game is null)
                 {
-                    await ReplyAsync(Message.Error.GameNotFound(game));
+                    await ReplyAsync(Reply.Error.NotFound.Game);
+                    return;
                 }
-                else
-                {
-                    switch (DatabaseHandler.RemoveFromDb(game))
-                    {
-                        case DatabaseHandler.Result.Failed:
-                            await ReplyAsync(Message.Error.Generic);
-                            break;
-                        case DatabaseHandler.Result.Successful:
-                            await ReplyAsync(Message.Info.SuccessfullyRemoved(game));
-                            break;
-                    }
-                }
+
+                Result result = DbHandler.Delete.Game(game);
+                await ReplyAsync(Reply.Context(result));
             }
         }
     }

@@ -6,24 +6,24 @@ using Inquisition.Data;
 
 namespace Inquisition.Modules
 {
-    [Group("help")]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
-        private static CommandService _commands;
+        private static CommandService CommandService;
 
-        public static void Create(CommandService commandService)
+        public HelpModule(CommandService commandService)
         {
-            _commands = commandService;
+            CommandService = commandService;
         }
 
-        [Command, Summary("List of all available commands.")]
+        [Command("help", RunMode = RunMode.Async)]
+        [Summary("List of all available commands.")]
         public async Task Help()
         {
             var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
 
             embed.Title = "Inquisition Help:";
 
-            foreach (var c in _commands.Commands)
+            foreach (var c in CommandService.Commands)
             {
                 string str = "";
                 foreach (var a in c.Aliases.Skip(1))
@@ -35,7 +35,7 @@ namespace Inquisition.Modules
                 }
                 embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
             }
-            await Context.User.SendMessageAsync(Message.Info.Generic, false, embed.Build());
+            await Context.User.SendMessageAsync(Reply.Generic, false, embed.Build());
         }
     }
 }

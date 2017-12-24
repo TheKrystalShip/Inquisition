@@ -261,3 +261,8 @@ __pycache__/
 *.pyc
 /Inquisition/Properties/Resources.Designer.cs
 /Inquisition/Properties/Resources.resx
+/Inquisition/libsodium.dll
+/Inquisition/opus.dll
+/Inquisition/Programs/ffmpeg.exe
+/Inquisition/Programs/youtube-dl.exe
+*.mp3
