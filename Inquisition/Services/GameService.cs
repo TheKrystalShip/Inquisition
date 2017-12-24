@@ -19,7 +19,7 @@ namespace Inquisition.Services
             {
                 if (RunningServers.TryGetValue(game.Name, out Process temp))
                 {
-                    await channel.SendMessageAsync(Message.Error.GameAlreadyRunning(game));
+                    await channel.SendMessageAsync(Reply.Error.GameAlreadyRunning(game));
                     return;
                 }
 
@@ -33,12 +33,12 @@ namespace Inquisition.Services
                 game.IsOnline = true;
                 DbHandler.Update.Game(game);
 
-                await channel.SendMessageAsync(Message.Info.GameStartingUp(game));
+                await channel.SendMessageAsync(Reply.Info.GameStarting(game));
             }
             catch (Exception e)
             {
-                await channel.SendMessageAsync(Message.Error.UnableToStartGameServer(game));
-                Console.WriteLine(e.Message);
+                await channel.SendMessageAsync(Reply.Error.UnableToStartGameServer(game));
+                Console.WriteLine(e);
             }
         }
 
@@ -55,16 +55,16 @@ namespace Inquisition.Services
                     game.IsOnline = false;
                     DbHandler.Update.Game(game);
 
-                    await channel.SendMessageAsync(Message.Info.GameShuttingDown(game.Name));
+                    await channel.SendMessageAsync(Reply.Info.GameStopping(game));
                     return;
                 }
 
-                await channel.SendMessageAsync(Message.Error.GameNotRunning(game));
+                await channel.SendMessageAsync(Reply.Error.GameNotRunning(game));
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                await channel.SendMessageAsync(Message.Error.UnableToStopGameServer(game));
-                Console.WriteLine(ex.Message);
+                await channel.SendMessageAsync(Reply.Error.UnableToStopGameServer(game));
+                Console.WriteLine(e);
             }
         }
 

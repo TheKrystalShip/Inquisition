@@ -4,20 +4,11 @@ using System.Linq;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Inquisition.Data;
-using Discord.Commands;
 
 namespace Inquisition.Handlers
 {
     public class DbHandler
     {
-        public enum Result
-        {
-            Failed,
-            Successful,
-            AlreadyExists,
-            DoesNotExist
-        }
-
         private static DatabaseContext db = new DatabaseContext();
 
         public static User ConvertToUser(SocketGuildUser user)
@@ -48,9 +39,18 @@ namespace Inquisition.Handlers
 
             return local;
         }
-        public static void Save()
+        public static Result Save()
         {
-            db.SaveChanges();
+            try
+            {
+                db.SaveChanges();
+                return Result.Successful;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Result.Failed;
+            }
         }
 
         public static class Select
@@ -114,6 +114,13 @@ namespace Inquisition.Handlers
                             .FirstOrDefault();
                 return a;
             }
+            public static Alert Alert(User author, User target)
+            {
+                Alert a = db.Alerts
+                            .Where(x => x.User == author && x.TargetUser == target)
+                            .FirstOrDefault();
+                return a;
+            }
             public static Playlist Playlist(int id)
             {
                 Playlist p = db.Playlists
@@ -153,38 +160,44 @@ namespace Inquisition.Handlers
             #endregion
 
             #region List
-            public static List<Game> Games(int amount = 0)
+            public static List<Game> Games()
             {
-                if (amount == 0)
-                {
-                    amount = db.Games.Count();
-                }
-
+                List<Game> Games = db.Games
+                                     .ToList();
+                return Games;
+            }
+            public static List<Game> Games(int amount)
+            {
                 List<Game> Games = db.Games
                                      .Take(amount)
                                      .ToList();
                 return Games;
             }
-            public static List<Joke> Jokes(int amount = 0)
+            public static List<Joke> Jokes()
             {
-                if (amount == 0)
-                {
-                    amount = db.Jokes.Count();
-                }
-
+                List<Joke> Jokes = db.Jokes
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Joke> Jokes(int amount)
+            {
                 List<Joke> Jokes = db.Jokes
                                      .Include(x => x.User)
                                      .Take(amount)
                                      .ToList();
                 return Jokes;
             }
-            public static List<Joke> Jokes(int amount = 0, User user = null)
+            public static List<Joke> Jokes(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Jokes.Where(x => x.User == user).Count();
-                }
-
+                List<Joke> Jokes = db.Jokes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Jokes;
+            }
+            public static List<Joke> Jokes(int amount, User user)
+            {
                 List<Joke> Jokes = db.Jokes
                                      .Where(x => x.User == user)
                                      .Include(x => x.User)
@@ -192,25 +205,31 @@ namespace Inquisition.Handlers
                                      .ToList();
                 return Jokes;
             }
-            public static List<Meme> Memes(int amount = 0)
+            public static List<Meme> Memes()
             {
-                if (amount == 0)
-                {
-                    amount = db.Memes.Count();
-                }
-
+                List<Meme> Memes = db.Memes
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Meme> Memes(int amount)
+            {
                 List<Meme> Memes = db.Memes
                                      .Include(x => x.User)
                                      .Take(amount)
                                      .ToList();
                 return Memes;
             }
-            public static List<Meme> Memes(int amount = 0, User user = null)
+            public static List<Meme> Memes(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Memes.Where(x => x.User == user).Count();
-                }
+                List<Meme> Memes = db.Memes
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Memes;
+            }
+            public static List<Meme> Memes(int amount, User user)
+            {
                 List<Meme> Memes = db.Memes
                                      .Where(x => x.User == user)
                                      .Include(x => x.User)
@@ -218,13 +237,16 @@ namespace Inquisition.Handlers
                                      .ToList();
                 return Memes;
             }
-            public static List<Reminder> Reminders(int amount = 0)
+            public static List<Reminder> Reminders()
             {
-                if (amount == 0)
-                {
-                    amount = db.Reminders.Count();
-                }
-
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Reminder> Reminders(int amount)
+            {
                 List<Reminder> Reminders = db.Reminders
                                              .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
                                              .Include(x => x.User)
@@ -232,13 +254,16 @@ namespace Inquisition.Handlers
                                              .ToList();
                 return Reminders;
             }
-            public static List<Reminder> Reminders(int amount = 0, User user = null)
+            public static List<Reminder> Reminders(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Reminders.Where(x => x.User == user).Count();
-                }
-
+                List<Reminder> Reminders = db.Reminders
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Reminders;
+            }
+            public static List<Reminder> Reminders(int amount, User user)
+            {
                 List<Reminder> Reminders = db.Reminders
                                              .Where(x => x.User == user)
                                              .Include(x => x.User)
@@ -246,13 +271,16 @@ namespace Inquisition.Handlers
                                              .ToList();
                 return Reminders;
             }
-            public static List<Alert> Alerts(int amount = 0)
+            public static List<Alert> Alerts()
             {
-                if (amount == 0)
-                {
-                    amount = db.Alerts.Count();
-                }
-
+                List<Alert> Alerts = db.Alerts
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> Alerts(int amount)
+            {
                 List<Alert> Alerts = db.Alerts
                                        .Include(x => x.User)
                                        .Include(x => x.TargetUser)
@@ -260,13 +288,17 @@ namespace Inquisition.Handlers
                                        .ToList();
                 return Alerts;
             }
-            public static List<Alert> Alerts(int amount = 0, User user = null)
+            public static List<Alert> Alerts(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Alerts.Where(x => x.User == user).Count();
-                }
-
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.User == user)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> Alerts(int amount, User user)
+            {
                 List<Alert> Alerts = db.Alerts
                                        .Where(x => x.User == user)
                                        .Include(x => x.User)
@@ -275,13 +307,17 @@ namespace Inquisition.Handlers
                                        .ToList();
                 return Alerts;
             }
-            public static List<Alert> TargetAlerts(int amount = 0, User targetUser = null)
+            public static List<Alert> TargetAlerts(User targetUser)
             {
-                if (amount == 0)
-                {
-                    amount = db.Alerts.Where(x => x.TargetUser == targetUser).Count();
-                }
-
+                List<Alert> Alerts = db.Alerts
+                                       .Where(x => x.TargetUser == targetUser)
+                                       .Include(x => x.User)
+                                       .Include(x => x.TargetUser)
+                                       .ToList();
+                return Alerts;
+            }
+            public static List<Alert> TargetAlerts(int amount, User targetUser)
+            {
                 List<Alert> Alerts = db.Alerts
                                        .Where(x => x.TargetUser == targetUser)
                                        .Include(x => x.User)
@@ -290,13 +326,16 @@ namespace Inquisition.Handlers
                                        .ToList();
                 return Alerts;
             }
-            public static List<Playlist> Playlists(int amount = 0)
+            public static List<Playlist> Playlists()
             {
-                if (amount == 0)
-                {
-                    amount = db.Playlists.Count();
-                }
-
+                List<Playlist> Playlists = db.Playlists
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Playlist> Playlists(int amount)
+            {
                 List<Playlist> Playlists = db.Playlists
                                              .Include(x => x.Songs)
                                              .Include(x => x.User)
@@ -304,13 +343,17 @@ namespace Inquisition.Handlers
                                              .ToList();
                 return Playlists;
             }
-            public static List<Playlist> Playlists(int amount = 0, User user = null)
+            public static List<Playlist> Playlists(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Playlists.Where(x => x.User == user).Count();
-                }
-
+                List<Playlist> Playlists = db.Playlists
+                                             .Where(x => x.User == user)
+                                             .Include(x => x.Songs)
+                                             .Include(x => x.User)
+                                             .ToList();
+                return Playlists;
+            }
+            public static List<Playlist> Playlists(int amount, User user)
+            {
                 List<Playlist> Playlists = db.Playlists
                                              .Where(x => x.User == user)
                                              .Include(x => x.Songs)
@@ -319,13 +362,16 @@ namespace Inquisition.Handlers
                                              .ToList();
                 return Playlists;
             }
-            public static List<Song> Songs(int amount = 0)
+            public static List<Song> Songs()
             {
-                if (amount == 0)
-                {
-                    amount = db.Songs.Count();
-                }
-
+                List<Song> Songs = db.Songs
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Songs;
+            }
+            public static List<Song> Songs(int amount)
+            {
                 List<Song> Songs = db.Songs
                                      .Include(x => x.Playlists)
                                      .Include(x => x.User)
@@ -333,13 +379,17 @@ namespace Inquisition.Handlers
                                      .ToList();
                 return Songs;
             }
-            public static List<Song> Songs(int amount = 0, User user = null)
+            public static List<Song> Songs(User user)
             {
-                if (amount == 0)
-                {
-                    amount = db.Songs.Where(x => x.User == user).Count();
-                }
-
+                List<Song> Songs = db.Songs
+                                     .Where(x => x.User == user)
+                                     .Include(x => x.Playlists)
+                                     .Include(x => x.User)
+                                     .ToList();
+                return Songs;
+            }
+            public static List<Song> Songs(int amount, User user)
+            {
                 List<Song> Songs = db.Songs
                                      .Where(x => x.User == user)
                                      .Include(x => x.Playlists)

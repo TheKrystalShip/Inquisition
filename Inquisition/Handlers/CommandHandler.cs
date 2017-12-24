@@ -13,26 +13,26 @@ namespace Inquisition.Handlers
 {
     public class CommandHandler
     {
-        private DiscordSocketClient Client;
-        private CommandService Commands;
-        private IServiceProvider Services;
+        private DiscordSocketClient DiscordClient;
+        private CommandService CommandService;
+        private IServiceProvider ServiceCollection;
+        private HelpModule HelpModule;
+        private string logFilePath;
 
-        string logFilePath;
-
-        public CommandHandler(DiscordSocketClient c)
+        public CommandHandler(DiscordSocketClient discordClient)
         {
-            Client = c;
+            DiscordClient = discordClient;
 
-            Commands = new CommandService();
+            CommandService = new CommandService();
 
-            Services = new ServiceCollection()
-                .AddSingleton(Client)
-                .AddSingleton(Commands)
+            ServiceCollection = new ServiceCollection()
+                .AddSingleton(DiscordClient)
+                .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
                 .AddSingleton(new GameService())
                 .BuildServiceProvider();
 
-            Commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
             Directory.CreateDirectory("Data/Logs");
 
@@ -45,9 +45,9 @@ namespace Inquisition.Handlers
                 Console.WriteLine("Done.");
             }
 
-            HelpModule.Create(Commands);
+            HelpModule = new HelpModule(CommandService);
 
-            Client.MessageReceived += HandleCommands;
+            DiscordClient.MessageReceived += HandleCommands;
         }
 
         private async Task HandleCommands(SocketMessage msg)
@@ -73,12 +73,12 @@ namespace Inquisition.Handlers
 
             int argPos = 0;
 
-            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos) ||
+            if (message.HasMentionPrefix(DiscordClient.CurrentUser, ref argPos) ||
                 message.HasStringPrefix(prefix, ref argPos) ||
                 message.Channel.GetType() == typeof(SocketDMChannel))
             {
-                SocketCommandContext context = new SocketCommandContext(Client, message);
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
+                SocketCommandContext context = new SocketCommandContext(DiscordClient, message);
+                IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
 
                 if (!result.IsSuccess)
                 {

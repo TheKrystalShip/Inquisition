@@ -10,11 +10,11 @@ namespace Inquisition.Modules
 {
     public class GameModule : ModuleBase<SocketCommandContext>
     {
-        private GameService GameServerService;
+        private GameService GameService;
 
-        public GameModule(GameService gameServerService)
+        public GameModule(GameService gameService)
         {
-            GameServerService = gameServerService;
+            GameService = gameService;
         }
 
         [Command("start", RunMode = RunMode.Async)]
@@ -25,11 +25,11 @@ namespace Inquisition.Modules
 
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(game));
+                await ReplyAsync(Reply.Error.NotFound.Game);
                 return;
             }
 
-            await GameServerService.StartServer(game, Context.Message.Channel);
+            await GameService.StartServer(game, Context.Message.Channel);
         }
 
         [Command("stop", RunMode = RunMode.Async)]
@@ -39,11 +39,11 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.Select.Game(name);
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(game));
+                await ReplyAsync(Reply.Error.NotFound.Game);
                 return;
             }
 
-            await GameServerService.StopServer(game, Context.Message.Channel);
+            await GameService.StopServer(game, Context.Message.Channel);
         }
 
         [Command("status", RunMode = RunMode.Async)]
@@ -54,11 +54,11 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.Select.Game(name);
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
+                await ReplyAsync(Reply.Error.NotFound.Game);
                 return;
             }
 
-            await GameServerService.ServerStatus(game, Context.Message.Channel);
+            await GameService.ServerStatus(game, Context.Message.Channel);
         }
 
         [Command("version", RunMode = RunMode.Async)]
@@ -68,7 +68,7 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.Select.Game(name);
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
+                await ReplyAsync(Reply.Error.NotFound.Game);
                 return;
             }
 
@@ -82,11 +82,11 @@ namespace Inquisition.Modules
             Data.Game game = DbHandler.Select.Game(name);
             if (game is null)
             {
-                await ReplyAsync(Message.Error.GameNotFound(new Data.Game { Name = name }));
+                await ReplyAsync(Reply.Error.NotFound.Game);
                 return;
             }
 
-            await ReplyAsync($"{game.Name}'s port is {game.Port}");
+            await ReplyAsync($"{game.Name}'s uses port {game.Port}");
         }
 
         [Command("games", RunMode = RunMode.Async)]
@@ -97,7 +97,7 @@ namespace Inquisition.Modules
 
             if (Games.Count == 0)
             {
-                await ReplyAsync(Message.Error.NoContent(Context.User));
+                await ReplyAsync(Reply.Error.NoContent(Context.User));
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace Inquisition.Modules
                 builder.AddInlineField(game.Name, st + $"on port {game.Port}, version {game.Version}");
             }
 
-            await ReplyAsync(Message.Info.Generic, false, builder.Build());
+            await ReplyAsync(Reply.Generic, false, builder.Build());
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Inquisition.Modules
 
             if (voiceChannel is null)
             {
-                await ReplyAsync(Message.Error.NotInVoiceChannel);
+                await ReplyAsync(Reply.Error.NotInVoiceChannel);
                 return;
             }
 
@@ -49,7 +49,7 @@ namespace Inquisition.Modules
 
             if (voiceChannel is null)
             {
-                await ReplyAsync(Message.Error.NotInVoiceChannel);
+                await ReplyAsync(Reply.Error.NotInVoiceChannel);
                 return;
             }
 
@@ -61,14 +61,35 @@ namespace Inquisition.Modules
             await AudioService.SendAudioAsync(Context.Guild, Context.Channel, song);
         }
 
-        //[Command("playlist")]
-        //[Summary("show a playlist's songs")]
-        //public async Task ListPlaylistSongsAsync([Remainder] int id)
-        //{
-        //    User localUser = DbHandler.Select.User(Context.User);
+        [Command("playlist")]
+        [Summary("show a playlist's songs")]
+        public async Task ListPlaylistSongsAsync(int id)
+        {
+            User localUser = DbHandler.Select.User(Context.User);
+            Playlist playlist = DbHandler.Select.Playlist(id);
 
-        //    Playlist playlist = DbHandler.Select.Playlist(id);
-        //}
+            if (playlist is null)
+            {
+                await ReplyAsync(Reply.Error.NotFound.Playlist);
+                return;
+            }
+
+            if (playlist.Songs.Count == 0)
+            {
+                await ReplyAsync($"{playlist.Name} doesn't have any songs");
+                return;
+            }
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+            embed.WithTitle(playlist.Name);
+
+            foreach (Song s in playlist.Songs)
+            {
+                embed.AddField($"{s.Id} - {s.Name}", $"Duration: {s.Duration}");
+            }
+
+            await ReplyAsync(Reply.Generic, false, embed.Build());
+        }
 
         [Command("playlists")]
         [Alias("playlists by")]
@@ -89,21 +110,27 @@ namespace Inquisition.Modules
                     break;
             }
 
-            if (Playlists.Count > 0)
+            if (Playlists.Count == 0)
             {
-                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-
-                foreach (Playlist p in Playlists)
-                {
-                    embed.AddField($"{p.Id} - {p.Name}, has {p.Songs.Count} songs", $"Created: {p.CreatedAt} by {p.User.Username}");
-                }
-
-                await ReplyAsync(Message.Info.Generic, false, embed.Build());
-            } else
-            {
-                await ReplyAsync(Message.Error.NoContent(localUser));
+                await ReplyAsync(Reply.Error.NoContent(localUser));
+                return;
             }
+
+            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+            foreach (Playlist p in Playlists)
+            {
+                embed.AddField($"{p.Id} - {p.Name}, has {p.Songs.Count} songs", $"Created: {p.CreatedAt} by {p.User.Username}");
+            }
+
+            await ReplyAsync(Reply.Generic, false, embed.Build());
         }
+
+        //[Command("download", RunMode = RunMode.Async)]
+        //public async Task DownloadSongAsync([Remainder] string name)
+        //{
+        //    AudioService.YTDownload(name);
+        //}
     }
 
     [Group("add")]
@@ -124,7 +151,7 @@ namespace Inquisition.Modules
 
             if (localUser.TimezoneOffset is null)
             {
-                await ReplyAsync(Message.Error.TimezoneNotSet);
+                await ReplyAsync(Reply.Error.TimezoneNotSet);
                 return;
             }
 
@@ -140,15 +167,8 @@ namespace Inquisition.Modules
                 return;
             }
 
-            switch (DbHandler.Insert.Playlist(playlist))
-            {
-                case DbHandler.Result.Successful:
-                    await ReplyAsync(Message.Info.SuccessfullyAdded(new Playlist()));
-                    break;
-                default:
-                    await ReplyAsync(Message.Error.Generic);
-                    break;
-            }
+            Result result = DbHandler.Insert.Playlist(playlist);
+            await ReplyAsync(Reply.Context(result));
         }
 
         //[Command("song")]
@@ -173,19 +193,12 @@ namespace Inquisition.Modules
 
             if (playlist is null)
             {
-                await ReplyAsync(Message.Error.NotTheOwner);
+                await ReplyAsync(Reply.Error.NotTheOwner);
                 return;
             }
 
-            switch (DbHandler.Delete.Playlist(playlist))
-            {
-                case DbHandler.Result.Failed:
-                    await ReplyAsync(Message.Error.Generic);
-                    break;
-                case DbHandler.Result.Successful:
-                    await ReplyAsync(Message.Info.SuccessfullyRemoved(playlist));
-                    break;
-            }
+            Result result = DbHandler.Delete.Playlist(playlist);
+            await ReplyAsync(Reply.Context(result));
         }
     }
 }

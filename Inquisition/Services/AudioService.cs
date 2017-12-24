@@ -2,6 +2,7 @@
 using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
+using Inquisition.Properties;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -81,6 +82,16 @@ namespace Inquisition.Services
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true
+            });
+        }
+
+        public Process YTDownload(string path)
+        {
+            return Process.Start(new ProcessStartInfo {
+                FileName = "Programs/youtube-dl.exe",
+                Arguments = $"-i --no-playlist --max-filesize 100m --default-search ytsearch " +
+                $"--extract-audio --format bestaudio --write-thumbnail " +
+                $"--output \"Data/Music/{path}.mp3\" {path}"
             });
         }
     }
