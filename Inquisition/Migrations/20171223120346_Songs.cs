@@ -4,22 +4,21 @@ using System.Collections.Generic;
 
 namespace Inquisition.Migrations
 {
-    public partial class PermanentNotifications : Migration
+    public partial class Songs : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsPermanent",
-                table: "Notifications",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.AddColumn<string>(
+                name: "LocalPath",
+                table: "Songs",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsPermanent",
-                table: "Notifications");
+                name: "LocalPath",
+                table: "Songs");
         }
     }
 }

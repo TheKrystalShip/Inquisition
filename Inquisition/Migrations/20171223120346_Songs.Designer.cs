@@ -10,9 +10,9 @@ using System;
 
 namespace Inquisition.Migrations
 {
-    [DbContext(typeof(InquisitionContext))]
-    [Migration("20171207154455_InitialStructure")]
-    partial class InitialStructure
+    [DbContext(typeof(DatabaseContext))]
+    [Migration("20171223120346_Songs")]
+    partial class Songs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,26 @@ namespace Inquisition.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Inquisition.Data.Alert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTimeOffset>("CreatedAt");
+
+                    b.Property<string>("TargetUserId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Alerts");
+                });
 
             modelBuilder.Entity("Inquisition.Data.Game", b =>
                 {
@@ -80,24 +100,26 @@ namespace Inquisition.Migrations
                     b.ToTable("Memes");
                 });
 
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
+            modelBuilder.Entity("Inquisition.Data.Playlist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTimeOffset>("CreatedAt");
 
-                    b.Property<string>("TargetUserId");
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("SongId");
 
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TargetUserId");
+                    b.HasIndex("SongId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Playlists");
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
@@ -122,6 +144,32 @@ namespace Inquisition.Migrations
                     b.ToTable("Reminders");
                 });
 
+            modelBuilder.Entity("Inquisition.Data.Song", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Duration");
+
+                    b.Property<string>("LocalPath");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("PlaylistId");
+
+                    b.Property<string>("Url");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlaylistId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Songs");
+                });
+
             modelBuilder.Entity("Inquisition.Data.User", b =>
                 {
                     b.Property<string>("Id")
@@ -138,11 +186,25 @@ namespace Inquisition.Migrations
 
                     b.Property<string>("Nickname");
 
+                    b.Property<int?>("TimezoneOffset");
+
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Inquisition.Data.Alert", b =>
+                {
+                    b.HasOne("Inquisition.Data.User", "TargetUser")
+                        .WithMany("TargetAlerts")
+                        .HasForeignKey("TargetUserId");
+
+                    b.HasOne("Inquisition.Data.User", "User")
+                        .WithMany("Alerts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Joke", b =>
@@ -161,16 +223,16 @@ namespace Inquisition.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Inquisition.Data.Notification", b =>
+            modelBuilder.Entity("Inquisition.Data.Playlist", b =>
                 {
-                    b.HasOne("Inquisition.Data.User", "TargetUser")
-                        .WithMany("TargetNotifications")
-                        .HasForeignKey("TargetUserId");
+                    b.HasOne("Inquisition.Data.Song")
+                        .WithMany("Playlists")
+                        .HasForeignKey("SongId");
 
                     b.HasOne("Inquisition.Data.User", "User")
-                        .WithMany("Notifications")
+                        .WithMany("Playlists")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Inquisition.Data.Reminder", b =>
@@ -179,6 +241,18 @@ namespace Inquisition.Migrations
                         .WithMany("Reminders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Inquisition.Data.Song", b =>
+                {
+                    b.HasOne("Inquisition.Data.Playlist")
+                        .WithMany("Songs")
+                        .HasForeignKey("PlaylistId");
+
+                    b.HasOne("Inquisition.Data.User", "User")
+                        .WithMany("Songs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 #pragma warning restore 612, 618
         }

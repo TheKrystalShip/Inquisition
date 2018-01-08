@@ -1,51 +1,45 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System;
-using System.Threading.Tasks;
 using Inquisition.Data;
-using System.IO;
+using Inquisition.Handlers;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using Inquisition.Properties;
 
 namespace Inquisition
 {
     class Program
     {
         private DiscordSocketClient Client;
-        private CommandHandler Commands;
+        private CommandHandler CommandHandler;
         private EventHandler EventHandler;
-        private string Token;
+        private string Token = Res.Token;
 
-        public static void Main(string[] args) => new Program().RunAsync().GetAwaiter().GetResult();
+        static void Main(string[] args) 
+            => new Program().Run().GetAwaiter().GetResult();
 
-        public async Task RunAsync()
+        public async Task Run()
         {
-            using (InquisitionContext db = new InquisitionContext())
+            using (DbContext db = new DatabaseContext())
             {
-                db.Database.EnsureCreated();
+                db.Database.Migrate();
             }
 
-            Client = new DiscordSocketClient(new DiscordSocketConfig() {
-                LogLevel = LogSeverity.Debug,
-            });
-
-            Commands = new CommandHandler(Client);
+            Client = new DiscordSocketClient();
+            CommandHandler = new CommandHandler(Client);
             EventHandler = new EventHandler(Client);
 
             try
             {
-                using (StreamReader file = new StreamReader("Data/TextFiles/token.txt"))
-                {
-                    Token = file.ReadLine();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+                await Client.SetGameAsync($"@Inquisition help");
 
-            await Client.SetGameAsync($"@Inquisition help");
-            
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
+                await Client.LoginAsync(TokenType.Bot, Token);
+                await Client.StartAsync();
+            }
+            catch (System.Exception e)
+            {
+                System.Console.WriteLine(e);
+            }
 
             await Task.Delay(-1);
         }
