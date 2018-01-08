@@ -1,38 +1,45 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System.Threading.Tasks;
+using Inquisition.Data;
 using Inquisition.Handlers;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Inquisition.Properties;
-using Inquisition.Data;
 
 namespace Inquisition
 {
     class Program
     {
         private DiscordSocketClient Client;
-        private CommandHandler Commands;
+        private CommandHandler CommandHandler;
         private EventHandler EventHandler;
-        private string Token = Resources.Token;
+        private string Token = Res.Token;
 
-        public static void Main(string[] args)
-            => new Program().MainAsync().GetAwaiter().GetResult();
+        static void Main(string[] args) 
+            => new Program().Run().GetAwaiter().GetResult();
 
-        public async Task MainAsync()
+        public async Task Run()
         {
-            using (DbContext context = new InquisitionContext())
+            using (DbContext db = new DatabaseContext())
             {
-                context.Database.Migrate();
+                db.Database.Migrate();
             }
 
             Client = new DiscordSocketClient();
-            Commands = new CommandHandler(Client);
+            CommandHandler = new CommandHandler(Client);
             EventHandler = new EventHandler(Client);
 
-            await Client.SetGameAsync($"@Inquisition help");
-            
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
+            try
+            {
+                await Client.SetGameAsync($"@Inquisition help");
+
+                await Client.LoginAsync(TokenType.Bot, Token);
+                await Client.StartAsync();
+            }
+            catch (System.Exception e)
+            {
+                System.Console.WriteLine(e);
+            }
 
             await Task.Delay(-1);
         }

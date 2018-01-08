@@ -3,39 +3,47 @@ using Discord.Commands;
 using System.Linq;
 using System.Threading.Tasks;
 using Inquisition.Data;
+using Inquisition.Services;
 
 namespace Inquisition.Modules
 {
-    [Group("help")]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
-        private static CommandService _commands;
+        private static CommandService CommandService;
 
-        public static void Create(CommandService commandService)
+        public HelpModule(CommandService commandService)
         {
-            _commands = commandService;
+            CommandService = commandService;
         }
 
-        [Command, Summary("List of all available commands.")]
+        [Command("help", RunMode = RunMode.Async)]
+        [Summary("List of all available commands.")]
         public async Task Help()
         {
-            var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-
-            embed.Title = "Inquisition Help:";
-
-            foreach (var c in _commands.Commands)
+            try
             {
-                string str = "";
-                foreach (var a in c.Aliases.Skip(1))
+                var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+                embed.Title = "Inquisition Help:";
+
+                foreach (var c in CommandService.Commands)
                 {
-                    if (a != null)
+                    string str = "";
+                    foreach (var a in c.Aliases.Skip(1))
                     {
-                        str += a + " | ";
+                        if (a != null)
+                        {
+                            str += a + " | ";
+                        }
                     }
+                    embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
                 }
-                embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
+                await Context.User.SendMessageAsync(Reply.Generic, false, embed.Build());
             }
-            await Context.User.SendMessageAsync(Message.Info.Generic, false, embed.Build());
+            catch (System.Exception e)
+            {
+                await ExceptionService.SendErrorAsync(Context, e);
+            }
         }
     }
 }

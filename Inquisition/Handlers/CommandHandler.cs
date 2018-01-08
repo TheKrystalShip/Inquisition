@@ -1,53 +1,39 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using Inquisition.Modules;
+using Inquisition.Data;
+using Inquisition.Properties;
 using Inquisition.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Inquisition.Data;
 
 namespace Inquisition.Handlers
 {
     public class CommandHandler
     {
-        private DiscordSocketClient Client;
-        private CommandService Commands;
-        private IServiceProvider Services;
+        private DiscordSocketClient DiscordClient;
+        private CommandService CommandService;
+        private IServiceProvider ServiceCollection;
 
-        string logFilePath;
-
-        public CommandHandler(DiscordSocketClient c)
+        public CommandHandler(DiscordSocketClient discordClient)
         {
-            Client = c;
-            
-            Commands = new CommandService();
+            DiscordClient = discordClient;
 
-            Services = new ServiceCollection()
-                .AddSingleton(Client)
-                .AddSingleton(Commands)
+            CommandService = new CommandService();
+
+            ServiceCollection = new ServiceCollection()
+                .AddSingleton(DiscordClient)
+                .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
+                .AddSingleton(new GameService())
+                .AddSingleton(new LoggingService())
+                .AddSingleton(new ExceptionService(DiscordClient))
                 .BuildServiceProvider();
 
-            Commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            Directory.CreateDirectory("Data/Logs");
-
-            logFilePath = String.Format("Data/Logs/{0:yyyy-MM-dd}.log", DateTime.Now);
-
-            if (!File.Exists(logFilePath))
-            {
-                Console.WriteLine($"Creating log file {logFilePath}...");
-                File.Create(logFilePath);
-                Task.Delay(2000);
-                Console.WriteLine("Done.");
-            }
-
-            HelpModule.Create(Commands);
-
-            Client.MessageReceived += HandleCommands;
+            DiscordClient.MessageReceived += HandleCommands;
         }
 
         private async Task HandleCommands(SocketMessage msg)
@@ -57,31 +43,35 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-            User localUser = DatabaseHandler.GetFromDb(msg.Author);
-
-            if (localUser is null)
+            try
             {
-                DatabaseHandler.AddToDb(localUser);
+                User localUser = DbHandler.Select.User(msg.Author);
+
+                if (localUser is null)
+                {
+                    DbHandler.Insert.User(message.Author as SocketGuildUser);
+                }
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(e);
             }
 
-            using (StreamWriter sw = new StreamWriter(logFilePath, true))
-            {
-                sw.WriteLine($"{msg.Channel} | {msg.Author}: {msg.Content}");
-            }
+            LoggingService.Log(msg);
 
-            string prefix = "rip ";
-
+            string prefix = Res.Prefix;
             int argPos = 0;
 
-            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos) ||
+            if (message.HasMentionPrefix(DiscordClient.CurrentUser, ref argPos) ||
                 message.HasStringPrefix(prefix, ref argPos) ||
                 message.Channel.GetType() == typeof(SocketDMChannel))
             {
-                SocketCommandContext context = new SocketCommandContext(Client, message);
-                IResult result = await Commands.ExecuteAsync(context, argPos, Services);
+                SocketCommandContext context = new SocketCommandContext(DiscordClient, message);
+                IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
 
                 if (!result.IsSuccess)
                 {
+                    await ExceptionService.SendErrorAsync(result.ErrorReason, msg);
                     Console.WriteLine($"{DateTimeOffset.UtcNow} - {result.ErrorReason}");
                 }
             }

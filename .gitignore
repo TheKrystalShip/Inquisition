@@ -259,10 +259,13 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-/Inquisition/token.txt
-/Inquisition/channel.txt
-*.txt
-*.exe
-*.resx
+/Inquisition/Properties/Resources.Designer.cs
 /Inquisition/Properties/Resources.resx
-/Inquisition/Properties/Resources.resx/Resources.Designer.cs
+/Inquisition/libsodium.dll
+/Inquisition/opus.dll
+/Inquisition/Programs/ffmpeg.exe
+/Inquisition/Programs/youtube-dl.exe
+*.mp3
+*.jpg
+/Inquisition/Properties/Res.Designer.cs
+/Inquisition/Properties/Res.resx

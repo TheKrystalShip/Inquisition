@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inquisition.Data
 {
-    public class InquisitionContext : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<Game> Games { get; set; }
         public DbSet<Joke> Jokes { get; set; }
@@ -19,8 +19,9 @@ namespace Inquisition.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(Resources.ConnectionString);
+            optionsBuilder.UseSqlServer(Res.ConnectionString);
             optionsBuilder.EnableSensitiveDataLogging(true);
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -98,7 +99,7 @@ namespace Inquisition.Data
     {
         [Key]
         public int Id { get; set; }
-        
+
         public virtual User User { get; set; }
 
         public string Text { get; set; }
@@ -205,6 +206,8 @@ namespace Inquisition.Data
         public string Duration { get; set; }
 
         public string Url { get; set; } = null;
+
+        public string LocalPath { get; set; } = null;
 
         public virtual User User { get; set; }
 
