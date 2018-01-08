@@ -18,8 +18,20 @@ namespace Inquisition.Data
                     return $"It already exists";
                 case Result.DoesNotExist:
                     return $"It doesn't exist";
+                case Result.AlreadyRunning:
+                    return "Server is already running";
+                case Result.Offline:
+                    return "Server is offline";
+                case Result.Online:
+                    return "Server is online";
+                case Result.ProcessRunningButOfflineInDb:
+                    return "Server has a process running, but is marked as offline";
+                case Result.ProcessNotRunningButOnlineInDb:
+                    return $"Server is not running, but is marked as online";
+                case Result.GenericError:
+                    return "Generic error";
                 default:
-                    return $"";
+                    return "";
             }
         }
 

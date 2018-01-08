@@ -4,6 +4,7 @@ using System.Linq;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Inquisition.Data;
+using Inquisition.Services;
 
 namespace Inquisition.Handlers
 {
@@ -48,7 +49,7 @@ namespace Inquisition.Handlers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                ExceptionService.SendErrorAsync(e);
                 return Result.Failed;
             }
         }
@@ -420,9 +421,9 @@ namespace Inquisition.Handlers
                         return Result.Successful;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -442,9 +443,9 @@ namespace Inquisition.Handlers
                         return Result.Successful;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -463,9 +464,9 @@ namespace Inquisition.Handlers
                         return Result.Successful;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -484,9 +485,9 @@ namespace Inquisition.Handlers
                         return Result.Successful;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -498,9 +499,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -512,9 +513,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -526,9 +527,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -540,9 +541,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -556,7 +557,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -568,9 +569,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -593,9 +594,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -615,9 +616,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -636,9 +637,9 @@ namespace Inquisition.Handlers
                     db.SaveChanges();
                     return Result.Successful;
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Console.WriteLine(ex.Message);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -659,7 +660,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -680,7 +681,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -701,7 +702,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -722,7 +723,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -737,7 +738,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -751,7 +752,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -765,7 +766,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -779,7 +780,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -793,7 +794,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -807,7 +808,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -815,18 +816,13 @@ namespace Inquisition.Handlers
             {
                 try
                 {
-                    Alert temp =
-                        db.Alerts
-                        .Where(x => x.TargetUser == alert.TargetUser && x.User == alert.User)
-                        .FirstOrDefault();
-
-                    db.Alerts.Remove(temp);
+                    db.Alerts.Remove(alert);
                     db.SaveChanges();
                     return Result.Successful;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -840,7 +836,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -854,7 +850,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -871,7 +867,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -885,7 +881,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -899,7 +895,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -913,7 +909,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -927,7 +923,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -941,7 +937,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -955,7 +951,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -969,7 +965,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -991,7 +987,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -1008,7 +1004,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -1025,7 +1021,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }
@@ -1042,7 +1038,7 @@ namespace Inquisition.Handlers
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    ExceptionService.SendErrorAsync(e);
                     return Result.Failed;
                 }
             }

@@ -266,3 +266,4 @@ __pycache__/
 /Inquisition/Programs/ffmpeg.exe
 /Inquisition/Programs/youtube-dl.exe
 *.mp3
+*.jpg

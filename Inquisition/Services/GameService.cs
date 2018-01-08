@@ -1,4 +1,4 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
 using Inquisition.Data;
 using Inquisition.Handlers;
 using System;
@@ -13,13 +13,13 @@ namespace Inquisition.Services
         public static Dictionary<string, Process> RunningServers { get; set; } = new Dictionary<string, Process>();
         public static string Path = $"";
 
-        public async Task StartServer(Game game, ISocketMessageChannel channel)
+        public async Task StartServer(Game game, SocketCommandContext context)
         {
             try
             {
                 if (RunningServers.TryGetValue(game.Name, out Process temp))
                 {
-                    await channel.SendMessageAsync(Reply.Error.GameAlreadyRunning(game));
+                    await ExceptionService.SendErrorAsync(context, Reply.Error.GameAlreadyRunning(game));
                     return;
                 }
 
@@ -33,16 +33,15 @@ namespace Inquisition.Services
                 game.IsOnline = true;
                 DbHandler.Update.Game(game);
 
-                await channel.SendMessageAsync(Reply.Info.GameStarting(game));
+                await context.Channel.SendMessageAsync(Reply.Info.GameStarting(game));
             }
             catch (Exception e)
             {
-                await channel.SendMessageAsync(Reply.Error.UnableToStartGameServer(game));
-                Console.WriteLine(e);
+                await ExceptionService.SendErrorAsync(context, e);
             }
         }
 
-        public async Task StopServer(Game game, ISocketMessageChannel channel)
+        public async Task StopServer(Game game, SocketCommandContext context)
         {
             try
             {
@@ -55,43 +54,43 @@ namespace Inquisition.Services
                     game.IsOnline = false;
                     DbHandler.Update.Game(game);
 
-                    await channel.SendMessageAsync(Reply.Info.GameStopping(game));
+                    await context.Channel.SendMessageAsync(Reply.Info.GameStopping(game));
                     return;
                 }
 
-                await channel.SendMessageAsync(Reply.Error.GameNotRunning(game));
+                await context.Channel.SendMessageAsync(Reply.Error.GameNotRunning(game));
             }
             catch (Exception e)
             {
-                await channel.SendMessageAsync(Reply.Error.UnableToStopGameServer(game));
-                Console.WriteLine(e);
+                await ExceptionService.SendErrorAsync(context, e);
             }
         }
 
-        public async Task ServerStatus(Game game, ISocketMessageChannel channel)
+        public Result ServerStatus(Game game, SocketCommandContext context)
         {
             bool ProcessRunning = RunningServers.TryGetValue(game.Name, out Process p);
             bool GameMarkedOnline = game.IsOnline;
 
-            if (!ProcessRunning && !GameMarkedOnline)
+            if (ProcessRunning && GameMarkedOnline)
             {
-                await channel.SendMessageAsync($"{game.Name} server is offline. If you wish to start it up use: game start \"{game.Name}\"");
-                return;
+                return Result.Online;
+            }
+            else if (!ProcessRunning && !GameMarkedOnline)
+            {
+                return Result.Offline;
             }
             else if (ProcessRunning && !GameMarkedOnline)
             {
-                await channel.SendMessageAsync($"{game.Name} has a process running, but is marked as offline in the database, " +
-                    $"please let the knobhead who programmed this know abut this error, thanks");
-                return;
+                return Result.ProcessRunningButOfflineInDb;
             }
             else if (!ProcessRunning && GameMarkedOnline)
             {
-                await channel.SendMessageAsync($"{game.Name} server is not running, but is marked as online in the database, " +
-                    $"please let the knobhead who programmed this know abut this error, thanks");
-                return;
+                return Result.ProcessNotRunningButOnlineInDb;
             }
-
-            await channel.SendMessageAsync($"{game.Name} server is online, version {game.Version} on port {game.Port}");
+            else
+            {
+                return Result.GenericError;
+            }
         }
     }
 }

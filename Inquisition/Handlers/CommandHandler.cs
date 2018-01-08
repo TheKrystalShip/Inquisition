@@ -1,11 +1,10 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using Inquisition.Data;
-using Inquisition.Modules;
+using Inquisition.Properties;
 using Inquisition.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -16,8 +15,6 @@ namespace Inquisition.Handlers
         private DiscordSocketClient DiscordClient;
         private CommandService CommandService;
         private IServiceProvider ServiceCollection;
-        private HelpModule HelpModule;
-        private string logFilePath;
 
         public CommandHandler(DiscordSocketClient discordClient)
         {
@@ -30,22 +27,11 @@ namespace Inquisition.Handlers
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
                 .AddSingleton(new GameService())
+                .AddSingleton(new LoggingService())
+                .AddSingleton(new ExceptionService(DiscordClient))
                 .BuildServiceProvider();
 
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
-
-            Directory.CreateDirectory("Data/Logs");
-
-            logFilePath = String.Format("Data/Logs/{0:yyyy-MM-dd}.log", DateTime.Now);
-
-            if (!File.Exists(logFilePath))
-            {
-                Console.WriteLine($"Creating log file {logFilePath}...");
-                File.Create(logFilePath);
-                Console.WriteLine("Done.");
-            }
-
-            HelpModule = new HelpModule(CommandService);
 
             DiscordClient.MessageReceived += HandleCommands;
         }
@@ -57,20 +43,23 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-            User localUser = DbHandler.Select.User(msg.Author);
-
-            if (localUser is null)
+            try
             {
-                DbHandler.Insert.User(localUser);
+                User localUser = DbHandler.Select.User(msg.Author);
+
+                if (localUser is null)
+                {
+                    DbHandler.Insert.User(message.Author as SocketGuildUser);
+                }
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(e);
             }
 
-            using (StreamWriter sw = new StreamWriter(logFilePath, true))
-            {
-                sw.WriteLine($"{msg.Channel} | {msg.Author}: {msg.Content}");
-            }
+            LoggingService.Log(msg);
 
-            string prefix = "rip ";
-
+            string prefix = Resources.Prefix;
             int argPos = 0;
 
             if (message.HasMentionPrefix(DiscordClient.CurrentUser, ref argPos) ||
@@ -82,6 +71,7 @@ namespace Inquisition.Handlers
 
                 if (!result.IsSuccess)
                 {
+                    await ExceptionService.SendErrorAsync(result.ErrorReason, msg);
                     Console.WriteLine($"{DateTimeOffset.UtcNow} - {result.ErrorReason}");
                 }
             }

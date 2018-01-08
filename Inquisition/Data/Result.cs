@@ -5,6 +5,12 @@
         Failed,
         Successful,
         AlreadyExists,
-        DoesNotExist
+        DoesNotExist,
+        AlreadyRunning,
+        Offline,
+        Online,
+        ProcessRunningButOfflineInDb,
+        ProcessNotRunningButOnlineInDb,
+        GenericError
     }
 }

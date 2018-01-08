@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Inquisition.Services;
+using System;
 using System.Threading.Tasks;
 using Inquisition.Data;
 using Inquisition.Handlers;
@@ -22,15 +23,22 @@ namespace Inquisition.Modules
         [Summary("Joines the channel of the User or the one passed as an argument")]
         public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
-
-            if (voiceChannel is null)
+            try
             {
-                await ReplyAsync(Reply.Error.NotInVoiceChannel);
-                return;
-            }
+                SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
 
-            await AudioService.JoinChannel(channel, Context.Guild.Id);
+                if (voiceChannel is null)
+                {
+                    await ReplyAsync(Reply.Error.NotInVoiceChannel);
+                    return;
+                }
+
+                await AudioService.JoinChannel(channel, Context.Guild.Id);
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(Context, e);
+            }
         }
 
         [Command("leave")]
@@ -38,57 +46,78 @@ namespace Inquisition.Modules
         [Summary("Kick the bot from the voice channel")]
         public async Task LeaveChannel(IVoiceChannel channel = null)
         {
-            await AudioService.LeaveChannel(Context);
+            try
+            {
+                await AudioService.LeaveChannel(Context);
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(Context, e);
+            }
         }
 
         [Command("play", RunMode = RunMode.Async)]
         [Summary("Request a song to be played")]
         public async Task PlayCmd([Remainder] string song)
         {
-            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
-
-            if (voiceChannel is null)
+            try
             {
-                await ReplyAsync(Reply.Error.NotInVoiceChannel);
-                return;
-            }
+                SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
 
-            if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
+                if (voiceChannel is null)
+                {
+                    await ReplyAsync(Reply.Error.NotInVoiceChannel);
+                    return;
+                }
+
+                if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
+                {
+                    await AudioService.JoinChannel(voiceChannel, Context.Guild.Id);
+                }
+
+                await AudioService.SendAudioAsync(Context.Guild, Context.Channel, song);
+            }
+            catch (Exception e)
             {
-                await AudioService.JoinChannel(voiceChannel, Context.Guild.Id);
+                await ExceptionService.SendErrorAsync(Context, e);
             }
-
-            await AudioService.SendAudioAsync(Context.Guild, Context.Channel, song);
         }
 
         [Command("playlist")]
         [Summary("show a playlist's songs")]
         public async Task ListPlaylistSongsAsync(int id)
         {
-            User localUser = DbHandler.Select.User(Context.User);
-            Playlist playlist = DbHandler.Select.Playlist(id);
-
-            if (playlist is null)
+            try
             {
-                await ReplyAsync(Reply.Error.NotFound.Playlist);
-                return;
-            }
+                User localUser = DbHandler.Select.User(Context.User);
+                Playlist playlist = DbHandler.Select.Playlist(id);
 
-            if (playlist.Songs.Count == 0)
+                if (playlist is null)
+                {
+                    await ReplyAsync(Reply.Error.NotFound.Playlist);
+                    return;
+                }
+
+                if (playlist.Songs.Count == 0)
+                {
+                    await ReplyAsync($"{playlist.Name} doesn't have any songs");
+                    return;
+                }
+
+                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+                embed.WithTitle(playlist.Name);
+
+                foreach (Song s in playlist.Songs)
+                {
+                    embed.AddField($"{s.Id} - {s.Name}", $"Duration: {s.Duration}");
+                }
+
+                await ReplyAsync(Reply.Generic, false, embed.Build());
+            }
+            catch (Exception e)
             {
-                await ReplyAsync($"{playlist.Name} doesn't have any songs");
-                return;
+                await ExceptionService.SendErrorAsync(Context, e);
             }
-
-            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-            embed.WithTitle(playlist.Name);
-
-            foreach (Song s in playlist.Songs)
-            {
-                embed.AddField($"{s.Id} - {s.Name}", $"Duration: {s.Duration}");
-            }
-
-            await ReplyAsync(Reply.Generic, false, embed.Build());
         }
 
         [Command("playlists")]
@@ -96,41 +125,55 @@ namespace Inquisition.Modules
         [Summary("Shows a user's playlists")]
         public async Task ListPlaylistsAsync(SocketGuildUser user = null)
         {
-            User localUser;
-            List<Playlist> Playlists;
-            switch (user)
+            try
             {
-                case null:
-                    localUser = DbHandler.Select.User(Context.User);
-                    Playlists = DbHandler.Select.Playlists(10);
-                    break;
-                default:
-                    localUser = DbHandler.Select.User(user);
-                    Playlists = DbHandler.Select.Playlists(10, localUser);
-                    break;
-            }
+                User localUser;
+                List<Playlist> Playlists;
+                switch (user)
+                {
+                    case null:
+                        localUser = DbHandler.Select.User(Context.User);
+                        Playlists = DbHandler.Select.Playlists(10);
+                        break;
+                    default:
+                        localUser = DbHandler.Select.User(user);
+                        Playlists = DbHandler.Select.Playlists(10, localUser);
+                        break;
+                }
 
-            if (Playlists.Count == 0)
+                if (Playlists.Count == 0)
+                {
+                    await ReplyAsync(Reply.Error.NoContent(localUser));
+                    return;
+                }
+
+                EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
+
+                foreach (Playlist p in Playlists)
+                {
+                    embed.AddField($"{p.Id} - {p.Name}, has {p.Songs.Count} songs", $"Created: {p.CreatedAt} by {p.User.Username}");
+                }
+
+                await ReplyAsync(Reply.Generic, false, embed.Build());
+            }
+            catch (Exception e)
             {
-                await ReplyAsync(Reply.Error.NoContent(localUser));
-                return;
+                await ExceptionService.SendErrorAsync(Context, e);
             }
-
-            EmbedBuilder embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-
-            foreach (Playlist p in Playlists)
-            {
-                embed.AddField($"{p.Id} - {p.Name}, has {p.Songs.Count} songs", $"Created: {p.CreatedAt} by {p.User.Username}");
-            }
-
-            await ReplyAsync(Reply.Generic, false, embed.Build());
         }
 
-        //[Command("download", RunMode = RunMode.Async)]
-        //public async Task DownloadSongAsync([Remainder] string name)
-        //{
-        //    AudioService.YTDownload(name);
-        //}
+        [Command("download", RunMode = RunMode.Async)]
+        public async Task DownloadSongAsync([Remainder] string name)
+        {
+            try
+            {
+                AudioService.YTDownload(name);
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(Context, e);
+            }
+        }
     }
 
     [Group("add")]
@@ -147,28 +190,35 @@ namespace Inquisition.Modules
         [Summary("Create a new playlist")]
         public async Task AddPlaylistAsync([Remainder] string name)
         {
-            User localUser = DbHandler.Select.User(Context.User);
-
-            if (localUser.TimezoneOffset is null)
+            try
             {
-                await ReplyAsync(Reply.Error.TimezoneNotSet);
-                return;
+                User localUser = DbHandler.Select.User(Context.User);
+
+                if (localUser.TimezoneOffset is null)
+                {
+                    await ReplyAsync(Reply.Error.TimezoneNotSet);
+                    return;
+                }
+
+                Playlist playlist = new Playlist
+                {
+                    Name = name,
+                    User = localUser
+                };
+
+                if (DbHandler.Exists(playlist))
+                {
+                    await ReplyAsync("Already exists in the database");
+                    return;
+                }
+
+                Result result = DbHandler.Insert.Playlist(playlist);
+                await ReplyAsync(Reply.Context(result));
             }
-
-            Playlist playlist = new Playlist
+            catch (Exception e)
             {
-                Name = name,
-                User = localUser
-            };
-
-            if (DbHandler.Exists(playlist))
-            {
-                await ReplyAsync("Already exists in the database");
-                return;
+                await ExceptionService.SendErrorAsync(Context, e);
             }
-
-            Result result = DbHandler.Insert.Playlist(playlist);
-            await ReplyAsync(Reply.Context(result));
         }
 
         //[Command("song")]
@@ -187,18 +237,25 @@ namespace Inquisition.Modules
         [Summary("Delete a playlist")]
         public async Task RemovePlaylistAsync(int id)
         {
-            User localUser = DbHandler.Select.User(Context.User);
-
-            Playlist playlist = DbHandler.Select.Playlist(id, localUser);
-
-            if (playlist is null)
+            try
             {
-                await ReplyAsync(Reply.Error.NotTheOwner);
-                return;
-            }
+                User localUser = DbHandler.Select.User(Context.User);
 
-            Result result = DbHandler.Delete.Playlist(playlist);
-            await ReplyAsync(Reply.Context(result));
+                Playlist playlist = DbHandler.Select.Playlist(id, localUser);
+
+                if (playlist is null)
+                {
+                    await ReplyAsync(Reply.Error.NotTheOwner);
+                    return;
+                }
+
+                Result result = DbHandler.Delete.Playlist(playlist);
+                await ReplyAsync(Reply.Context(result));
+            }
+            catch (Exception e)
+            {
+                await ExceptionService.SendErrorAsync(Context, e);
+            }
         }
     }
 }

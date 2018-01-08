@@ -21,6 +21,7 @@ namespace Inquisition.Data
         {
             optionsBuilder.UseSqlServer(Resources.ConnectionString);
             optionsBuilder.EnableSensitiveDataLogging(true);
+            base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
