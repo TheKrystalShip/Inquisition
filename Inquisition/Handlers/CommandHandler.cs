@@ -57,8 +57,6 @@ namespace Inquisition.Handlers
                 await ExceptionService.SendErrorAsync(e);
             }
 
-            LoggingService.Log(msg);
-
             string prefix = Resources.Prefix;
             int argPos = 0;
 
@@ -68,6 +66,8 @@ namespace Inquisition.Handlers
             {
                 SocketCommandContext context = new SocketCommandContext(DiscordClient, message);
                 IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
+
+                LoggingService.Log(context);
 
                 if (!result.IsSuccess)
                 {

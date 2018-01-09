@@ -5,6 +5,7 @@ using Inquisition.Handlers;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Inquisition.Properties;
+using Inquisition.Services;
 
 namespace Inquisition
 {
@@ -29,10 +30,16 @@ namespace Inquisition
             CommandHandler = new CommandHandler(Client);
             EventHandler = new EventHandler(Client);
 
-            await Client.SetGameAsync($"@Inquisition help");
-
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
+            try
+            {
+                await Client.LoginAsync(TokenType.Bot, Token);
+                await Client.StartAsync();
+                await Client.SetGameAsync($"@Inquisition help");
+            }
+            catch (System.Exception e)
+            {
+                LoggingService.ErrorLog(e);
+            }
 
             await Task.Delay(-1);
         }

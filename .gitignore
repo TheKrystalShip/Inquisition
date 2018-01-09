@@ -267,3 +267,4 @@ __pycache__/
 /Inquisition/Programs/youtube-dl.exe
 *.mp3
 *.jpg
+*.xml
