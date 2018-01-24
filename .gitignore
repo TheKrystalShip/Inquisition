@@ -283,3 +283,5 @@ __pycache__/
 /Inquisition.Core/Programs/ffmpeg.exe
 /Inquisition.Core/Programs/youtube-dl.exe
 /Inquisition.Core/Data/XSL.xslt
+/Inquisition.Data/Properties/Resources.resx
+/Inquisition.Data/Properties/Resources.Designer.cs

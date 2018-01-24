@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
+    <ProjectReference Include="..\Inquisition.Data\Inquisition.Data.csproj" />
     <ProjectReference Include="..\Inquisition.Report\Inquisition.Data.csproj" />
   </ItemGroup>
 
