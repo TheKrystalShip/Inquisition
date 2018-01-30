@@ -15,6 +15,7 @@ namespace Inquisition
         private DiscordSocketClient Client;
         private CommandHandler CommandHandler;
         private EventHandler EventHandler;
+		private ThreadHandler ThreadHandler;
         private string Token = Resources.Token;
 
         static void Main(string[] args) 
@@ -24,7 +25,6 @@ namespace Inquisition
         {
             try
             {
-				using (Benchmark benchmark = new Benchmark())
 				using (DbHandler db = new DbHandler())
 				{
 					db.MigrateDatabase();
@@ -33,6 +33,7 @@ namespace Inquisition
 				Client = new DiscordSocketClient();
 				CommandHandler = new CommandHandler(Client);
 				EventHandler = new EventHandler(Client);
+				ThreadHandler = new ThreadHandler(Client, new DbHandler()).StartAllLoops();
 
 				await Client.LoginAsync(TokenType.Bot, Token);
                 await Client.StartAsync();

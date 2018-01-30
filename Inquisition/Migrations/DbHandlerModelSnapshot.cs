@@ -100,9 +100,7 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<TimeSpan>("ExpiresIn");
-
-                    b.Property<string>("Name");
+                    b.Property<TimeSpan?>("ExpiresIn");
 
                     b.Property<string>("Url");
 

@@ -17,23 +17,25 @@ namespace Inquisition.Handlers
     {
         private DiscordSocketClient DiscordClient;
         private CommandService CommandService;
+		private DbHandler DbHandler;
         private IServiceProvider ServiceCollection;
 
         public CommandHandler(DiscordSocketClient discordClient)
         {
             DiscordClient = discordClient;
-
+			DbHandler = new DbHandler();
             CommandService = new CommandService();
+            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            ServiceCollection = new ServiceCollection()
+			ServiceCollection = new ServiceCollection()
                 .AddSingleton(DiscordClient)
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
                 .AddSingleton(new ReportService())
 				.AddSingleton(new DbHandler())
+				.AddSingleton(new ReminderService(DiscordClient, DbHandler))
+				.AddSingleton(new OfferService(DbHandler))
                 .BuildServiceProvider();
-
-            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
             DiscordClient.MessageReceived += HandleCommands;
         }

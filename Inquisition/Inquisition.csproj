@@ -8,6 +8,10 @@
     <Platforms>AnyCPU;x64</Platforms>
     <AssemblyName>Inquisition</AssemblyName>
     <RootNamespace>Inquisition</RootNamespace>
+    <Authors>Cristian Moraru</Authors>
+    <Company />
+    <Product />
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -20,6 +24,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LangVersion>default</LangVersion>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

@@ -114,8 +114,7 @@ namespace Inquisition.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ExpiresIn = table.Column<TimeSpan>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    ExpiresIn = table.Column<TimeSpan>(nullable: true),
                     Url = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
                 },

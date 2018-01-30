@@ -11,7 +11,7 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(DbHandler))]
-    [Migration("20180129121355_Initial")]
+    [Migration("20180130103555_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,9 +101,7 @@ namespace Inquisition.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<TimeSpan>("ExpiresIn");
-
-                    b.Property<string>("Name");
+                    b.Property<TimeSpan?>("ExpiresIn");
 
                     b.Property<string>("Url");
 
