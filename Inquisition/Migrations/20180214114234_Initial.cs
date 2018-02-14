@@ -14,9 +14,9 @@ namespace Inquisition.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Arguments = table.Column<string>(maxLength: 500, nullable: true),
+                    FileName = table.Column<string>(maxLength: 500, nullable: true),
                     IsOnline = table.Column<bool>(nullable: false),
-                    LaunchArgs = table.Column<string>(maxLength: 500, nullable: true),
-                    Path = table.Column<string>(maxLength: 500, nullable: true),
                     Port = table.Column<string>(maxLength: 10, nullable: true),
                     Version = table.Column<string>(maxLength: 10, nullable: true)
                 },
@@ -37,6 +37,35 @@ namespace Inquisition.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Guilds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reports",
+                columns: table => new
+                {
+                    Guid = table.Column<Guid>(nullable: false),
+                    Channel = table.Column<string>(maxLength: 100, nullable: true),
+                    ErrorMessage = table.Column<string>(nullable: true),
+                    GuildID = table.Column<string>(maxLength: 100, nullable: true),
+                    GuildName = table.Column<string>(maxLength: 100, nullable: true),
+                    Message = table.Column<string>(maxLength: 500, nullable: true),
+                    Path = table.Column<string>(nullable: true),
+                    ReportGuid = table.Column<Guid>(nullable: true),
+                    Severity = table.Column<int>(nullable: false),
+                    StackTrace = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false),
+                    UserID = table.Column<string>(maxLength: 100, nullable: true),
+                    UserName = table.Column<string>(maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reports", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Reports_Reports_ReportGuid",
+                        column: x => x.ReportGuid,
+                        principalTable: "Reports",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,6 +118,28 @@ namespace Inquisition.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Deals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ExpireDate = table.Column<DateTime>(nullable: false),
+                    MessageId = table.Column<string>(nullable: true),
+                    Url = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Deals_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jokes",
                 columns: table => new
                 {
@@ -102,27 +153,6 @@ namespace Inquisition.Migrations
                     table.PrimaryKey("PK_Jokes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Jokes_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Offers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ExpiresIn = table.Column<TimeSpan>(nullable: true),
-                    Url = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Offers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Offers_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -161,19 +191,24 @@ namespace Inquisition.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Jokes_UserId",
-                table: "Jokes",
+                name: "IX_Deals_UserId",
+                table: "Deals",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Offers_UserId",
-                table: "Offers",
+                name: "IX_Jokes_UserId",
+                table: "Jokes",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reminders_UserId",
                 table: "Reminders",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_ReportGuid",
+                table: "Reports",
+                column: "ReportGuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildId",
@@ -187,16 +222,19 @@ namespace Inquisition.Migrations
                 name: "Alerts");
 
             migrationBuilder.DropTable(
+                name: "Deals");
+
+            migrationBuilder.DropTable(
                 name: "Games");
 
             migrationBuilder.DropTable(
                 name: "Jokes");
 
             migrationBuilder.DropTable(
-                name: "Offers");
+                name: "Reminders");
 
             migrationBuilder.DropTable(
-                name: "Reminders");
+                name: "Reports");
 
             migrationBuilder.DropTable(
                 name: "Users");

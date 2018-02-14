@@ -27,7 +27,7 @@ namespace Inquisition.Services
 
 				Process p = new Process();
 				p.StartInfo.FileName = $"C:\\Windows\\system32\\notepad.exe";
-				p.StartInfo.Arguments = game.LaunchArgs;
+				p.StartInfo.Arguments = game.Arguments;
 				p.Start();
 
 				RunningServers.Add(game.Name, p);

@@ -16,7 +16,7 @@ namespace Inquisition.Handlers
 
         public EventHandler(DiscordSocketClient client)
         {
-			ChannelId = Convert.ToUInt64(Resources.MembersLogChannel);
+			ChannelId = Convert.ToUInt64(BotInfo.MembersLogChannel);
 			Client = client;
 
 			Client.Ready += Ready;

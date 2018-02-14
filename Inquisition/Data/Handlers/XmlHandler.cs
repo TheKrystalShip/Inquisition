@@ -1,5 +1,4 @@
 ﻿using Inquisition.Data.Models;
-
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
@@ -25,7 +24,6 @@ namespace Inquisition.Data.Handlers
 			using (StringWriter results = new StringWriter())
 			{
 				xsl.Transform(xmlFileUri, null, results);
-				string res = results.ToString();
 				return results.ToString();
 			}
 		}

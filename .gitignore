@@ -285,3 +285,6 @@ __pycache__/
 /Inquisition.Core/Data/XSL.xslt
 /Inquisition.Data/Properties/Resources.resx
 /Inquisition.Data/Properties/Resources.Designer.cs
+/Inquisition/Properties/EmailServiceInfo.Designer.cs
+/Inquisition/Properties/EmailServiceInfo.resx
+/Inquisition/Properties

@@ -13,6 +13,10 @@ namespace Inquisition.Services
 {
 	public class ReportService
 	{
+		private static DbHandler db;
+
+		public ReportService(DbHandler dbHandler) => db = dbHandler; 
+
 		// CommandService.ExecuteAsync errors
 		public static async Task Report(string e, SocketMessage msg)
 		{
@@ -38,16 +42,18 @@ namespace Inquisition.Services
 		{
 			Report report = new Report
 			{
+				Guid = Guid.NewGuid(),
 				Severity = Severity.Warning,
-				Type = Inquisition.Data.Models.Type.General,
+				Type = Data.Models.Type.General,
 				ErrorMessage = e.Message,
-				StackTrace = e.StackTrace,
-				Guid = Guid.NewGuid()
+				StackTrace = e.StackTrace
 			};
 
 			FillInnerExceptions(ref report, e);
 
 			LogHandler.GenerateLog(ref report);
+			db.Reports.Add(report);
+			db.SaveChanges();
 			Console.WriteLine($"Unexpected error ocurred, a log file has been created.");
 		}
 
@@ -56,8 +62,9 @@ namespace Inquisition.Services
         {
 			Report report = new Report
 			{
+				Guid = Guid.NewGuid(),
 				Severity = Severity.Critical,
-				Type = Inquisition.Data.Models.Type.Guild,
+				Type = Data.Models.Type.Guild,
 				Channel = ctx.Channel.Name,
 				ErrorMessage = e.Message,
 				Message = ctx.Message.Content.Replace("<@304353122019704842> ", ""),
@@ -65,14 +72,15 @@ namespace Inquisition.Services
 				GuildName = ctx.Guild.Name,
 				StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", ""),
 				UserID = ctx.User.Id.ToString(),
-				UserName = ctx.User.Username,
-				Guid = Guid.NewGuid()
+				UserName = ctx.User.Username
 			};
 
 			FillInnerExceptions(ref report, e);
 
 			LogHandler.GenerateLog(ref report);
 			EmailHandler.SendReport(report);
+			db.Reports.Add(report);
+			db.SaveChanges();
         }
 
 		private static void FillInnerExceptions(ref Report report, Exception e)
@@ -82,11 +90,11 @@ namespace Inquisition.Services
 				e = e.InnerException;
 				report.InnerExceptions.Add(new Report()
 				{
+					Guid = Guid.NewGuid(),
 					Severity = Severity.Critical,
-					Type = Inquisition.Data.Models.Type.Inner,
+					Type = Data.Models.Type.Inner,
 					ErrorMessage = e.Message,
-					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", ""),
-					Guid = Guid.NewGuid()
+					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
 				});
 			}
 		}

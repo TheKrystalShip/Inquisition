@@ -10,13 +10,13 @@ namespace Inquisition.Data.Handlers
 {
 	public class EmailHandler
 	{
-		private string Host = "smtp.gmail.com";
+		private string Host = EmailInfo.Host;
 		private int Port = 587;
-		private string Username = Resources.Username;
-		private string Password = Resources.Password;
+		private string Username = EmailInfo.Username;
+		private string Password = EmailInfo.Password;
+		private string FromAddress = EmailInfo.SenderAddress;
+		private string ToAddress = EmailInfo.TargetAddress;
 
-		private string FromAddress = Resources.SenderAddress;
-		private string ToAddress = Resources.TargetAddress;
 		private string XSLFile = Path.Combine("Data", "XSL.xslt");
 
 		public static event EventHandler EmailSent;
@@ -45,7 +45,7 @@ namespace Inquisition.Data.Handlers
 
 				MailMessage email = new MailMessage(from.Address, to.Address)
 				{
-					Subject = "Error Report",
+					Subject = $"{DateTime.Now} - Error Report",
 					IsBodyHtml = true,
 					Body = XmlHandler.Transform(report.Path, XSLFile)
 				};

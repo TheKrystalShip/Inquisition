@@ -7,15 +7,16 @@ namespace Inquisition.Data.Handlers
 {
 	public class DbHandler : DbContext
 	{
-		private string ConnectionString = Resources.ConnectionStringTesting;
+		private string ConnectionString = DbInfo.ConnectionStringTesting;
 		
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
 		public DbSet<Reminder> Reminders { get; set; }
 		public DbSet<Alert> Alerts { get; set; }
-		public DbSet<Offer> Offers { get; set; }
+		public DbSet<Deal> Deals { get; set; }
 		public DbSet<Game> Games { get; set; }
 		public DbSet<Guild> Guilds { get; set; }
+		public DbSet<Report> Reports { get; set; }
 
 		public void MigrateDatabase() => Database.Migrate();
 
@@ -71,7 +72,7 @@ namespace Inquisition.Data.Handlers
 				.HasOne(x => x.TargetUser)
 				.WithMany(x => x.TargetAlerts);
 
-			mb.Entity<Offer>()
+			mb.Entity<Deal>()
 				.HasOne(x => x.User)
 				.WithMany(x => x.Offers)
 				.OnDelete(DeleteBehavior.Cascade);

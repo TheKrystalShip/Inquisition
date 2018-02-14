@@ -31,10 +31,10 @@ namespace Inquisition.Handlers
                 .AddSingleton(DiscordClient)
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
-                .AddSingleton(new ReportService())
+                .AddSingleton(new ReportService(DbHandler))
 				.AddSingleton(new DbHandler())
 				.AddSingleton(new ReminderService(DiscordClient, DbHandler))
-				.AddSingleton(new OfferService(DbHandler))
+				.AddSingleton(new DealService(DbHandler))
                 .BuildServiceProvider();
 
             DiscordClient.MessageReceived += HandleCommands;
@@ -47,7 +47,7 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-			string prefix = Resources.Prefix;
+			string prefix = BotInfo.Prefix;
             int argPos = 0;
 
             if (message.HasMentionPrefix(DiscordClient.CurrentUser, ref argPos) ||

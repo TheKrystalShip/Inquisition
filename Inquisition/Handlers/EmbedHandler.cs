@@ -4,6 +4,8 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Inquisition.Handlers
 {
@@ -50,23 +52,63 @@ namespace Inquisition.Handlers
             return Embed;
         }
 
-		public static EmbedBuilder Create(Offer offer)
+		public static EmbedBuilder Create(Deal deal)
 		{
 			Embed = new EmbedBuilder();
 
-			if (offer.ExpireDate != null)
+			if (deal.ExpireDate != null)
 			{
-				string expires = string.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", offer.ExpireDate.Subtract(DateTime.Now));
+				string expires = string.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", deal.ExpireDate.Subtract(DateTime.Now));
 				Embed.WithTitle("Expires in: " + expires);
 			} else
 			{
 				Embed.WithTitle("No expiration date set");
 			}
 
-			Embed.WithDescription(offer.Url);
+			Embed.WithDescription(deal.Url);
 			Embed.WithCurrentTimestamp();
 			Embed.WithColor(Color.DarkGreen);
-			Embed.WithFooter($"{offer.User.Username}", offer.User.AvatarUrl);
+			Embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
+
+			return Embed;
+		}
+
+		public static EmbedBuilder Create(Deal deal, IUserMessage msg)
+		{
+			Embed = new EmbedBuilder();
+			var existingEmbed = msg.Embeds.First();
+
+			if (deal.ExpireDate != null)
+			{
+				string expires = string.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", deal.ExpireDate.Subtract(DateTime.Now));
+				Embed.WithTitle("Expires in: " + expires);
+			}
+			else
+			{
+				Embed.WithTitle("No expiration date set");
+			}
+
+			Embed.WithImageUrl(existingEmbed.Image.ToString());
+			Embed.WithDescription(existingEmbed.Description);
+			Embed.WithCurrentTimestamp();
+			Embed.WithColor(Color.DarkGreen);
+			Embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
+
+			return Embed;
+		}
+
+		public static EmbedBuilder Create(List<Deal> dealList)
+		{
+			Embed = new EmbedBuilder();
+			Embed.WithTitle("Active deals");
+			Embed.WithCurrentTimestamp();
+			Embed.WithColor(Color.DarkGreen);
+
+			foreach (Deal offer in dealList)
+			{
+				string timeRemaining = String.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", offer.ExpireDate.Subtract(DateTime.Now));
+				Embed.AddField(offer.Url, $"Time remaining: {timeRemaining}");
+			}
 
 			return Embed;
 		}

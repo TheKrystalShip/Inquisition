@@ -18,9 +18,11 @@ namespace Inquisition.Services
 	{
 		private DiscordSocketClient Client;
 		private DbHandler db;
-		private Timer Timer;
+
+		public Timer Timer { get; set; }
 		public event EventHandler LoopStarted;
 		public event EventHandler LoopStopped;
+		public event EventHandler LoopTick;
 
 		public ReminderService(DiscordSocketClient client, DbHandler dbHandler)
 		{
@@ -30,19 +32,23 @@ namespace Inquisition.Services
 
 		public void StartLoop()
 		{
-			Timer = new Timer(delegate {
-				List<Reminder> RemindersList = GetReminderList(10);
-				if (RemindersList.Count > 0)
-				{
-					foreach (Reminder r in RemindersList)
-					{
-						Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
-						db.Reminders.Remove(r);
-					}
-					db.SaveChanges();
-				}
-			}, null, 0, 1000);
+			Timer = new Timer(Loop, null, 0, 1000);
 			LoopStarted?.Invoke(this, EventArgs.Empty);
+		}
+
+		public void Loop(object state)
+		{
+			List<Reminder> RemindersList = GetReminderList(10);
+			if (RemindersList.Count > 0)
+			{
+				foreach (Reminder r in RemindersList)
+				{
+					Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
+					db.Reminders.Remove(r);
+				}
+				db.SaveChanges();
+			}
+			LoopTick?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void StopLoop()
@@ -56,10 +62,10 @@ namespace Inquisition.Services
 			if (db.Reminders.Any())
 			{
 				return db.Reminders
-				.Where(x => x.DueDate <= DateTimeOffset.UtcNow)
-				.Take(amount)
-				.Include(x => x.User)
-				.ToList();
+						 .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+						 .Take(amount)
+						 .Include(x => x.User)
+						 .ToList();
 			}
 			return new List<Reminder>();
 		}

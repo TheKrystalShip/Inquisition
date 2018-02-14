@@ -8,15 +8,15 @@ using Inquisition.Services;
 
 using System.Threading.Tasks;
 
-namespace Inquisition
+namespace Inquisition.Core
 {
-	class Program
+	public class Program
     {
         private DiscordSocketClient Client;
         private CommandHandler CommandHandler;
         private EventHandler EventHandler;
 		private ThreadHandler ThreadHandler;
-        private string Token = Resources.Token;
+        private string Token = BotInfo.Token;
 
         static void Main(string[] args) 
             => new Program().Run().GetAwaiter().GetResult();

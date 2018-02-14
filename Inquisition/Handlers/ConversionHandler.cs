@@ -31,7 +31,7 @@ namespace Inquisition.Handlers
 
 		private static Guild ToGuild(SocketGuild socketGuild)
 		{
-			return db.Guilds.FirstOrDefault(x => x.Id == socketGuild.Id.ToString()) ?? 
+			return db.Guilds.FirstOrDefault(x => x.Id == socketGuild.Id.ToString()) ??
 				new Guild
 				{
 					Name = socketGuild.Name,

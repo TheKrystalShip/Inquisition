@@ -17,9 +17,9 @@ namespace Inquisition.Data.Models
 		public bool IsOnline { get; set; }
 
 		[MaxLength(500)]
-		public string Path { get; set; }
+		public string FileName { get; set; }
 
 		[MaxLength(500)]
-		public string LaunchArgs { get; set; }
+		public string Arguments { get; set; }
     }
 }

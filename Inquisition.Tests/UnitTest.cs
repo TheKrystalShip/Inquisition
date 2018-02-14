@@ -1,9 +1,8 @@
-using System;
 using Xunit;
 
 namespace Inquisition.Tests
 {
-    public class UnitTest
+	public class UnitTest
     {
 		[Fact]
 		public void PassingTest()

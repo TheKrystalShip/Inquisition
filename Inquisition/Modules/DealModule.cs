@@ -7,34 +7,31 @@ using Inquisition.Handlers;
 using Inquisition.Services;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class OfferModule : ModuleBase<SocketCommandContext>
+	public class DealModule : ModuleBase<SocketCommandContext>
     {
 		private DbHandler db;
-		private OfferService OfferService;
 
-		public OfferModule(DbHandler dbHandler, OfferService offerService)
-		{
-			db = dbHandler;
-			OfferService = offerService;
-		}
+		public DealModule(DbHandler dbHandler) => db = dbHandler;
 
-		[Command("add offer")]
-		[Summary("Adds an offer")]
-		public async Task AddOfferAsync(string url, string timeLeft = null)
+		[Command("add deal")]
+		[Summary("Adds a deal")]
+		public async Task AddDealAsync(string url, string timeLeft = null)
 		{
 			try
 			{
 				var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
 				await Context.Channel.DeleteMessagesAsync(messages);
+				var reply = await ReplyAsync("Adding your deal...");
 
 				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
-				Offer offer = new Offer
+				Deal deal = new Deal
 				{
 					Url = url,
 					User = localUser
@@ -43,16 +40,18 @@ namespace Inquisition.Modules
 				if (timeLeft != null)
 				{
 					TimeSpan.TryParse(timeLeft, out TimeSpan expires);
-					offer.ExpireDate = DateTime.Now.Add(expires);
+					deal.ExpireDate = DateTime.Now.Add(expires);
 				}
 
-				//db.Offers.Add(offer);
-				//db.SaveChanges();
-
-				EmbedBuilder embed = EmbedHandler.Create(offer);
+				EmbedBuilder embed = EmbedHandler.Create(deal, (messages.First() as IUserMessage));
 
 				var msg = await ReplyAsync(ReplyHandler.Context(Result.Successful), false, embed.Build());
-				OfferService.AddOfferMessage(msg, offer);
+
+				deal.MessageId = msg.Id.ToString();
+
+				db.Deals.Add(deal);
+				db.SaveChanges();
+
 			}
 			catch (Exception e)
 			{
@@ -60,6 +59,17 @@ namespace Inquisition.Modules
 				Console.WriteLine(e);
 				ReportService.Report(Context, e);
 			}
+		}
+
+		[Command("deals", RunMode = RunMode.Async)]
+		[Summary("Returns all active deals")]
+		public async Task ShowDealsAsync()
+		{
+			List<Deal> dealList = db.Deals.ToList();
+
+			EmbedBuilder embed = EmbedHandler.Create(dealList);
+
+			await ReplyAsync(ReplyHandler.Generic, false, embed.Build());
 		}
     }
 }

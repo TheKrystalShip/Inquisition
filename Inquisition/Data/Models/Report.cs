@@ -1,36 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
 namespace Inquisition.Data.Models
 {
-	public enum Severity
-	{
-		Critical,
-		Warning
-	}
-	public enum Type
-	{
-		Guild,
-		General,
-		Database,
-		Inner
-	}
-
 	[XmlRoot]
 	public class Report
 	{
+		[Key]
+		public Guid Guid { get; set; }
+
 		public Severity Severity { get; set; }
 		public Type Type { get; set; }
 
+		[MaxLength(100)]
 		public string GuildName { get; set; }
+		[MaxLength(100)]
 		public string GuildID { get; set; }
 
+		[MaxLength(100)]
 		public string UserName { get; set; }
+		[MaxLength(100)]
 		public string UserID { get; set; }
 
+		[MaxLength(100)]
 		public string Channel { get; set; }
+		[MaxLength(500)]
 		public string Message { get; set; }
 
 		public string ErrorMessage { get; set; }
@@ -39,7 +35,6 @@ namespace Inquisition.Data.Models
 		[XmlArray("InnerExceptions")]
 		public List<Report> InnerExceptions { get; set; } = new List<Report>();
 
-		public Guid Guid { get; set; }
 		public string Path { get; set; }
 	}
 }

@@ -14,7 +14,7 @@ namespace Inquisition.Data.Handlers
 			string date = String.Format("{0:yyyy-MMM-dd}", DateTime.Now);
 			string year = String.Format("{0:yyyy}", DateTime.Now);
 			string month = String.Format("{0:MMM}", DateTime.Now);
-			string day = String.Format("{0:dd}", DateTime.Now);
+			string day = String.Format("{0:dddd-dd}", DateTime.Now);
 
 			string reportFileDir;
 
@@ -32,7 +32,7 @@ namespace Inquisition.Data.Handlers
 
 			string reportFileName = String.Format("{0:HH-mm-ss}", DateTime.Now);
 
-			report.Path = reportFileDir + Path.DirectorySeparatorChar + reportFileName + ".xml";
+			report.Path = Path.Combine(reportFileDir, reportFileName + ".xml");
 
 			XmlHandler.Serialize(report);
 		}
