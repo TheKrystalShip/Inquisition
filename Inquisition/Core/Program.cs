@@ -16,6 +16,7 @@ namespace Inquisition.Core
         private CommandHandler CommandHandler;
         private EventHandler EventHandler;
 		private ThreadHandler ThreadHandler;
+		private PrefixHandler PrefixHandler;
         private string Token = BotInfo.Token;
 
         static void Main(string[] args) 
@@ -33,7 +34,8 @@ namespace Inquisition.Core
 				Client = new DiscordSocketClient();
 				CommandHandler = new CommandHandler(Client);
 				EventHandler = new EventHandler(Client);
-				ThreadHandler = new ThreadHandler(Client, new DbHandler()).StartAllLoops();
+				ThreadHandler = new ThreadHandler(Client, new DbHandler());//.StartAllLoops();
+				PrefixHandler = new PrefixHandler(new DbHandler());
 
 				await Client.LoginAsync(TokenType.Bot, Token);
                 await Client.StartAsync();

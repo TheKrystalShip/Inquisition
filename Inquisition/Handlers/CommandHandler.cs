@@ -2,14 +2,12 @@
 using Discord.WebSocket;
 
 using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
 using Inquisition.Properties;
 using Inquisition.Services;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -50,10 +48,8 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-			string prefix = GetGuildPrefix(message) ?? BotInfo.Prefix;
-
-			Console.WriteLine("Prefix used after return from db: " + prefix);
-
+			string prefix = GetGuildPrefix(message) ?? BotInfo.DefaultPrefix;
+			
 			int argPos = 0;
 
             if (message.HasMentionPrefix(Client.CurrentUser, ref argPos) ||
@@ -76,14 +72,7 @@ namespace Inquisition.Handlers
 			{
 				var guildChannel = message.Channel as SocketGuildChannel;
 				string socketGuildId = guildChannel.Guild.Id.ToString();
-
-				Guild guild = db.Guilds.FirstOrDefault(x => x.Id == socketGuildId);
-
-				string prefixToReturn = guild.Prefix;
-
-				Console.WriteLine("Prefix from db for " + guild.Name + ": " + prefixToReturn);
-
-				return prefixToReturn;
+				return PrefixHandler.PrefixDictionary[socketGuildId];
 			}
 			catch (Exception e)
 			{

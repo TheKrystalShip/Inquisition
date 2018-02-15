@@ -121,6 +121,8 @@ namespace Inquisition.Modules
 				db.Guilds.Update(guild);
 				db.SaveChanges();
 
+				PrefixHandler.PrefixDictionary[contextGuildId] = newPrefix;
+
 				await ReplyAsync($"Prefix was **{currentPrefix}**, now changed to **{newPrefix}**");
 			}
 			catch (Exception e)
