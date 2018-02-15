@@ -2,7 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Commands;
 using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
@@ -33,11 +32,11 @@ namespace Inquisition.Modules
 				switch (user)
 				{
 					case null:
-						joke = Select.Joke(true);
+						joke = db.Jokes.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
 						break;
 					default:
 						User temp = db.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
-						joke = Select.Joke(temp, true);
+						joke = db.Jokes.Where(x => x.User == temp).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
 						break;
 				}
 
@@ -71,11 +70,11 @@ namespace Inquisition.Modules
 				switch (user)
 				{
 					case null:
-						Jokes = Select.JokeList(10);
+						Jokes = db.Jokes.Take(10).ToList();
 						break;
 					default:
 						User temp = db.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
-						Jokes = Select.JokeList(10, temp);
+						Jokes = db.Jokes.Where(x => x.User == temp).Take(10).ToList();
 						break;
 				}
 

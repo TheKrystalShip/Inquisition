@@ -3,7 +3,7 @@ using Xunit;
 namespace Inquisition.Tests
 {
 	public class UnitTest
-    {
+	{
 		[Fact]
 		public void PassingTest()
 		{
@@ -22,9 +22,7 @@ namespace Inquisition.Tests
 		}
 
 		[Theory]
-		[InlineData(3)]
-		[InlineData(5)]
-		[InlineData(6)]
+		[InlineData(3), InlineData(5), InlineData(6)]
 		public void OddTheory(int value)
 		{
 			Assert.True(IsOdd(value));

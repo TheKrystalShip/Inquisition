@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Inquisition.Data.Commands
 {
-	// TODO: Move to Generic types in CrudHandler class
+	[Obsolete("Obsolete, use dependency injected DbContext instead", true)]
 	public class Select
 	{
 		private static DbHandler db;

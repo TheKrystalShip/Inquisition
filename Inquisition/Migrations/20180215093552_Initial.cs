@@ -31,8 +31,10 @@ namespace Inquisition.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     IconUrl = table.Column<string>(nullable: true),
+                    MemberAuditChannelId = table.Column<string>(nullable: true),
                     MemberCount = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Prefix = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

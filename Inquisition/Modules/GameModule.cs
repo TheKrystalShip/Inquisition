@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Commands;
 using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
@@ -31,7 +30,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = Select.Game(name);
+				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 
 				if (game is null)
 				{
@@ -53,7 +52,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = Select.Game(name);
+				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -75,7 +74,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = Select.Game(name);
+				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -97,7 +96,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = Select.Game(name);
+				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -118,7 +117,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = Select.Game(name);
+				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);

@@ -91,9 +91,13 @@ namespace Inquisition.Migrations
 
                     b.Property<string>("IconUrl");
 
+                    b.Property<string>("MemberAuditChannelId");
+
                     b.Property<int>("MemberCount");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Prefix");
 
                     b.HasKey("Id");
 

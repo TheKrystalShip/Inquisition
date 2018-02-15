@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Inquisition.Properties;
+
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Inquisition.Data.Models
@@ -10,6 +12,8 @@ namespace Inquisition.Data.Models
 		public string Name { get; set; }
 		public string IconUrl { get; set; }
 		public int MemberCount { get; set; }
+		public string MemberAuditChannelId { get; set; }
+		public string Prefix { get; set; } = BotInfo.Prefix;
 
 		public virtual List<User> Users { get; set; } = new List<User>();
     }

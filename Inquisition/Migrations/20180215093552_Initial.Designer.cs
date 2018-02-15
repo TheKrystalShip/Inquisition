@@ -12,7 +12,7 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(DbHandler))]
-    [Migration("20180214114234_Initial")]
+    [Migration("20180215093552_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,9 +92,13 @@ namespace Inquisition.Migrations
 
                     b.Property<string>("IconUrl");
 
+                    b.Property<string>("MemberAuditChannelId");
+
                     b.Property<int>("MemberCount");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Prefix");
 
                     b.HasKey("Id");
 

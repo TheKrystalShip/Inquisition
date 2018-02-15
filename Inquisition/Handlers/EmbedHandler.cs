@@ -112,5 +112,16 @@ namespace Inquisition.Handlers
 
 			return Embed;
 		}
+
+		public static EmbedBuilder Create(SocketTextChannel channel)
+		{
+			Embed = new EmbedBuilder();
+			Embed.WithTitle(channel.Guild.Name);
+			Embed.WithColor(Color.Gold);
+			Embed.WithCurrentTimestamp();
+			Embed.AddField("Default log channel: ", channel.Mention);
+
+			return Embed;
+		}
     }
 }

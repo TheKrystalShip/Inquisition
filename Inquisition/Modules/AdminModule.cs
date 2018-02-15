@@ -1,12 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-
+using Inquisition.Data.Handlers;
+using Inquisition.Data.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
@@ -14,6 +16,10 @@ namespace Inquisition.Modules
 	[RequireUserPermission(GuildPermission.Administrator)]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
+		private DbHandler db;
+
+		public AdminModule(DbHandler dbHandler) => db = dbHandler;
+
         [Command("prune", RunMode = RunMode.Async)]
         [Summary("[Admin] Prunes all inactive members from the server")]
         public async Task PruneMembersAsync(int days)
