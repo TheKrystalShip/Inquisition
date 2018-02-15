@@ -13,6 +13,7 @@ namespace Inquisition.Core
 	public class Program
     {
         private DiscordSocketClient Client;
+		private DbHandler DbHandler;
         private CommandHandler CommandHandler;
         private EventHandler EventHandler;
 		private ThreadHandler ThreadHandler;
@@ -26,16 +27,13 @@ namespace Inquisition.Core
         {
             try
             {
-				using (DbHandler db = new DbHandler())
-				{
-					db.MigrateDatabase();
-				}
-
 				Client = new DiscordSocketClient();
-				CommandHandler = new CommandHandler(Client);
-				EventHandler = new EventHandler(Client);
-				ThreadHandler = new ThreadHandler(Client, new DbHandler());//.StartAllLoops();
-				PrefixHandler = new PrefixHandler(new DbHandler());
+				DbHandler = new DbHandler();
+
+				CommandHandler = new CommandHandler(Client, DbHandler);
+				EventHandler = new EventHandler(Client, DbHandler);
+				ThreadHandler = new ThreadHandler(Client, DbHandler);//.StartAllLoops();
+				PrefixHandler = new PrefixHandler(DbHandler);
 
 				await Client.LoginAsync(TokenType.Bot, Token);
                 await Client.StartAsync();

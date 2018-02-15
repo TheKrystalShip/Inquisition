@@ -7,7 +7,6 @@ using Inquisition.Data.Models;
 using Inquisition.Handlers;
 
 using System;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -8,18 +8,14 @@ namespace Inquisition.Handlers
 {
 	public class PrefixHandler
     {
-		private DbHandler db;
+		private DbHandler DbHandler;
 		public static Dictionary<string, string> PrefixDictionary { get; set; } = new Dictionary<string, string>();
 
 		public PrefixHandler(DbHandler dbHandler)
 		{
-			db = dbHandler;
-			LoadPrefixes();
-		}
+			DbHandler = dbHandler;
 
-		public void LoadPrefixes()
-		{
-			List<Guild> Guilds = db.Guilds.ToList();
+			List<Guild> Guilds = DbHandler.Guilds.ToList();
 
 			foreach (Guild guild in Guilds)
 			{

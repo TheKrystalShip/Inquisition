@@ -1,14 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+
 using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
@@ -107,7 +106,7 @@ namespace Inquisition.Modules
         }
 
 		[Command("test", RunMode = RunMode.Async)]
-		public async Task TestCommandAsync(params string[] s)
+		public async Task TestCommandAsync()
 		{
 
 		}

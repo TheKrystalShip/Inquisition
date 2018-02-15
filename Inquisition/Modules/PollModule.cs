@@ -15,7 +15,7 @@ namespace Inquisition.Modules
 		[Command("poll", RunMode = RunMode.Async)]
 		[Alias("poll:")]
 		[Summary("Create a poll")]
-		public async Task CreatePollAsync([Remainder] string r = "")
+		public async Task CreatePollAsync([Remainder] string question = "")
 		{
 			try
 			{
@@ -30,7 +30,7 @@ namespace Inquisition.Modules
 				await Context.Channel.DeleteMessagesAsync(messages);
 
 				EmbedBuilder embed = EmbedHandler.Create(Context.User);
-				embed.WithTitle(r);
+				embed.WithTitle(question);
 				embed.WithFooter($"Asked by {Context.User.Username}", Context.User.GetAvatarUrl() ?? null);
 
 				var msg = await ReplyAsync("", false, embed.Build());
@@ -38,7 +38,7 @@ namespace Inquisition.Modules
 				foreach (Emoji e in reactions)
 				{
 					await msg.AddReactionAsync(e);
-					await Task.Delay(1000);
+					Task.Delay(1000);
 				}
 			}
 			catch (Exception e)

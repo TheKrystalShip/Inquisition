@@ -1,6 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-
+using Inquisition.Data.Handlers;
 using Inquisition.Properties;
 
 using System;
@@ -11,11 +11,13 @@ namespace Inquisition.Handlers
 	public class EventHandler
     {
         private DiscordSocketClient Client;
+		private DbHandler DbHandler;
         private SocketTextChannel MembersLogChannel;
 		private ulong ChannelId;
 
-        public EventHandler(DiscordSocketClient client)
+        public EventHandler(DiscordSocketClient client, DbHandler dbHandler)
         {
+			DbHandler = dbHandler;
 			ChannelId = Convert.ToUInt64(BotInfo.MembersLogChannel);
 			Client = client;
 
