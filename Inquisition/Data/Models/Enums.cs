@@ -17,7 +17,8 @@
 	public enum LoopType
 	{
 		Reminder,
-		Deal
+		Deal,
+		Activity
 	}
 
 	public enum Severity

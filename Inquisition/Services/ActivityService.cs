@@ -11,9 +11,9 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class DealService : IThreadLoop
+	public class ActivityService : IThreadLoop
     {
-		public string Name { get; set; } = "Deal Service";
+		public string Name { get; set; } = "Activity service";
 		public Timer Timer { get; set; }
 		public event EventHandler LoopStarted;
 		public event EventHandler LoopStopped;
@@ -27,6 +27,8 @@ namespace Inquisition.Services
 
 		public void Loop(object state)
 		{
+			//List<Activity> Activities = GetActivityList();
+
 			LoopTick?.Invoke(Name, EventArgs.Empty);
 		}
 
@@ -36,12 +38,13 @@ namespace Inquisition.Services
 			LoopStopped?.Invoke(Name, EventArgs.Empty);
 		}
 
-		private List<Deal> GetDeals()
+		public List<Activity> GetActivityList()
 		{
 			DbHandler db = new DbHandler();
-			return db.Deals
+			return db.Activities
+				.Include(x => x.Guild)
 				.Include(x => x.User)
-				.ToList() ?? new List<Deal>();
+				.ToList() ?? new List<Activity>();
 		}
 	}
 }

@@ -9,10 +9,9 @@ namespace Inquisition.Handlers
 {
 	public class ConversionHandler
     {
-		private static DbHandler db = new DbHandler();
-
 		public static void AddUser(SocketGuildUser user)
 		{
+			DbHandler db = new DbHandler();
 			if (!db.Users.Any(x => x.Id == user.Id.ToString()))
 			{
 				db.Users.Add(new User
@@ -31,6 +30,7 @@ namespace Inquisition.Handlers
 
 		private static Guild ToGuild(SocketGuild socketGuild)
 		{
+			DbHandler db = new DbHandler();
 			return db.Guilds.FirstOrDefault(x => x.Id == socketGuild.Id.ToString()) ??
 				new Guild
 				{

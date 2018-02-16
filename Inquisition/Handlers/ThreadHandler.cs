@@ -1,72 +1,80 @@
 ﻿using Discord.WebSocket;
 
 using Inquisition.Data.Handlers;
+using Inquisition.Data.Interfaces;
 using Inquisition.Data.Models;
 using Inquisition.Services;
 
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
 	public class ThreadHandler
     {
-		private Dictionary<LoopType, Thread> LoopDictionary { get; set; } = new Dictionary<LoopType, Thread>();
+		private static Dictionary<LoopType, Thread> LoopDictionary { get; set; } = new Dictionary<LoopType, Thread>();
 
-		private ReminderService ReminderService;
-		private DealService DealService;
-
-		private Thread ReminderThread;
-		private Thread DealThread;
-
-		private DiscordSocketClient Client;
-		private DbHandler db;
-
-		public ThreadHandler(DiscordSocketClient socketClient, DbHandler dbHandler)
+		public ThreadHandler(DiscordSocketClient socketClient)
 		{
-			Client = socketClient;
-			db = dbHandler;
+			ReminderService reminderService = new ReminderService(socketClient);
+			HandleEvents(reminderService);
+			LoopDictionary.Add(LoopType.Reminder, new Thread(reminderService.StartLoop));
 
-			ReminderService = new ReminderService(Client, db);
-			ReminderService.LoopStarted += ReminderService_LoopStarted;
-			ReminderThread = new Thread(ReminderService.StartLoop);
-			LoopDictionary.Add(LoopType.Reminder, ReminderThread);
+			DealService dealService = new DealService();
+			HandleEvents(dealService);
+			LoopDictionary.Add(LoopType.Deal, new Thread(dealService.StartLoop));
 
-			DealService = new DealService(db);
-			DealService.LoopStarted += DealService_LoopStarted;
-			DealThread = new Thread(DealService.StartLoop);
-			LoopDictionary.Add(LoopType.Deal, DealThread);
+			ActivityService activityService = new ActivityService();
+			HandleEvents(activityService);
+			LoopDictionary.Add(LoopType.Activity, new Thread(activityService.StartLoop));
+
+			StartAllLoops();
 		}
 
-		private void ReminderService_LoopStarted(object sender, EventArgs e)
+		private void HandleEvents<T>(T service) where T: IThreadLoop
 		{
-			Console.WriteLine("Reminder loop started...");
+			service.LoopStarted += Service_LoopStarted;
+			service.LoopTick += Service_LoopTick;
+			service.LoopStopped += Service_LoopStopped;
 		}
 
-		private void DealService_LoopStarted(object sender, EventArgs e)
+		private void Service_LoopStarted(object sender, EventArgs e)
+			=> LogHandler.WriteLine(sender, "Started");
+
+		private void Service_LoopTick(object sender, EventArgs e)
+			=> LogHandler.WriteLine(sender, "Ticked");
+
+		private void Service_LoopStopped(object sender, EventArgs e) 
+			=> LogHandler.WriteLine(sender, "Stopped");
+
+		public async void StartAllLoops()
 		{
-			Console.WriteLine("Offer loop started...");
+			await Task.Delay(5000);
+			foreach (KeyValuePair<LoopType, Thread> loop in LoopDictionary)
+			{
+				loop.Value?.Start();
+			}
 		}
 
-		public void StartLoop(LoopType loop) 
+		public void StopAllLoops()
+		{
+			foreach (KeyValuePair<LoopType, Thread> loop in LoopDictionary)
+			{
+				loop.Value?.Abort();
+			}
+		}
+
+		public static void StartLoop(LoopType loop) 
 			=> LoopDictionary.GetValueOrDefault(loop).Start();
 
-		public void StopLoop(LoopType loop) 
+		/// <summary>
+		/// I know it's not ideal, just a temporary thing until i can get a flag in place to
+		/// gracefully close down the threads. Also it doesn't work anyway, platform doesn't support it.
+		/// </summary>
+		/// <param name="loop">Which loop to close down</param>
+		public static void StopLoop(LoopType loop) 
 			=> LoopDictionary.GetValueOrDefault(loop).Abort();
-
-		public ThreadHandler StartAllLoops()
-		{
-			ReminderThread?.Start();
-			DealThread?.Start();
-			return this;
-		}
-
-		public ThreadHandler StopAllLoops()
-		{
-			ReminderThread?.Abort();
-			DealThread?.Abort();
-			return this;
-		}
-    }
+	}
 }

@@ -57,7 +57,7 @@ namespace Inquisition.Data.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				EmailFailed?.Invoke(this, EventArgs.Empty);
 			}
 		}

@@ -17,6 +17,7 @@ namespace Inquisition.Data.Handlers
 		public DbSet<Game> Games { get; set; }
 		public DbSet<Guild> Guilds { get; set; }
 		public DbSet<Report> Reports { get; set; }
+		public DbSet<Activity> Activities { get; set; }
 
 		public void MigrateDatabase() => Database.Migrate();
 
@@ -46,12 +47,16 @@ namespace Inquisition.Data.Handlers
 				.WithOne(x => x.TargetUser);
 
 			mb.Entity<User>()
-				.HasMany(x => x.Offers)
+				.HasMany(x => x.Deals)
 				.WithOne(x => x.User);
 
 			mb.Entity<User>()
 				.HasOne(x => x.Guild)
 				.WithMany(x => x.Users);
+
+			mb.Entity<User>()
+				.HasMany(x => x.Activities)
+				.WithOne(x => x.User);
 
 			mb.Entity<Joke>()
 				.HasOne(x => x.User)
@@ -74,12 +79,17 @@ namespace Inquisition.Data.Handlers
 
 			mb.Entity<Deal>()
 				.HasOne(x => x.User)
-				.WithMany(x => x.Offers)
+				.WithMany(x => x.Deals)
 				.OnDelete(DeleteBehavior.Cascade);
 
 			mb.Entity<Guild>()
 				.HasMany(x => x.Users)
 				.WithOne(x => x.Guild);
+
+			mb.Entity<Activity>()
+				.HasOne(x => x.User)
+				.WithMany(x => x.Activities)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }

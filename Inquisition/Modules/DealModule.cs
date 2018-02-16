@@ -56,7 +56,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				ReportService.Report(Context, e);
 			}
 		}

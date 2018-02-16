@@ -48,7 +48,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 			}
 		}
 	}

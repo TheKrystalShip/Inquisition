@@ -22,6 +22,7 @@ namespace Inquisition.Data.Models
         public virtual List<Reminder> Reminders { get; set; } = new List<Reminder>();
         public virtual List<Alert> Alerts { get; set; } = new List<Alert>();
         public virtual List<Alert> TargetAlerts { get; set; } = new List<Alert>();
-		public virtual List<Deal> Offers { get; set; } = new List<Deal>();
+		public virtual List<Deal> Deals { get; set; } = new List<Deal>();
+		public virtual List<Activity> Activities { get; set; } = new List<Activity>();
     }
 }

@@ -12,15 +12,15 @@ namespace Inquisition.Core
 {
 	public class Program
     {
-        private DiscordSocketClient Client;
-		private DbHandler DbHandler;
-        private CommandHandler CommandHandler;
-        private EventHandler EventHandler;
+		private DiscordSocketClient Client;
+		
+		private CommandHandler CommandHandler;
+		private EventHandler EventHandler;
 		private ThreadHandler ThreadHandler;
 		private PrefixHandler PrefixHandler;
         private string Token = BotInfo.Token;
 
-        static void Main(string[] args) 
+		static void Main(string[] args) 
             => new Program().Run().GetAwaiter().GetResult();
 
         public async Task Run()
@@ -28,12 +28,11 @@ namespace Inquisition.Core
             try
             {
 				Client = new DiscordSocketClient();
-				DbHandler = new DbHandler();
 
-				CommandHandler = new CommandHandler(Client, DbHandler);
-				EventHandler = new EventHandler(Client, DbHandler);
-				ThreadHandler = new ThreadHandler(Client, DbHandler);//.StartAllLoops();
-				PrefixHandler = new PrefixHandler(DbHandler);
+				CommandHandler = new CommandHandler(Client);
+				EventHandler = new EventHandler(Client);
+				ThreadHandler = new ThreadHandler(Client);
+				PrefixHandler = new PrefixHandler();
 
 				await Client.LoginAsync(TokenType.Bot, Token);
                 await Client.StartAsync();
@@ -41,6 +40,7 @@ namespace Inquisition.Core
 			}
             catch (System.Exception e)
             {
+				LogHandler.WriteLine(e);
 				ReportService.Report(e);
             }
 

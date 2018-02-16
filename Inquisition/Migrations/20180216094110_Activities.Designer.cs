@@ -12,8 +12,8 @@ using System;
 namespace Inquisition.Migrations
 {
     [DbContext(typeof(DbHandler))]
-    [Migration("20180215093552_Initial")]
-    partial class Initial
+    [Migration("20180216094110_Activities")]
+    partial class Activities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,32 @@ namespace Inquisition.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Inquisition.Data.Models.Activity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Arguments");
+
+                    b.Property<DateTime>("DueTime");
+
+                    b.Property<string>("GuildId");
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("ScheduledTime");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Activities");
+                });
 
             modelBuilder.Entity("Inquisition.Data.Models.Alert", b =>
                 {
@@ -209,6 +235,18 @@ namespace Inquisition.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Inquisition.Data.Models.Activity", b =>
+                {
+                    b.HasOne("Inquisition.Data.Models.Guild", "Guild")
+                        .WithMany()
+                        .HasForeignKey("GuildId");
+
+                    b.HasOne("Inquisition.Data.Models.User", "User")
+                        .WithMany("Activities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Inquisition.Data.Models.Alert", b =>
                 {
                     b.HasOne("Inquisition.Data.Models.User", "TargetUser")
@@ -224,7 +262,7 @@ namespace Inquisition.Migrations
             modelBuilder.Entity("Inquisition.Data.Models.Deal", b =>
                 {
                     b.HasOne("Inquisition.Data.Models.User", "User")
-                        .WithMany("Offers")
+                        .WithMany("Deals")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

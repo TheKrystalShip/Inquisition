@@ -13,10 +13,6 @@ namespace Inquisition.Services
 {
 	public class ReportService
 	{
-		private static DbHandler db;
-
-		public ReportService(DbHandler dbHandler) => db = dbHandler; 
-
 		// CommandService.ExecuteAsync errors
 		public static async Task Report(string e, SocketMessage msg)
 		{
@@ -33,20 +29,21 @@ namespace Inquisition.Services
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex);
+				LogHandler.WriteLine(ex);
 			}
 		}
 
-		// Warning
-		public static void Report(Exception e)
+		// Non-Guild related
+		public static void Report(Exception e, Severity s = Severity.Warning, Data.Models.Type t = Data.Models.Type.General)
 		{
+			DbHandler db = new DbHandler();
 			Report report = new Report
 			{
 				Guid = Guid.NewGuid(),
-				Severity = Severity.Warning,
-				Type = Data.Models.Type.General,
+				Severity = s,
+				Type = t,
 				ErrorMessage = e.Message,
-				StackTrace = e.StackTrace
+				StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
 			};
 
 			FillInnerExceptions(ref report, e);
@@ -54,12 +51,13 @@ namespace Inquisition.Services
 			LogHandler.GenerateLog(ref report);
 			db.Reports.Add(report);
 			db.SaveChanges();
-			Console.WriteLine($"Unexpected error ocurred, a log file has been created.");
+			LogHandler.WriteLine("Unexpected error ocurred, a log file has been created.");
 		}
 
-		// Critical
-        public static void Report(SocketCommandContext ctx, Exception e)
+		// Guild related
+		public static void Report(SocketCommandContext ctx, Exception e)
         {
+			DbHandler db = new DbHandler();
 			Report report = new Report
 			{
 				Guid = Guid.NewGuid(),

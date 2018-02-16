@@ -17,13 +17,12 @@ namespace Inquisition.Handlers
     {
         private DiscordSocketClient Client;
         private CommandService CommandService;
-		private DbHandler DbHandler;
         private IServiceProvider ServiceCollection;
 
-        public CommandHandler(DiscordSocketClient discordClient, DbHandler dbHandler)
+        public CommandHandler(DiscordSocketClient discordClient)
         {
             Client = discordClient;
-			DbHandler = dbHandler;
+
             CommandService = new CommandService();
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
@@ -31,10 +30,9 @@ namespace Inquisition.Handlers
                 .AddSingleton(Client)
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
-                .AddSingleton(new ReportService(DbHandler))
-				.AddSingleton(new DbHandler())
-				.AddSingleton(new ReminderService(Client, DbHandler))
-				.AddSingleton(new DealService(DbHandler))
+                .AddSingleton(new ReportService())
+				.AddSingleton(new ReminderService(Client))
+				.AddSingleton(new DealService())
 				.AddDbContext<DbHandler>()
                 .BuildServiceProvider();
 
@@ -61,7 +59,7 @@ namespace Inquisition.Handlers
                 if (!result.IsSuccess)
                 {
                     await ReportService.Report(result.ErrorReason, msg);
-                    Console.WriteLine($"{DateTimeOffset.UtcNow} - {result.ErrorReason}");
+					LogHandler.WriteLine(result.ErrorReason);
                 }
             }
         }
@@ -76,7 +74,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				return null;
 			}
 		}

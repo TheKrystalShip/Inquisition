@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Inquisition.Data.Handlers;
+
+using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace Inquisition.Services
 {
@@ -14,7 +14,7 @@ namespace Inquisition.Services
 		public void Dispose()
 		{
 			Stopwatch.Stop();
-			Console.WriteLine("Elapsed Time (hh.mm.ss.ffffff) - " + Stopwatch.Elapsed);
+			LogHandler.WriteLine($"{Stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
 		}
 	}
 }

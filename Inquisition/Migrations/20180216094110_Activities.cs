@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Inquisition.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Activities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -91,6 +91,36 @@ namespace Inquisition.Migrations
                         principalTable: "Guilds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Arguments = table.Column<string>(nullable: true),
+                    DueTime = table.Column<DateTime>(nullable: false),
+                    GuildId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    ScheduledTime = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Activities_Guilds_GuildId",
+                        column: x => x.GuildId,
+                        principalTable: "Guilds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Activities_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,6 +213,16 @@ namespace Inquisition.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Activities_GuildId",
+                table: "Activities",
+                column: "GuildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_UserId",
+                table: "Activities",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Alerts_TargetUserId",
                 table: "Alerts",
                 column: "TargetUserId");
@@ -220,6 +260,9 @@ namespace Inquisition.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Activities");
+
             migrationBuilder.DropTable(
                 name: "Alerts");
 

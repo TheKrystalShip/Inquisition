@@ -3,6 +3,8 @@ using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
 
+using Inquisition.Data.Handlers;
+
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -39,7 +41,7 @@ namespace Inquisition.Services
             }
             catch (Exception)
             {
-                Console.WriteLine("Disconnected");
+				LogHandler.WriteLine("Disconnected");
             }
         }
 
@@ -64,7 +66,7 @@ namespace Inquisition.Services
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine("Stopped audio stream");
+						LogHandler.WriteLine("Stopped audio stream");
                     }
                     finally
                     {

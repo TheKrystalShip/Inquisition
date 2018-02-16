@@ -123,5 +123,31 @@ namespace Inquisition.Handlers
 
 			return Embed;
 		}
+
+		public static EmbedBuilder Create(Activity activity)
+		{
+			Embed = new EmbedBuilder();
+			Embed.WithColor(Color.Gold);
+			Embed.WithCurrentTimestamp();
+			Embed.WithFooter($"{activity.User.Username}", activity.User.AvatarUrl);
+
+			Embed.AddField(activity.Name, $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
+
+			return Embed;
+		}
+
+		public static EmbedBuilder Create(List<Activity> activityList)
+		{
+			Embed = new EmbedBuilder();
+			Embed.WithColor(Color.Gold);
+			Embed.WithCurrentTimestamp();
+
+			foreach (Activity activity in activityList)
+			{
+				Embed.AddField($"{activity.Name} {activity.Arguments}", $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
+			}
+
+			return Embed;
+		}
     }
 }

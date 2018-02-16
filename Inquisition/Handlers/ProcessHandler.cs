@@ -47,7 +47,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				return Result.Failed;
 			}
 		}
@@ -78,7 +78,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				return Result.Failed;
 			}
 		}
@@ -104,7 +104,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				return Result.Failed;
 			}
 		}
@@ -125,19 +125,19 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 				return Result.Failed;
 			}
 		}
 
 		private static void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
 		{
-			Console.WriteLine(e);
+			LogHandler.WriteLine(e);
 		}
 
 		private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{
-			Console.WriteLine(e);
+			LogHandler.WriteLine(e);
 		}
 	}
 }

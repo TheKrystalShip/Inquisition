@@ -17,57 +17,55 @@ namespace Inquisition.Services
 	public class ReminderService : IThreadLoop
 	{
 		private DiscordSocketClient Client;
-		private DbHandler db;
 
+		public string Name { get; set; } = "Reminider service";
 		public Timer Timer { get; set; }
 		public event EventHandler LoopStarted;
 		public event EventHandler LoopStopped;
 		public event EventHandler LoopTick;
 
-		public ReminderService(DiscordSocketClient client, DbHandler dbHandler)
-		{
-			Client = client;
-			db = dbHandler;
-		}
+		public ReminderService(DiscordSocketClient client) 
+			=> Client = client;
 
 		public void StartLoop()
 		{
 			Timer = new Timer(Loop, null, 0, 1000);
-			LoopStarted?.Invoke(this, EventArgs.Empty);
+			LoopStarted?.Invoke(Name, EventArgs.Empty);
 		}
 
 		public void Loop(object state)
 		{
 			List<Reminder> RemindersList = GetReminderList(10);
-			if (RemindersList.Count > 0)
+
+			foreach (Reminder r in RemindersList)
 			{
-				foreach (Reminder r in RemindersList)
-				{
-					Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
-					db.Reminders.Remove(r);
-				}
-				db.SaveChanges();
+				Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
+				RemoveReminder(r);
 			}
-			LoopTick?.Invoke(this, EventArgs.Empty);
+			LoopTick?.Invoke(Name, EventArgs.Empty);
 		}
 
 		public void StopLoop()
 		{
 			Timer.Dispose();
-			LoopStopped?.Invoke(this, EventArgs.Empty);
+			LoopStopped?.Invoke(Name, EventArgs.Empty);
 		}
 
 		private List<Reminder> GetReminderList(int amount)
 		{
-			if (db.Reminders.Any())
-			{
-				return db.Reminders
-						 .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
-						 .Take(amount)
-						 .Include(x => x.User)
-						 .ToList();
-			}
-			return new List<Reminder>();
+			DbHandler db = new DbHandler();
+			return db.Reminders
+				.Where(x => x.DueDate <= DateTimeOffset.UtcNow)
+				.Take(amount)
+				.Include(x => x.User)
+				.ToList() ?? new List<Reminder>();
+		}
+
+		private void RemoveReminder(Reminder r)
+		{
+			DbHandler db = new DbHandler();
+			db.Reminders.Remove(r);
+			db.SaveChanges();
 		}
 	}
 }

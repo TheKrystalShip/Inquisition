@@ -5,13 +5,14 @@ namespace Inquisition.Data.Interfaces
 {
 	public interface IThreadLoop
     {
+		string Name { get; set; }
 		Timer Timer { get; set; }
 		event EventHandler LoopStarted;
 		event EventHandler LoopStopped;
 		event EventHandler LoopTick;
 
 		void StartLoop();
-		void StopLoop();
 		void Loop(object state);
+		void StopLoop();
     }
 }

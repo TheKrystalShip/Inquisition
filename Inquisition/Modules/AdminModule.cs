@@ -110,5 +110,55 @@ namespace Inquisition.Modules
 		{
 
 		}
-    }
+	}
+
+	[Group("stop")]
+	public class StopAdminModule : ModuleBase<SocketCommandContext>
+	{
+		[Command("reminders")]
+		[Alias("reminder loop", "reminders loop")]
+		public async Task StopReminderLoopAsync()
+		{
+			ThreadHandler.StopLoop(Data.Models.LoopType.Reminder);
+		}
+
+		[Command("deals")]
+		[Alias("deal loop", "deals loop")]
+		public async Task StopDealsLoopAsync()
+		{
+			ThreadHandler.StopLoop(Data.Models.LoopType.Deal);
+		}
+
+		[Command("activities")]
+		[Alias("activity loop", "activities loop")]
+		public async Task StopActivityLoopAsync()
+		{
+			ThreadHandler.StopLoop(Data.Models.LoopType.Activity);
+		}
+	}
+
+	[Group("start")]
+	public class StartAdminModule : ModuleBase<SocketCommandContext>
+	{
+		[Command("reminders")]
+		[Alias("reminder loop", "reminders loop")]
+		public async Task StartReminderLoopAsync()
+		{
+			ThreadHandler.StartLoop(Data.Models.LoopType.Reminder);
+		}
+
+		[Command("deals")]
+		[Alias("deal loop", "deals loop")]
+		public async Task StartDealsLoopAsync()
+		{
+			ThreadHandler.StartLoop(Data.Models.LoopType.Deal);
+		}
+
+		[Command("activities")]
+		[Alias("activity loop", "activities loop")]
+		public async Task StartActivityLoopAsync()
+		{
+			ThreadHandler.StartLoop(Data.Models.LoopType.Activity);
+		}
+	}
 }
