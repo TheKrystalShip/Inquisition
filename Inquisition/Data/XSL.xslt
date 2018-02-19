@@ -31,18 +31,10 @@
         <h2>Critical Exception Report</h2>
         <table>
           <tr>
-            <th>Severity</th>
-            <th>Type</th>
             <th>Guild Name</th>
             <th>Guild ID</th>
           </tr>
           <tr>
-            <td>
-              <xsl:value-of select="Severity"/>
-            </td>
-            <td>
-              <xsl:value-of select="Type"/>
-            </td>
             <td>
               <xsl:value-of select="GuildName"/>
             </td>

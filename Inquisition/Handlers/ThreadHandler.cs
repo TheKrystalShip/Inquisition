@@ -49,39 +49,24 @@ namespace Inquisition.Handlers
 		private void Service_LoopStarted(object sender, EventArgs e)
 			=> LogHandler.WriteLine(sender, "Started");
 
-		private void Service_LoopTick(object sender, EventArgs e)
-		{
-			//LogHandler.WriteLine(sender, "Ticked");
-		}
+		private void Service_LoopTick(object sender, EventArgs e) 
+			=> LogHandler.WriteLine(sender, "Ticked");
 
 		private void Service_LoopStopped(object sender, EventArgs e) 
 			=> LogHandler.WriteLine(sender, "Stopped");
 
 		public async void StartAllLoops()
 		{
-			await Task.Delay(5000);
+			await Task.Delay(7500);
 			foreach (KeyValuePair<LoopType, Thread> loop in LoopDictionary)
 			{
 				loop.Value?.Start();
 			}
 		}
 
-		public void StopAllLoops()
-		{
-			foreach (KeyValuePair<LoopType, Thread> loop in LoopDictionary)
-			{
-				loop.Value?.Abort();
-			}
-		}
-
 		public static void StartLoop(LoopType loop) 
 			=> LoopDictionary.GetValueOrDefault(loop).Start();
 
-		/// <summary>
-		/// I know it's not ideal, just a temporary thing until i can get a flag in place to
-		/// gracefully close down the threads. Also it doesn't work anyway, platform doesn't support it.
-		/// </summary>
-		/// <param name="loop">Which loop to close down</param>
 		public static void StopLoop(LoopType loop) 
 			=> LoopDictionary.GetValueOrDefault(loop).Abort();
 	}

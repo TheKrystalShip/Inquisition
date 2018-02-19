@@ -33,7 +33,14 @@ namespace Inquisition.Handlers
 			{
 				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
 				FileName = $"{DateTime.Now:hh-mm-ss}",
-				SendEmail = false
+				SendEmail = true,
+				Host = EmailInfo.Host,
+				Port = 587,
+				Username = EmailInfo.Username,
+				Password = EmailInfo.Password,
+				FromAddress = EmailInfo.SenderAddress,
+				ToAddress = EmailInfo.TargetAddress,
+				XSLFile = Path.Combine("Data", "XSL.xslt")
 			};
 
 			ServiceCollection = new ServiceCollection()

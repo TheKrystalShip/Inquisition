@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
+using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
 using Inquisition.Reporting.Core;
@@ -33,41 +34,54 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				LogHandler.WriteLine(e);
 			}
 		}
 
 		// Non-Guild related
 		public static void Report(Exception e)
 		{
-			Report report = new Report
+			try
 			{
-				Guid = Guid.NewGuid(),
-				ErrorMessage = e.Message,
-				StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
-			};
+				Report report = new Report
+				{
+					Guid = Guid.NewGuid(),
+					ErrorMessage = e.Message,
+					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
+				};
 
-			Reporter.Report(report);
+				Reporter.Report(report);
+			}
+			catch (InvalidOperationException ex)
+			{
+				LogHandler.WriteLine(ex);
+			}
 		}
 
 		// Guild related
 		public static void Report(SocketCommandContext ctx, Exception e)
         {
-			Report report = new Report
+			try
 			{
-				Guid = Guid.NewGuid(),
-				Type = Reporting.Models.Type.General,
-				Channel = ctx.Channel.Name,
-				ErrorMessage = e.Message,
-				Message = ctx.Message.Content.Replace("<@304353122019704842> ", ""),
-				GuildID = ctx.Guild.Id.ToString(),
-				GuildName = ctx.Guild.Name,
-				StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", ""),
-				UserID = ctx.User.Id.ToString(),
-				UserName = ctx.User.Username
-			};
+				Report report = new Report
+				{
+					Guid = Guid.NewGuid(),
+					Channel = ctx.Channel.Name,
+					ErrorMessage = e.Message,
+					Message = ctx.Message.Content.Replace("<@304353122019704842> ", ""),
+					GuildID = ctx.Guild.Id.ToString(),
+					GuildName = ctx.Guild.Name,
+					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", ""),
+					UserID = ctx.User.Id.ToString(),
+					UserName = ctx.User.Username
+				};
 
-			Reporter.Report(report);
+				Reporter.Report(report);
+			}
+			catch (InvalidOperationException ex)
+			{
+				LogHandler.WriteLine(ex);
+			}
 		}
 	}
 }

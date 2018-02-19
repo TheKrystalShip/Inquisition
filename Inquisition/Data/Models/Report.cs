@@ -8,8 +8,6 @@ namespace Inquisition.Data.Models
 	{
 		public Guid Guid { get; set; }
 		
-		public Reporting.Models.Type Type { get; set; }
-		
 		public string GuildName { get; set; }
 		public string GuildID { get; set; }
 		
