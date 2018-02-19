@@ -9,6 +9,8 @@ namespace Inquisition.Data.Models
     {
 		[Key]
 		public string Id { get; set; }
+
+		[MaxLength(100)]
 		public string Name { get; set; }
 		public string IconUrl { get; set; }
 		public int MemberCount { get; set; }

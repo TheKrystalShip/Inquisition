@@ -132,12 +132,12 @@ namespace Inquisition.Handlers
 
 		private static void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
 		{
-			LogHandler.WriteLine(e);
+			Console.WriteLine(e);
 		}
 
 		private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{
-			LogHandler.WriteLine(e);
+
 		}
 	}
 }

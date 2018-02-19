@@ -13,24 +13,4 @@
 		ProcessNotRunningButOnlineInDb,
 		GenericError
 	}
-
-	public enum LoopType
-	{
-		Reminder,
-		Deal,
-		Activity
-	}
-
-	public enum Severity
-	{
-		Critical,
-		Warning
-	}
-	public enum Type
-	{
-		Guild,
-		General,
-		Database,
-		Inner
-	}
 }

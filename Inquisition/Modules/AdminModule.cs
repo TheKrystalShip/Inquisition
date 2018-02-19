@@ -119,21 +119,21 @@ namespace Inquisition.Modules
 		[Alias("reminder loop", "reminders loop")]
 		public async Task StopReminderLoopAsync()
 		{
-			ThreadHandler.StopLoop(Data.Models.LoopType.Reminder);
+			ThreadHandler.StopLoop(LoopType.Reminder);
 		}
 
 		[Command("deals")]
 		[Alias("deal loop", "deals loop")]
 		public async Task StopDealsLoopAsync()
 		{
-			ThreadHandler.StopLoop(Data.Models.LoopType.Deal);
+			ThreadHandler.StopLoop(LoopType.Deal);
 		}
 
 		[Command("activities")]
 		[Alias("activity loop", "activities loop")]
 		public async Task StopActivityLoopAsync()
 		{
-			ThreadHandler.StopLoop(Data.Models.LoopType.Activity);
+			ThreadHandler.StopLoop(LoopType.Activity);
 		}
 	}
 
@@ -144,21 +144,21 @@ namespace Inquisition.Modules
 		[Alias("reminder loop", "reminders loop")]
 		public async Task StartReminderLoopAsync()
 		{
-			ThreadHandler.StartLoop(Data.Models.LoopType.Reminder);
+			ThreadHandler.StartLoop(LoopType.Reminder);
 		}
 
 		[Command("deals")]
 		[Alias("deal loop", "deals loop")]
 		public async Task StartDealsLoopAsync()
 		{
-			ThreadHandler.StartLoop(Data.Models.LoopType.Deal);
+			ThreadHandler.StartLoop(LoopType.Deal);
 		}
 
 		[Command("activities")]
 		[Alias("activity loop", "activities loop")]
 		public async Task StartActivityLoopAsync()
 		{
-			ThreadHandler.StartLoop(Data.Models.LoopType.Activity);
+			ThreadHandler.StartLoop(LoopType.Activity);
 		}
 	}
 }

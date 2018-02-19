@@ -9,29 +9,38 @@ namespace Inquisition.Handlers
 {
 	public class ConversionHandler
     {
-		public static void AddUser(SocketGuildUser user)
+		private static DbHandler db;
+
+		public static void AddUser(SocketGuildUser socketGuildUser)
 		{
-			DbHandler db = new DbHandler();
-			if (!db.Users.Any(x => x.Id == user.Id.ToString()))
+			db = new DbHandler();
+			string socketUserId = socketGuildUser.Id.ToString();
+
+			if (!db.Users.Any(x => x.Id == socketUserId))
 			{
-				db.Users.Add(new User
-					{
-						Username = user.Username,
-						Id = user.Id.ToString(),
-						Nickname = user.Nickname,
-						AvatarUrl = user.GetAvatarUrl(),
-						Discriminator = user.Discriminator,
-						Guild = ToGuild(user.Guild)
-					}
-				);
+				Guild guild = ToGuild(socketGuildUser.Guild);
+				User user = new User
+				{
+					Username = socketGuildUser.Username,
+					Id = socketUserId,
+					Nickname = socketGuildUser.Nickname,
+					AvatarUrl = socketGuildUser.GetAvatarUrl(),
+					Discriminator = socketGuildUser.Discriminator,
+					Guild = guild
+				};
+
+				var state = db.Entry(user.Guild).State;
+
+				db.Users.Add(user);
 				db.SaveChanges();
 			}
 		}
 
 		private static Guild ToGuild(SocketGuild socketGuild)
 		{
-			DbHandler db = new DbHandler();
-			return db.Guilds.FirstOrDefault(x => x.Id == socketGuild.Id.ToString()) ??
+			string socketGuildId = socketGuild.Id.ToString();
+
+			return db.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
 				new Guild
 				{
 					Name = socketGuild.Name,

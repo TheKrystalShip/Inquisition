@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Handlers;
 using Inquisition.Properties;
 using Inquisition.Services;
@@ -40,7 +39,6 @@ namespace Inquisition.Core
 			}
             catch (System.Exception e)
             {
-				LogHandler.WriteLine(e);
 				ReportService.Report(e);
             }
 

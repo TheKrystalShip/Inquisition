@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Inquisition.Migrations
 {
-    public partial class Activities : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -33,41 +33,12 @@ namespace Inquisition.Migrations
                     IconUrl = table.Column<string>(nullable: true),
                     MemberAuditChannelId = table.Column<string>(nullable: true),
                     MemberCount = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
                     Prefix = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Guilds", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Reports",
-                columns: table => new
-                {
-                    Guid = table.Column<Guid>(nullable: false),
-                    Channel = table.Column<string>(maxLength: 100, nullable: true),
-                    ErrorMessage = table.Column<string>(nullable: true),
-                    GuildID = table.Column<string>(maxLength: 100, nullable: true),
-                    GuildName = table.Column<string>(maxLength: 100, nullable: true),
-                    Message = table.Column<string>(maxLength: 500, nullable: true),
-                    Path = table.Column<string>(nullable: true),
-                    ReportGuid = table.Column<Guid>(nullable: true),
-                    Severity = table.Column<int>(nullable: false),
-                    StackTrace = table.Column<string>(nullable: true),
-                    Type = table.Column<int>(nullable: false),
-                    UserID = table.Column<string>(maxLength: 100, nullable: true),
-                    UserName = table.Column<string>(maxLength: 100, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reports", x => x.Guid);
-                    table.ForeignKey(
-                        name: "FK_Reports_Reports_ReportGuid",
-                        column: x => x.ReportGuid,
-                        principalTable: "Reports",
-                        principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,11 +219,6 @@ namespace Inquisition.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_ReportGuid",
-                table: "Reports",
-                column: "ReportGuid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_GuildId",
                 table: "Users",
                 column: "GuildId");
@@ -277,9 +243,6 @@ namespace Inquisition.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reminders");
-
-            migrationBuilder.DropTable(
-                name: "Reports");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -16,7 +16,6 @@ namespace Inquisition.Data.Handlers
 		public DbSet<Deal> Deals { get; set; }
 		public DbSet<Game> Games { get; set; }
 		public DbSet<Guild> Guilds { get; set; }
-		public DbSet<Report> Reports { get; set; }
 		public DbSet<Activity> Activities { get; set; }
 
 		public void MigrateDatabase() => Database.Migrate();

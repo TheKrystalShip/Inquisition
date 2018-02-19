@@ -3,11 +3,13 @@ using Discord.WebSocket;
 
 using Inquisition.Data.Handlers;
 using Inquisition.Properties;
+using Inquisition.Reporting.Core;
 using Inquisition.Services;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -17,6 +19,7 @@ namespace Inquisition.Handlers
     {
         private DiscordSocketClient Client;
         private CommandService CommandService;
+		private Reporter Reporter;
         private IServiceProvider ServiceCollection;
 
         public CommandHandler(DiscordSocketClient discordClient)
@@ -26,11 +29,18 @@ namespace Inquisition.Handlers
             CommandService = new CommandService();
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
+			Reporter = new Reporter
+			{
+				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
+				FileName = $"{DateTime.Now:hh-mm-ss}",
+				SendEmail = false
+			};
+
 			ServiceCollection = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
-                .AddSingleton(new ReportService())
+                .AddSingleton(new ReportService(Reporter))
 				.AddSingleton(new ReminderService(Client))
 				.AddSingleton(new DealService())
 				.AddDbContext<DbHandler>()
@@ -59,7 +69,6 @@ namespace Inquisition.Handlers
                 if (!result.IsSuccess)
                 {
                     await ReportService.Report(result.ErrorReason, msg);
-					LogHandler.WriteLine(result.ErrorReason);
                 }
             }
         }
@@ -75,7 +84,7 @@ namespace Inquisition.Handlers
 			catch (Exception e)
 			{
 				LogHandler.WriteLine(e);
-				return null;
+				return BotInfo.DefaultPrefix;
 			}
 		}
     }

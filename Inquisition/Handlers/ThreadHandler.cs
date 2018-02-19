@@ -2,7 +2,6 @@
 
 using Inquisition.Data.Handlers;
 using Inquisition.Data.Interfaces;
-using Inquisition.Data.Models;
 using Inquisition.Services;
 
 using System;
@@ -12,6 +11,13 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
+	public enum LoopType
+	{
+		Reminder,
+		Deal,
+		Activity
+	}
+
 	public class ThreadHandler
     {
 		private static Dictionary<LoopType, Thread> LoopDictionary { get; set; } = new Dictionary<LoopType, Thread>();
@@ -44,7 +50,9 @@ namespace Inquisition.Handlers
 			=> LogHandler.WriteLine(sender, "Started");
 
 		private void Service_LoopTick(object sender, EventArgs e)
-			=> LogHandler.WriteLine(sender, "Ticked");
+		{
+			//LogHandler.WriteLine(sender, "Ticked");
+		}
 
 		private void Service_LoopStopped(object sender, EventArgs e) 
 			=> LogHandler.WriteLine(sender, "Stopped");

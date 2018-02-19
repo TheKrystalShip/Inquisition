@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 
 using Inquisition.Data.Handlers;
-using Inquisition.Properties;
 
 using System;
 using System.Threading.Tasks;
@@ -12,18 +11,18 @@ namespace Inquisition.Handlers
 	public class EventHandler
     {
         private DiscordSocketClient Client;
-        private SocketTextChannel MembersLogChannel;
-		private ulong ChannelId;
 
         public EventHandler(DiscordSocketClient client)
         {
-			ChannelId = Convert.ToUInt64(BotInfo.MembersLogChannel);
 			Client = client;
-
-			Client.Ready += Ready;
             Client.Log += Log;
+			Client.Ready += Ready;
+        }
 
-			MembersLogChannel = Client.GetChannel(ChannelId) as SocketTextChannel;
+		private Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg);
+            return Task.CompletedTask;
         }
 
 		private Task Ready()
@@ -31,12 +30,6 @@ namespace Inquisition.Handlers
 			RegisterUsers();
 			return Task.CompletedTask;
 		}
-
-		private Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg);
-            return Task.CompletedTask;
-        }
 
 		private void RegisterUsers()
 		{
@@ -53,7 +46,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(e.Message);
 			}
 		}
 	}

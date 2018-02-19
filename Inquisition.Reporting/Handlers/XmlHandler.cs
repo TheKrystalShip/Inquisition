@@ -1,19 +1,31 @@
-﻿using Inquisition.Data.Models;
+﻿using Inquisition.Reporting.Models;
+
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
 
-namespace Inquisition.Data.Handlers
+namespace Inquisition.Reporting.Handlers
 {
 	public static class XmlHandler
 	{
-		public static void Serialize(Report report)
+		public static void Serialize<T>(T report) where T: IReport
 		{
-			XmlSerializer serializer = new XmlSerializer(typeof(Report));
+			XmlSerializer serializer = new XmlSerializer(typeof(T));
 			using (TextWriter writer = new StreamWriter(report.Path))
 			{
 				serializer.Serialize(writer, report);
 			}
+		}
+
+		public static T Deserialize<T>(string path) where T: class
+		{
+			object toReturn;
+			XmlSerializer serializer = new XmlSerializer(typeof(T));
+			using (StringReader reader = new StringReader(path))
+			{
+				toReturn = serializer.Deserialize(reader);
+			}
+			return (T) toReturn;
 		}
 
 		public static string Transform(string xmlFileUri, string xsltFileUri)

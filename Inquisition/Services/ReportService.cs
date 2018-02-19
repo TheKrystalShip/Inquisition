@@ -2,9 +2,9 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
+using Inquisition.Reporting.Core;
 
 using System;
 using System.Threading.Tasks;
@@ -13,8 +13,12 @@ namespace Inquisition.Services
 {
 	public class ReportService
 	{
+		private static Reporter Reporter;
+
+		public ReportService(Reporter reporter) => Reporter = reporter;
+
 		// CommandService.ExecuteAsync errors
-		public static async Task Report(string e, SocketMessage msg)
+		public static async Task Report(string error, SocketMessage msg)
 		{
 			try
 			{
@@ -23,46 +27,36 @@ namespace Inquisition.Services
 					.WithColor(Color.DarkRed);
 
 				embed.WithTitle("Error ocurred");
-				embed.WithDescription(e);
+				embed.WithDescription(error);
 
-				await msg.Channel.SendMessageAsync("Oops...", false, embed);
+				await msg.Channel.SendMessageAsync("Oops...", false, embed.Build());
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				LogHandler.WriteLine(ex);
+				Console.WriteLine(e);
 			}
 		}
 
 		// Non-Guild related
-		public static void Report(Exception e, Severity s = Severity.Warning, Data.Models.Type t = Data.Models.Type.General)
+		public static void Report(Exception e)
 		{
-			DbHandler db = new DbHandler();
 			Report report = new Report
 			{
 				Guid = Guid.NewGuid(),
-				Severity = s,
-				Type = t,
 				ErrorMessage = e.Message,
 				StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
 			};
 
-			FillInnerExceptions(ref report, e);
-
-			LogHandler.GenerateLog(ref report);
-			db.Reports.Add(report);
-			db.SaveChanges();
-			LogHandler.WriteLine("Unexpected error ocurred, a log file has been created.");
+			Reporter.Report(report);
 		}
 
 		// Guild related
 		public static void Report(SocketCommandContext ctx, Exception e)
         {
-			DbHandler db = new DbHandler();
 			Report report = new Report
 			{
 				Guid = Guid.NewGuid(),
-				Severity = Severity.Critical,
-				Type = Data.Models.Type.Guild,
+				Type = Reporting.Models.Type.General,
 				Channel = ctx.Channel.Name,
 				ErrorMessage = e.Message,
 				Message = ctx.Message.Content.Replace("<@304353122019704842> ", ""),
@@ -73,28 +67,7 @@ namespace Inquisition.Services
 				UserName = ctx.User.Username
 			};
 
-			FillInnerExceptions(ref report, e);
-
-			LogHandler.GenerateLog(ref report);
-			EmailHandler.SendReport(report);
-			db.Reports.Add(report);
-			db.SaveChanges();
-        }
-
-		private static void FillInnerExceptions(ref Report report, Exception e)
-		{
-			while (e.InnerException != null)
-			{
-				e = e.InnerException;
-				report.InnerExceptions.Add(new Report()
-				{
-					Guid = Guid.NewGuid(),
-					Severity = Severity.Critical,
-					Type = Data.Models.Type.Inner,
-					ErrorMessage = e.Message,
-					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
-				});
-			}
+			Reporter.Report(report);
 		}
 	}
 }

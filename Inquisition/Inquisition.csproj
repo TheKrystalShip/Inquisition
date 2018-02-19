@@ -51,6 +51,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\DbInfo.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
