@@ -1,8 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -15,9 +16,9 @@ namespace Inquisition.Modules
 {
 	public class ReminderModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public ReminderModule(DbHandler dbHandler) => db = dbHandler;
+		public ReminderModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("reminders", RunMode = RunMode.Async)]
 		[Summary("Displays a list with all of your reminders")]

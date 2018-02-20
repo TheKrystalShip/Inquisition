@@ -1,6 +1,7 @@
-﻿using Inquisition.Data.Handlers;
-using Inquisition.Data.Interfaces;
-using Inquisition.Data.Models;
+﻿using Inquisition.Data.Interfaces;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
+using Inquisition.Handlers;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,9 @@ namespace Inquisition.Services
     {
 		public string Name { get; set; } = "Activity service";
 		public Timer Timer { get; set; }
-		public event EventHandler LoopStarted;
-		public event EventHandler LoopStopped;
-		public event EventHandler LoopTick;
+		public event System.EventHandler LoopStarted;
+		public event System.EventHandler LoopStopped;
+		public event System.EventHandler LoopTick;
 
 		public void StartLoop()
 		{
@@ -40,7 +41,7 @@ namespace Inquisition.Services
 
 		public List<Activity> GetActivityList()
 		{
-			DbHandler db = new DbHandler();
+			DatabaseContext db = new DatabaseContext();
 			return db.Activities
 				.Include(x => x.Guild)
 				.Include(x => x.User)

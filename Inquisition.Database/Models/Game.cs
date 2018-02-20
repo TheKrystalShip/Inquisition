@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Inquisition.Data.Models
+namespace Inquisition.Database.Models
 {
 	public class Game
-    {
+	{
 		[Key]
 		[MaxLength(100)]
 		public string Name { get; set; }
@@ -21,5 +21,5 @@ namespace Inquisition.Data.Models
 
 		[MaxLength(500)]
 		public string Arguments { get; set; }
-    }
+	}
 }

@@ -1,6 +1,7 @@
 ﻿using Discord.WebSocket;
 
 using Inquisition.Data.Models;
+using Inquisition.Database.Models;
 
 namespace Inquisition.Handlers
 {

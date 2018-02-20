@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
+using Inquisition.Database.Core;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -13,9 +13,9 @@ namespace Inquisition.Modules
 {
 	public class MemeModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public MemeModule(DbHandler dbHandler) => db = dbHandler;
+		public MemeModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("meme", RunMode = RunMode.Async)]
 		[Alias("meme by")]

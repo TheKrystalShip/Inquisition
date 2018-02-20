@@ -1,8 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
-
 using System;
 using System.Threading.Tasks;
 

@@ -29,9 +29,6 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,15 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
     <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\DbInfo.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>DbInfo.resx</DependentUpon>
-    </Compile>
     <Compile Update="Properties\EmailInfo.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -73,10 +66,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Properties\DbInfo.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DbInfo.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Update="Properties\EmailInfo.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>EmailInfo.Designer.cs</LastGenOutput>

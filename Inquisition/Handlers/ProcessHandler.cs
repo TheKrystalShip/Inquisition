@@ -1,5 +1,6 @@
-﻿using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
+﻿using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace Inquisition.Handlers
 {
 	public class ProcessHandler
     {
-		private static DbHandler db;
+		private static DatabaseContext db;
 		public static Dictionary<Game, Process> GameProcessDictionary { get; set; } = new Dictionary<Game, Process>();
 		public static Dictionary<string, Process> ProcessDictionary { get; set; } = new Dictionary<string, Process>();
 
-		public ProcessHandler(DbHandler dbHandler) => db = dbHandler;
+		public ProcessHandler(DatabaseContext dbHandler) => db = dbHandler;
 
 		public static Result StartProcess(string process)
 		{

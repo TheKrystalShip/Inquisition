@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Inquisition.Data.Models
+namespace Inquisition.Database.Models
 {
 	public class Activity
-    {
+	{
 		[Key]
 		public int Id { get; set; }
 		public string Name { get; set; }
@@ -14,5 +14,5 @@ namespace Inquisition.Data.Models
 
 		public virtual User User { get; set; }
 		public virtual Guild Guild { get; set; }
-    }
+	}
 }

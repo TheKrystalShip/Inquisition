@@ -3,7 +3,7 @@ using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
+using Inquisition.Handlers;
 
 using System;
 using System.Collections.Concurrent;

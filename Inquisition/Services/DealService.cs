@@ -1,6 +1,6 @@
-﻿using Inquisition.Data.Handlers;
-using Inquisition.Data.Interfaces;
-using Inquisition.Data.Models;
+﻿using Inquisition.Data.Interfaces;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +38,7 @@ namespace Inquisition.Services
 
 		private List<Deal> GetDeals()
 		{
-			DbHandler db = new DbHandler();
+			DatabaseContext db = new DatabaseContext();
 			return db.Deals
 				.Include(x => x.User)
 				.ToList() ?? new List<Deal>();

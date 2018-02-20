@@ -1,8 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -15,9 +16,9 @@ namespace Inquisition.Modules
 {
 	public class DealModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public DealModule(DbHandler dbHandler) => db = dbHandler;
+		public DealModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("add deal")]
 		[Summary("Adds a deal")]

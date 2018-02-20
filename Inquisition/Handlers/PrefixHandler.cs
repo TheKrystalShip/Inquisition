@@ -1,5 +1,6 @@
-﻿using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
+﻿
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Inquisition.Handlers
 
 		public PrefixHandler()
 		{
-			DbHandler db = new DbHandler();
+			DatabaseContext db = new DatabaseContext();
 
 			List<Guild> Guilds = db.Guilds.ToList();
 

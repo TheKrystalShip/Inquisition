@@ -1,12 +1,10 @@
-﻿using Inquisition.Properties;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Inquisition.Data.Models
+namespace Inquisition.Database.Models
 {
 	public class Guild
-    {
+	{
 		[Key]
 		public string Id { get; set; }
 
@@ -15,8 +13,8 @@ namespace Inquisition.Data.Models
 		public string IconUrl { get; set; }
 		public int MemberCount { get; set; }
 		public string MemberAuditChannelId { get; set; }
-		public string Prefix { get; set; } = BotInfo.DefaultPrefix;
+		public string Prefix { get; set; }
 
 		public virtual List<User> Users { get; set; } = new List<User>();
-    }
+	}
 }

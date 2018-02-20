@@ -2,8 +2,9 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 
 using System;
@@ -14,10 +15,10 @@ namespace Inquisition.Modules
 {
 	public class SettingsModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 		private DiscordSocketClient Client;
 
-		public SettingsModule(DbHandler dbHandler, DiscordSocketClient socketClient)
+		public SettingsModule(DatabaseContext dbHandler, DiscordSocketClient socketClient)
 		{
 			db = dbHandler;
 			Client = socketClient;
@@ -71,8 +72,8 @@ namespace Inquisition.Modules
 	[Group("set")]
 	public class SetSettingsModule : ModuleBase<SocketCommandContext>
 	{
-		private DbHandler db;
-		public SetSettingsModule(DbHandler dbHandler) => db = dbHandler;
+		private DatabaseContext db;
+		public SetSettingsModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("log channel")]
 		[Alias("default channel", "default log channel")]

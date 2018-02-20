@@ -1,14 +1,14 @@
-﻿using Inquisition.Data.Models;
-using Inquisition.Properties;
+﻿using Inquisition.Database.Models;
+using Inquisition.Database.Properties;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Inquisition.Data.Handlers
+namespace Inquisition.Database.Core
 {
-	public class DbHandler : DbContext
-	{
-		private string ConnectionString = DbInfo.ConnectionStringTesting;
-		
+	public class DatabaseContext : DbContext
+    {
+		private string ConnectionString = Resources.ConnectionStringTesting;
+
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
 		public DbSet<Reminder> Reminders { get; set; }

@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -16,9 +16,9 @@ namespace Inquisition.Modules
 	public class GameModule : ModuleBase<SocketCommandContext>
 	{
 		private GameService GameService;
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public GameModule(GameService gameService, DbHandler dbHandler)
+		public GameModule(GameService gameService, DatabaseContext dbHandler)
 		{
 			GameService = gameService;
 			db = dbHandler;
@@ -30,7 +30,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 
 				if (game is null)
 				{
@@ -52,7 +52,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -74,7 +74,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -96,7 +96,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -117,7 +117,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Data.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -138,7 +138,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				List<Data.Models.Game> Games = db.Games.ToList();
+				List<Database.Models.Game> Games = db.Games.ToList();
 
 				if (Games.Count == 0)
 				{
@@ -148,7 +148,7 @@ namespace Inquisition.Modules
 
 				EmbedBuilder builder = EmbedHandler.Create(Context.User);
 
-				foreach (Data.Models.Game game in Games)
+				foreach (Database.Models.Game game in Games)
 				{
 					string st = game.IsOnline ? "Online " : "Offline ";
 					builder.AddInlineField(game.Name, st + $"on port {game.Port}, version {game.Version}");

@@ -1,15 +1,13 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
+using Inquisition.Database.Core;
 using Inquisition.Properties;
-using Inquisition.Reporting.Core;
 using Inquisition.Services;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -19,7 +17,6 @@ namespace Inquisition.Handlers
     {
         private DiscordSocketClient Client;
         private CommandService CommandService;
-		private Reporter Reporter;
         private IServiceProvider ServiceCollection;
 
         public CommandHandler(DiscordSocketClient discordClient)
@@ -29,28 +26,14 @@ namespace Inquisition.Handlers
             CommandService = new CommandService();
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
-			Reporter = new Reporter
-			{
-				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
-				FileName = $"{DateTime.Now:hh-mm-ss}",
-				SendEmail = true,
-				Host = EmailInfo.Host,
-				Port = 587,
-				Username = EmailInfo.Username,
-				Password = EmailInfo.Password,
-				FromAddress = EmailInfo.SenderAddress,
-				ToAddress = EmailInfo.TargetAddress,
-				XSLFile = Path.Combine("Data", "XSL.xslt")
-			};
-
 			ServiceCollection = new ServiceCollection()
                 .AddSingleton(Client)
                 .AddSingleton(CommandService)
                 .AddSingleton(new AudioService())
-                .AddSingleton(new ReportService(Reporter))
+                .AddSingleton(new ReportService())
 				.AddSingleton(new ReminderService(Client))
 				.AddSingleton(new DealService())
-				.AddDbContext<DbHandler>()
+				.AddDbContext<DatabaseContext>()
                 .BuildServiceProvider();
 
             Client.MessageReceived += HandleCommands;

@@ -2,7 +2,7 @@
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-
+using Inquisition.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

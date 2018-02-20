@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 
 using Inquisition.Data.Models;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 
 using System;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inquisition.Data.Handlers
+namespace Inquisition.Handlers
 {
 	public class LogHandler
 	{

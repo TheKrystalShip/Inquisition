@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Inquisition.Data.Models
+namespace Inquisition.Database.Models
 {
 	public class Deal
 	{
@@ -11,5 +11,5 @@ namespace Inquisition.Data.Models
 		public string MessageId { get; set; }
 		public DateTime ExpireDate { get; set; }
 		public virtual User User { get; set; }
-    }
+	}
 }

@@ -1,9 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Interfaces;
-using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -53,7 +53,7 @@ namespace Inquisition.Services
 
 		private List<Reminder> GetReminderList(int amount)
 		{
-			DbHandler db = new DbHandler();
+			DatabaseContext db = new DatabaseContext();
 			return db.Reminders
 				.Where(x => x.DueDate <= DateTimeOffset.UtcNow)
 				.Take(amount)
@@ -63,7 +63,7 @@ namespace Inquisition.Services
 
 		private void RemoveReminder(Reminder r)
 		{
-			DbHandler db = new DbHandler();
+			DatabaseContext db = new DatabaseContext();
 			db.Reminders.Remove(r);
 			db.SaveChanges();
 		}

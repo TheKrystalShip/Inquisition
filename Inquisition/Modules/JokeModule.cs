@@ -2,8 +2,9 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -16,9 +17,9 @@ namespace Inquisition.Modules
 {
 	public class JokeModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public JokeModule(DbHandler dbHandler) => db = dbHandler;
+		public JokeModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("joke", RunMode = RunMode.Async)]
 		[Alias("joke by")]

@@ -2,12 +2,13 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
+using Inquisition.Properties;
 using Inquisition.Reporting.Core;
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Inquisition.Services
@@ -16,7 +17,22 @@ namespace Inquisition.Services
 	{
 		private static Reporter Reporter;
 
-		public ReportService(Reporter reporter) => Reporter = reporter;
+		static ReportService()
+		{
+			Reporter = new Reporter
+			{
+				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
+				FileName = $"{DateTime.Now:hh-mm-ss}",
+				SendEmail = true,
+				Host = EmailInfo.Host,
+				Port = 587,
+				Username = EmailInfo.Username,
+				Password = EmailInfo.Password,
+				FromAddress = EmailInfo.SenderAddress,
+				ToAddress = EmailInfo.TargetAddress,
+				XSLFile = Path.Combine("Data", "XSL.xslt")
+			};
+		}
 
 		// CommandService.ExecuteAsync errors
 		public static async Task Report(string error, SocketMessage msg)

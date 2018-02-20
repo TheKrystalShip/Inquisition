@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 
 using System.Linq;
 
@@ -9,11 +9,11 @@ namespace Inquisition.Handlers
 {
 	public class ConversionHandler
     {
-		private static DbHandler db;
+		private static DatabaseContext db;
 
 		public static void AddUser(SocketGuildUser socketGuildUser)
 		{
-			db = new DbHandler();
+			db = new DatabaseContext();
 			string socketUserId = socketGuildUser.Id.ToString();
 
 			if (!db.Users.Any(x => x.Id == socketUserId))

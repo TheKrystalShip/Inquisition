@@ -1,8 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
-
-using Inquisition.Data.Handlers;
-using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 
 using System;
@@ -15,8 +14,8 @@ namespace Inquisition.Modules
 {
 	public class ActivityModule : ModuleBase<SocketCommandContext>
 	{
-		private DbHandler db;
-		public ActivityModule(DbHandler dbHandler) => db = dbHandler;
+		private DatabaseContext db;
+		public ActivityModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("activities")]
 		[Alias("tasks")]
@@ -26,7 +25,7 @@ namespace Inquisition.Modules
 			string contextUserId = Context.User.Id.ToString();
 			User user = db.Users.FirstOrDefault(x => x.Id == contextUserId);
 
-			List<Data.Models.Activity> ActivityList = db.Activities.Where(x => x.User == user).ToList();
+			List<Database.Models.Activity> ActivityList = db.Activities.Where(x => x.User == user).ToList();
 
 			if (ActivityList.Count == 0)
 			{
@@ -44,8 +43,8 @@ namespace Inquisition.Modules
 	[RequireUserPermission(Discord.GuildPermission.Administrator)]
     public class ScheduleActivityModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
-		public ScheduleActivityModule(DbHandler dbHandler) => db = dbHandler;
+		private DatabaseContext db;
+		public ScheduleActivityModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("shutdown")]
 		[Alias("shutdown in")]
@@ -75,7 +74,7 @@ namespace Inquisition.Modules
 			User user = db.Users.FirstOrDefault(x => x.Id == contextUserId);
 			Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
 
-			Data.Models.Activity task = new Data.Models.Activity
+			Database.Models.Activity task = new Database.Models.Activity
 			{
 				Name = "shutdown",
 				Arguments = Args,

@@ -2,8 +2,9 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Handlers;
 using Inquisition.Data.Models;
+using Inquisition.Database.Core;
+using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Services;
 
@@ -18,9 +19,9 @@ namespace Inquisition.Modules
 {
 	public class AlertModule : ModuleBase<SocketCommandContext>
     {
-		private DbHandler db;
+		private DatabaseContext db;
 
-		public AlertModule(DbHandler dbHandler) => db = dbHandler;
+		public AlertModule(DatabaseContext dbHandler) => db = dbHandler;
 
 		[Command("alerts", RunMode = RunMode.Async)]
 		[Summary("Displays a list of all of your notifications")]

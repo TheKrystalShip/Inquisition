@@ -1,4 +1,4 @@
-﻿using Inquisition.Data.Handlers;
+﻿using Inquisition.Handlers;
 
 using System;
 using System.Diagnostics;

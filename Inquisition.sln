@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition", "Inquisition\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Tests", "Inquisition.Tests\Inquisition.Tests.csproj", "{A7654ECC-030B-4DE5-9B52-51E230FE1B88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Reporting", "Inquisition.Reporting\Inquisition.Reporting.csproj", "{3944C222-F552-49AE-9E99-4ACD2917FBBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Reporting", "Inquisition.Reporting\Inquisition.Reporting.csproj", "{3944C222-F552-49AE-9E99-4ACD2917FBBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{3944C222-F552-49AE-9E99-4ACD2917FBBD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3944C222-F552-49AE-9E99-4ACD2917FBBD}.Release|x64.ActiveCfg = Release|Any CPU
 		{3944C222-F552-49AE-9E99-4ACD2917FBBD}.Release|x64.Build.0 = Release|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Debug|x64.Build.0 = Debug|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|x64.ActiveCfg = Release|Any CPU
+		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
