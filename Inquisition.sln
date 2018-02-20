@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Tests", "Inquis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Reporting", "Inquisition.Reporting\Inquisition.Reporting.csproj", "{3944C222-F552-49AE-9E99-4ACD2917FBBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

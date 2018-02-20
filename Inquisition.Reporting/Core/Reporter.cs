@@ -3,6 +3,7 @@ using Inquisition.Reporting.Models;
 using Inquisition.Reporting.Services;
 
 using System;
+using System.IO;
 
 namespace Inquisition.Reporting.Core
 {
@@ -62,7 +63,7 @@ namespace Inquisition.Reporting.Core
 		/// <param name="report">Model implementing IReport interface</param>
 		public void Report<T>(T report) where T: IReport
 		{
-			LogHandler.GenerateLogFile(ref report, OutputPath, FileName);
+			Log(ref report, OutputPath, FileName);
 
 			if (SendEmail)
 			{
@@ -83,6 +84,17 @@ namespace Inquisition.Reporting.Core
 
 				emailService.SendReport(report);
 			}
+		}
+
+		private void Log<T>(ref T report, string outputPath, string fileName) where T: IReport
+		{
+			string reportFilePath = outputPath ?? Path.Combine("Data", "Logs");
+			Directory.CreateDirectory(reportFilePath);
+
+			string reportFileName = fileName ?? String.Format("{0:HH-mm-ss}", DateTime.Now);
+			report.Path = Path.Combine(reportFilePath, reportFileName + ".xml");
+
+			XmlHandler.Serialize(report);
 		}
 	}
 }
