@@ -115,50 +115,24 @@ namespace Inquisition.Modules
 	[Group("stop")]
 	public class StopAdminModule : ModuleBase<SocketCommandContext>
 	{
-		[Command("reminders")]
-		[Alias("reminder loop", "reminders loop")]
-		public async Task StopReminderLoopAsync()
+		[Command("loops")]
+		[Alias("all loops")]
+		public async Task StopAllLoopsAsync()
 		{
-			ThreadHandler.StopLoop(LoopType.Reminder);
-		}
-
-		[Command("deals")]
-		[Alias("deal loop", "deals loop")]
-		public async Task StopDealsLoopAsync()
-		{
-			ThreadHandler.StopLoop(LoopType.Deal);
-		}
-
-		[Command("activities")]
-		[Alias("activity loop", "activities loop")]
-		public async Task StopActivityLoopAsync()
-		{
-			ThreadHandler.StopLoop(LoopType.Activity);
+			ServiceHandler.StopAllLoops();
+			await ReplyAsync("All loops stopped");
 		}
 	}
 
 	[Group("start")]
 	public class StartAdminModule : ModuleBase<SocketCommandContext>
 	{
-		[Command("reminders")]
-		[Alias("reminder loop", "reminders loop")]
-		public async Task StartReminderLoopAsync()
+		[Command("loops")]
+		[Alias("all loops")]
+		public async Task StartAllLoopsAsync()
 		{
-			ThreadHandler.StartLoop(LoopType.Reminder);
-		}
-
-		[Command("deals")]
-		[Alias("deal loop", "deals loop")]
-		public async Task StartDealsLoopAsync()
-		{
-			ThreadHandler.StartLoop(LoopType.Deal);
-		}
-
-		[Command("activities")]
-		[Alias("activity loop", "activities loop")]
-		public async Task StartActivityLoopAsync()
-		{
-			ThreadHandler.StartLoop(LoopType.Activity);
+			ServiceHandler.StartAllLoops();
+			await ReplyAsync("All loops started");
 		}
 	}
 }

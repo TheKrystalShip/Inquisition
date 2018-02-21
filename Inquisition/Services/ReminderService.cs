@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Data.Interfaces;
+using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 
@@ -14,11 +14,10 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class ReminderService : IThreadLoop
+	public class ReminderService : IService
 	{
 		private DiscordSocketClient Client;
 
-		public string Name { get; set; } = "Reminider service";
 		public Timer Timer { get; set; }
 		public event EventHandler LoopStarted;
 		public event EventHandler LoopStopped;
@@ -30,7 +29,7 @@ namespace Inquisition.Services
 		public void StartLoop()
 		{
 			Timer = new Timer(Loop, null, 0, 1000);
-			LoopStarted?.Invoke(Name, EventArgs.Empty);
+			LoopStarted?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Loop(object state)
@@ -42,13 +41,13 @@ namespace Inquisition.Services
 				Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
 				RemoveReminder(r);
 			}
-			LoopTick?.Invoke(Name, EventArgs.Empty);
+			LoopTick?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void StopLoop()
 		{
 			Timer.Dispose();
-			LoopStopped?.Invoke(Name, EventArgs.Empty);
+			LoopStopped?.Invoke(this, EventArgs.Empty);
 		}
 
 		private List<Reminder> GetReminderList(int amount)
@@ -66,6 +65,11 @@ namespace Inquisition.Services
 			DatabaseContext db = new DatabaseContext();
 			db.Reminders.Remove(r);
 			db.SaveChanges();
+		}
+
+		public override string ToString()
+		{
+			return "Reminder service";
 		}
 	}
 }

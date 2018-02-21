@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Data.Models;
 using Inquisition.Database.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,7 +119,7 @@ namespace Inquisition.Handlers
 			Embed.WithTitle(channel.Guild.Name);
 			Embed.WithColor(Color.Gold);
 			Embed.WithCurrentTimestamp();
-			Embed.AddField("Default log channel: ", channel.Mention);
+			Embed.AddField("Default channel: ", channel.Mention);
 
 			return Embed;
 		}
@@ -144,7 +144,7 @@ namespace Inquisition.Handlers
 
 			foreach (Activity activity in activityList)
 			{
-				Embed.AddField($"{activity.Name} {activity.Arguments}", $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
+				Embed.AddField($"{activity.Id} - {activity.Name} {activity.Arguments}", $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
 			}
 
 			return Embed;

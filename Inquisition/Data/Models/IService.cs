@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
 
-namespace Inquisition.Data.Interfaces
+namespace Inquisition.Data.Models
 {
-	public interface IThreadLoop
+	public interface IService
     {
-		string Name { get; set; }
 		Timer Timer { get; set; }
 		event EventHandler LoopStarted;
 		event EventHandler LoopStopped;

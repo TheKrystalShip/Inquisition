@@ -27,10 +27,10 @@ namespace Inquisition.Handlers
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
 			ServiceCollection = new ServiceCollection()
-                .AddSingleton(Client)
-                .AddSingleton(CommandService)
-                .AddSingleton(new AudioService())
-                .AddSingleton(new ReportService())
+				.AddSingleton(Client)
+				.AddSingleton(CommandService)
+				.AddSingleton(new AudioService())
+				.AddSingleton(new ReportService())
 				.AddSingleton(new ReminderService(Client))
 				.AddSingleton(new DealService())
 				.AddDbContext<DatabaseContext>()
@@ -73,8 +73,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
-				return BotInfo.DefaultPrefix;
+				return null;
 			}
 		}
     }

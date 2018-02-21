@@ -15,7 +15,7 @@ namespace Inquisition.Core
 		
 		private CommandHandler CommandHandler;
 		private EventHandler EventHandler;
-		private ThreadHandler ThreadHandler;
+		private ServiceHandler ServiceHandler;
 		private PrefixHandler PrefixHandler;
         private string Token = BotInfo.Token;
 
@@ -30,7 +30,7 @@ namespace Inquisition.Core
 
 				CommandHandler = new CommandHandler(Client);
 				EventHandler = new EventHandler(Client);
-				ThreadHandler = new ThreadHandler(Client);
+				ServiceHandler = new ServiceHandler(Client);
 				PrefixHandler = new PrefixHandler();
 
 				await Client.LoginAsync(TokenType.Bot, Token);

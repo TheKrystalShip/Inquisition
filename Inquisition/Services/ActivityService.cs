@@ -1,7 +1,6 @@
-﻿using Inquisition.Data.Interfaces;
+﻿using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
-using Inquisition.Handlers;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -12,31 +11,30 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class ActivityService : IThreadLoop
+	public class ActivityService : IService
     {
-		public string Name { get; set; } = "Activity service";
 		public Timer Timer { get; set; }
-		public event System.EventHandler LoopStarted;
-		public event System.EventHandler LoopStopped;
-		public event System.EventHandler LoopTick;
+		public event EventHandler LoopStarted;
+		public event EventHandler LoopStopped;
+		public event EventHandler LoopTick;
 
 		public void StartLoop()
 		{
 			Timer = new Timer(Loop, null, 0, 1000);
-			LoopStarted?.Invoke(Name, EventArgs.Empty);
+			LoopStarted?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Loop(object state)
 		{
 			//List<Activity> Activities = GetActivityList();
 
-			LoopTick?.Invoke(Name, EventArgs.Empty);
+			LoopTick?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void StopLoop()
 		{
 			Timer.Dispose();
-			LoopStopped?.Invoke(Name, EventArgs.Empty);
+			LoopStopped?.Invoke(this, EventArgs.Empty);
 		}
 
 		public List<Activity> GetActivityList()
@@ -46,6 +44,11 @@ namespace Inquisition.Services
 				.Include(x => x.Guild)
 				.Include(x => x.User)
 				.ToList() ?? new List<Activity>();
+		}
+
+		public override string ToString()
+		{
+			return "Activity service";
 		}
 	}
 }

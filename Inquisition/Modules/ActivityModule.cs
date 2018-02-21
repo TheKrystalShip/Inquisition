@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
@@ -19,7 +20,6 @@ namespace Inquisition.Modules
 
 		[Command("activities")]
 		[Alias("tasks")]
-		[Summary("Show a user's activities")]
 		public async Task ShowActivitiesAsync()
 		{
 			string contextUserId = Context.User.Id.ToString();
@@ -39,8 +39,9 @@ namespace Inquisition.Modules
 		}
 	}
 
-	[Group("schedule")]
-	[RequireUserPermission(Discord.GuildPermission.Administrator)]
+	[Group("add activity")]
+	[Alias("schedule")]
+	[RequireUserPermission(GuildPermission.Administrator)]
     public class ScheduleActivityModule : ModuleBase<SocketCommandContext>
     {
 		private DatabaseContext db;
@@ -50,14 +51,14 @@ namespace Inquisition.Modules
 		[Alias("shutdown in")]
 		public async Task ScheduleShutdownAsync(int time = 0)
 		{
-			ScheduleTask($"/s /t {time}", time);
+			ScheduleActivity($"/s /t {time}", time);
 		}
 
 		[Command("reboot")]
 		[Alias("reboot in", "restart", "restart in")]
 		public async Task ScheduleRebootAsync(int time = 0)
 		{
-			ScheduleTask($"/r /t {time}", time);
+			ScheduleActivity($"/r /t {time}", time);
 		}
 
 		[Command("abort")]
@@ -67,14 +68,14 @@ namespace Inquisition.Modules
 			Process.Start("shutdown", "/a");
 		}
 
-		private void ScheduleTask(string Args, int time)
+		private void ScheduleActivity(string Args, int time)
 		{
 			string contextUserId = Context.User.Id.ToString();
 			string contextGuildId = Context.Guild.Id.ToString();
 			User user = db.Users.FirstOrDefault(x => x.Id == contextUserId);
 			Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
 
-			Database.Models.Activity task = new Database.Models.Activity
+			Database.Models.Activity activity = new Database.Models.Activity
 			{
 				Name = "shutdown",
 				Arguments = Args,
@@ -84,7 +85,7 @@ namespace Inquisition.Modules
 				Guild = guild
 			};
 
-			db.Activities.Add(task);
+			db.Activities.Add(activity);
 			db.SaveChanges();
 		}
     }

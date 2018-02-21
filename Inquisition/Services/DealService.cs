@@ -1,4 +1,4 @@
-﻿using Inquisition.Data.Interfaces;
+﻿using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 
@@ -11,9 +11,8 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class DealService : IThreadLoop
+	public class DealService : IService
     {
-		public string Name { get; set; } = "Deal Service";
 		public Timer Timer { get; set; }
 		public event EventHandler LoopStarted;
 		public event EventHandler LoopStopped;
@@ -22,18 +21,18 @@ namespace Inquisition.Services
 		public void StartLoop()
 		{
 			Timer = new Timer(Loop, null, 0, 1000);
-			LoopStarted?.Invoke(Name, EventArgs.Empty);
+			LoopStarted?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Loop(object state)
 		{
-			LoopTick?.Invoke(Name, EventArgs.Empty);
+			LoopTick?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void StopLoop()
 		{
 			Timer.Dispose();
-			LoopStopped?.Invoke(Name, EventArgs.Empty);
+			LoopStopped?.Invoke(this, EventArgs.Empty);
 		}
 
 		private List<Deal> GetDeals()
@@ -42,6 +41,11 @@ namespace Inquisition.Services
 			return db.Deals
 				.Include(x => x.User)
 				.ToList() ?? new List<Deal>();
+		}
+
+		public override string ToString()
+		{
+			return "Deal service";
 		}
 	}
 }

@@ -24,9 +24,9 @@ namespace Inquisition.Modules
 			Client = socketClient;
 		}
 
-		[Command("default channel")]
-		[Alias("log channel", "default log channel")]
-		public async Task ShowDefaultLogChannel()
+		[Command("audit channel")]
+		[Alias("default audit channel")]
+		public async Task ShowDefaultAuditChannelAsync()
 		{
 			try
 			{
@@ -39,7 +39,7 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				string defaultChannelId = guild.MemberAuditChannelId;
+				string defaultChannelId = guild.AuditChannelId;
 				SocketTextChannel channel = Client.GetChannel(Convert.ToUInt64(defaultChannelId)) as SocketTextChannel;
 
 				EmbedBuilder embed = EmbedHandler.Create(channel);
@@ -75,9 +75,9 @@ namespace Inquisition.Modules
 		private DatabaseContext db;
 		public SetSettingsModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("log channel")]
-		[Alias("default channel", "default log channel")]
-		public async Task SetDefaultLogChannel(SocketGuildChannel channel)
+		[Command("audit channel")]
+		[Alias("default audit channel")]
+		public async Task SetDefaultAuditChannelAsync(SocketGuildChannel channel)
 		{
 			try
 			{
@@ -90,7 +90,7 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				guild.MemberAuditChannelId = channel.Id.ToString();
+				guild.AuditChannelId = channel.Id.ToString();
 				db.SaveChanges();
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
