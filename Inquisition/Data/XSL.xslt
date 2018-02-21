@@ -86,7 +86,7 @@
         </table>
         <xsl:if test="InnerExceptions">
           <h2>Inner Exceptions</h2>
-          <xsl:for-each select="InnerExceptions/Report">
+          <xsl:for-each select="InnerExceptions/InnerReport">
             <table class="inner">
               <tr>
                 <th>Error Message</th>

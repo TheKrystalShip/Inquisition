@@ -19,9 +19,9 @@ namespace Inquisition.Services
 		private DiscordSocketClient Client;
 
 		public Timer Timer { get; set; }
-		public event EventHandler LoopStarted;
-		public event EventHandler LoopStopped;
-		public event EventHandler LoopTick;
+		public event EventHandler Start;
+		public event EventHandler Stop;
+		public event EventHandler Tick;
 
 		public ReminderService(DiscordSocketClient client) 
 			=> Client = client;
@@ -29,7 +29,7 @@ namespace Inquisition.Services
 		public void StartLoop()
 		{
 			Timer = new Timer(Loop, null, 0, 1000);
-			LoopStarted?.Invoke(this, EventArgs.Empty);
+			Start?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Loop(object state)
@@ -41,13 +41,13 @@ namespace Inquisition.Services
 				Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
 				RemoveReminder(r);
 			}
-			LoopTick?.Invoke(this, EventArgs.Empty);
+			Tick?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void StopLoop()
 		{
 			Timer.Dispose();
-			LoopStopped?.Invoke(this, EventArgs.Empty);
+			Stop?.Invoke(this, EventArgs.Empty);
 		}
 
 		private List<Reminder> GetReminderList(int amount)

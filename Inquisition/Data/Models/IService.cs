@@ -6,9 +6,9 @@ namespace Inquisition.Data.Models
 	public interface IService
     {
 		Timer Timer { get; set; }
-		event EventHandler LoopStarted;
-		event EventHandler LoopStopped;
-		event EventHandler LoopTick;
+		event EventHandler Start;
+		event EventHandler Stop;
+		event EventHandler Tick;
 
 		void StartLoop();
 		void Loop(object state);

@@ -103,11 +103,13 @@ namespace Inquisition.Services
 		public async Task UserJoined(SocketGuildUser user)
 		{
 			await SendAuditMessageAsync($"User joined: {user.Mention}", GetGuildAuditChannel(user.Guild));
+			ConversionHandler.AddUser(user);
 		}
 
 		public async Task UserLeft(SocketGuildUser user)
 		{
 			await SendAuditMessageAsync($"User left: {user.Mention}", GetGuildAuditChannel(user.Guild));
+			ConversionHandler.RemoveUser(user);
 		}
 
 		public async Task UserUpdated(SocketUser before, SocketUser after)

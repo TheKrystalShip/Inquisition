@@ -7,7 +7,9 @@ using Inquisition.Handlers;
 using Inquisition.Services;
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
@@ -109,6 +111,25 @@ namespace Inquisition.Modules
 		public async Task TestCommandAsync()
 		{
 
+		}
+
+		[Command("restart")]
+		[Alias("reboot")]
+		public async Task RebootAsync()
+		{
+			await ReplyAsync("Rebooting...");
+
+			ProcessStartInfo Info = new ProcessStartInfo
+			{
+				Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
+				WindowStyle = ProcessWindowStyle.Normal,
+				CreateNoWindow = false,
+				FileName = "dotnet"
+			};
+
+			Process.Start(Info);
+
+			Environment.Exit(0);
 		}
 	}
 

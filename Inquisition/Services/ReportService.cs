@@ -63,8 +63,10 @@ namespace Inquisition.Services
 				{
 					Guid = Guid.NewGuid(),
 					ErrorMessage = e.Message,
-					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", "")
+					StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
 				};
+
+				CatchInnerReports(ref report, e);
 
 				Reporter.Report(report);
 			}
@@ -87,16 +89,31 @@ namespace Inquisition.Services
 					Message = ctx.Message.Content.Replace("<@304353122019704842> ", ""),
 					GuildID = ctx.Guild.Id.ToString(),
 					GuildName = ctx.Guild.Name,
-					StackTrace = e.StackTrace.Trim().Replace("<", "").Replace(">", "").Replace("&", ""),
+					StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim(),
 					UserID = ctx.User.Id.ToString(),
 					UserName = ctx.User.Username
 				};
+
+				CatchInnerReports(ref report, e);
 
 				Reporter.Report(report);
 			}
 			catch (InvalidOperationException ex)
 			{
 				LogHandler.WriteLine(ex);
+			}
+		}
+
+		private static void CatchInnerReports(ref Report report, Exception e)
+		{
+			while (e.InnerException != null)
+			{
+				e = e.InnerException;
+				report.InnerExceptions.Add(new Report.InnerReport {
+					Guid = Guid.NewGuid(),
+					ErrorMessage = e.Message,
+					StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
+				});
 			}
 		}
 	}

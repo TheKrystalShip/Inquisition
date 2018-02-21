@@ -1,9 +1,12 @@
 ﻿using Inquisition.Reporting.Models;
 
 using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace Inquisition.Data.Models
 {
+	[XmlRoot]
 	public class Report : IReport
 	{
 		public Guid Guid { get; set; }
@@ -20,6 +23,17 @@ namespace Inquisition.Data.Models
 		public string ErrorMessage { get; set; }
 		public string StackTrace { get; set; }
 
+		[XmlArray("InnerExceptions")]
+		public List<InnerReport> InnerExceptions { get; set; } = new List<InnerReport>();
+
 		public string Path { get; set; }
+
+		public class InnerReport : IReport
+		{
+			public Guid Guid { get; set; }
+			public string ErrorMessage { get; set; }
+			public string StackTrace { get; set; }
+			public string Path { get; set; }
+		}
 	}
 }

@@ -27,9 +27,9 @@ namespace Inquisition.Handlers
 
 		private void HandleEvents<T>(T service) where T: IService
 		{
-			service.LoopStarted += Service_LoopStarted;
-			service.LoopTick += Service_LoopTick;
-			service.LoopStopped += Service_LoopStopped;
+			service.Start += Service_LoopStarted;
+			service.Tick += Service_LoopTick;
+			service.Stop += Service_LoopStopped;
 		}
 
 		private void Service_LoopStarted(object sender, EventArgs e)

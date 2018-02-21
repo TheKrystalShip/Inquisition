@@ -10,10 +10,12 @@ namespace Inquisition.Handlers
 	public class ConversionHandler
     {
 		private static DatabaseContext db;
+		public static int UsersAdded = 0;
+
+		static ConversionHandler() => db = new DatabaseContext();
 
 		public static void AddUser(SocketGuildUser socketGuildUser)
 		{
-			db = new DatabaseContext();
 			string socketUserId = socketGuildUser.Id.ToString();
 
 			if (!db.Users.Any(x => x.Id == socketUserId))
@@ -32,6 +34,18 @@ namespace Inquisition.Handlers
 				var state = db.Entry(user.Guild).State;
 
 				db.Users.Add(user);
+				db.SaveChanges();
+				UsersAdded++;
+			}
+		}
+
+		public static void RemoveUser(SocketGuildUser user)
+		{
+			string userId = user.Id.ToString();
+			if (db.Users.Any(x => x.Id == userId))
+			{
+				User toRemove = db.Users.FirstOrDefault(x => x.Id == userId);
+				db.Users.Remove(toRemove);
 				db.SaveChanges();
 			}
 		}

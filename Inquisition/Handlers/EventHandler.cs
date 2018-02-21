@@ -38,8 +38,8 @@ namespace Inquisition.Handlers
 
 		private async Task RegisterUsers()
 		{
-			await Task.Delay(2000);
 			LogHandler.WriteLine("Starting user registration...");
+			await Task.Delay(2000);
 
 			try
 			{
@@ -61,7 +61,7 @@ namespace Inquisition.Handlers
 			}
 			finally
 			{
-				LogHandler.WriteLine($"Done.");
+				LogHandler.WriteLine(ConversionHandler.UsersAdded > 0 ? $"Done, added {ConversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
 			}
 		}
 
