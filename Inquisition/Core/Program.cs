@@ -12,21 +12,22 @@ namespace Inquisition.Core
 	public class Program
     {
 		private DiscordSocketClient Client;
+		private string Token;
 		
 		private CommandHandler CommandHandler;
 		private EventHandler EventHandler;
 		private ServiceHandler ServiceHandler;
 		private PrefixHandler PrefixHandler;
-        private string Token = BotInfo.Token;
 
-		static void Main(string[] args) 
-            => new Program().Run().GetAwaiter().GetResult();
+		static void Main(string[] args)
+			=> new Program().Run();
 
-        public async Task Run()
+        private async void Run()
         {
             try
             {
 				Client = new DiscordSocketClient();
+				Token = BotInfo.Token;
 
 				CommandHandler = new CommandHandler(Client);
 				EventHandler = new EventHandler(Client);

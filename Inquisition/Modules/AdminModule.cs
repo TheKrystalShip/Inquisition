@@ -131,6 +131,14 @@ namespace Inquisition.Modules
 
 			Environment.Exit(0);
 		}
+
+		[Command("shutdown")]
+		[Alias("quit")]
+		public async Task Shutdown()
+		{
+			await ReplyAsync("Shutting down...");
+			Environment.Exit(0);
+		}
 	}
 
 	[Group("stop")]
