@@ -4,7 +4,6 @@ using Discord.WebSocket;
 
 using Inquisition.Database.Core;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Diagnostics;
@@ -38,7 +37,7 @@ namespace Inquisition.Modules
             }
             catch (Exception e)
             {
-                ReportService.Report(e);
+                ReportHandler.Report(e);
             }
         }
 
@@ -54,7 +53,7 @@ namespace Inquisition.Modules
             }
             catch (Exception e)
             {
-                ReportService.Report(e);
+                ReportHandler.Report(e);
             }
         }
 
@@ -75,7 +74,7 @@ namespace Inquisition.Modules
             }
             catch (Exception e)
             {
-                ReportService.Report(e);
+                ReportHandler.Report(e);
             }
         }
 
@@ -94,15 +93,15 @@ namespace Inquisition.Modules
 					{
 						var openLog = File.Open("DoesNotExist", FileMode.Open);
 					}
-					catch
+					catch (Exception inner2)
 					{
-						throw new FileNotFoundException(inner.Message, inner);
+						throw new FileNotFoundException(inner2.Message, inner);
 					}
 				}
 			}
 			catch (Exception e)
 			{
-				ReportService.Report(Context, e);
+				ReportHandler.Report(Context, e);
 				await ReplyAsync("", false, EmbedHandler.Create(e));
 			}
         }

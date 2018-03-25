@@ -1,4 +1,5 @@
-﻿using Inquisition.Reporting.Handlers;
+﻿using Inquisition.Excepitions;
+using Inquisition.Reporting.Handlers;
 using Inquisition.Reporting.Models;
 using Inquisition.Reporting.Services;
 
@@ -69,7 +70,7 @@ namespace Inquisition.Reporting.Core
 			{
 				if (Host is null || Username is null || Password is null || FromAddress is null || ToAddress is null || XSLFile is null || Port == 0)
 				{
-					throw new InvalidOperationException("Email parameters not specified");
+					throw new InquisitionReportException("Email parameters not specified");
 				}
 
 				EmailService emailService = new EmailService() {

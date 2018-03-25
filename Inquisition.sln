@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Reporting", "In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Logging", "Inquisition.Logging\Inquisition.Logging.csproj", "{01B684FB-020C-415F-AFED-025E0BE3DC3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Exceptions", "Inquisition.Exceptions\Inquisition.Exceptions.csproj", "{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,22 @@ Global
 		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|x64.ActiveCfg = Release|Any CPU
 		{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}.Release|x64.Build.0 = Release|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Debug|x64.Build.0 = Debug|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Release|x64.ActiveCfg = Release|Any CPU
+		{01B684FB-020C-415F-AFED-025E0BE3DC3B}.Release|x64.Build.0 = Release|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Debug|x64.Build.0 = Debug|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Release|x64.ActiveCfg = Release|Any CPU
+		{2630D5B1-E8F3-4ADA-A419-4D38E3C4E53C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

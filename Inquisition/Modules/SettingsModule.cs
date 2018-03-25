@@ -6,6 +6,7 @@ using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 		}
 
@@ -97,7 +98,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 		}
 
@@ -120,14 +121,14 @@ namespace Inquisition.Modules
 				guild.Prefix = newPrefix.Trim();
 				db.Guilds.Update(guild);
 				db.SaveChanges();
-
-				PrefixHandler.PrefixDictionary[contextGuildId] = newPrefix;
+				
+				PrefixHandler.SetPrefix(contextGuildId, newPrefix);
 
 				await ReplyAsync($"Prefix was **{currentPrefix}**, now changed to **{newPrefix}**");
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 		}
 	}

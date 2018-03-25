@@ -2,6 +2,8 @@
 using Discord.WebSocket;
 
 using Inquisition.Database.Core;
+using Inquisition.Exceptions;
+using Inquisition.Logging;
 using Inquisition.Properties;
 using Inquisition.Services;
 
@@ -13,24 +15,25 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class CommandHandler
+	public class CommandHandler : BaseHandler
     {
         private DiscordSocketClient Client;
         private CommandService CommandService;
         private IServiceProvider ServiceCollection;
 
-        public CommandHandler(DiscordSocketClient discordClient)
+        public CommandHandler(DiscordSocketClient client)
         {
-            Client = discordClient;
+            Client = client;
 
             CommandService = new CommandService();
             CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
 			ServiceCollection = new ServiceCollection()
+				.AddLogging()
 				.AddSingleton(Client)
 				.AddSingleton(CommandService)
 				.AddSingleton(new AudioService())
-				.AddSingleton(new ReportService())
+				.AddSingleton(new ReportHandler())
 				.AddSingleton(new ReminderService(Client))
 				.AddSingleton(new DealService())
 				.AddDbContext<DatabaseContext>()
@@ -47,18 +50,19 @@ namespace Inquisition.Handlers
                 return;
 
 			string prefix = GetGuildPrefix(message) ?? BotInfo.DefaultPrefix;
-			
 			int argPos = 0;
 
-            if (message.HasMentionPrefix(Client.CurrentUser, ref argPos) ||
-                message.HasStringPrefix(prefix, ref argPos))
+			bool messageHasMention = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
+			bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
+
+			if (messageHasMention || messageHasPrefix)
             {
                 SocketCommandContext context = new SocketCommandContext(Client, message);
                 IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
 
                 if (!result.IsSuccess)
                 {
-                    await ReportService.Report(result.ErrorReason, msg);
+                    await ReportHandler.Report(result.ErrorReason, msg);
                 }
             }
         }
@@ -69,12 +73,13 @@ namespace Inquisition.Handlers
 			{
 				var guildChannel = message.Channel as SocketGuildChannel;
 				string socketGuildId = guildChannel.Guild.Id.ToString();
-				return PrefixHandler.PrefixDictionary[socketGuildId];
+				return PrefixHandler.GetPrefix(socketGuildId);
 			}
-			catch (Exception e)
+			catch (InquisitionNotFoundException e)
 			{
+				LogHandler.WriteLine(LogTarget.Console, e);
 				return null;
 			}
 		}
-    }
+	}
 }

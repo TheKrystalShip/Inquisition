@@ -36,7 +36,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportService.Report(Context, e);
+				ReportHandler.Report(Context, e);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				ReportService.Report(Context, e);
+				ReportHandler.Report(Context, e);
 			}
 		}
 	}

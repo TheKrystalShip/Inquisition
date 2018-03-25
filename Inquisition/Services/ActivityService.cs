@@ -1,40 +1,28 @@
-﻿using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+﻿using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class ActivityService : IService
+	public class ActivityService : BaseService
     {
-		public Timer Timer { get; set; }
-		public event EventHandler Start;
-		public event EventHandler Stop;
-		public event EventHandler Tick;
-
-		public void StartLoop()
+		public override void StartLoop()
 		{
-			Timer = new Timer(Loop, null, 0, 1000);
-			Start?.Invoke(this, EventArgs.Empty);
+			base.StartLoop();
 		}
 
-		public void Loop(object state)
+		public override void Loop(object state)
 		{
-			//List<Activity> Activities = GetActivityList();
-
-			Tick?.Invoke(this, EventArgs.Empty);
+			base.Loop(state);
 		}
 
-		public void StopLoop()
+		public override void StopLoop()
 		{
-			Timer.Dispose();
-			Stop?.Invoke(this, EventArgs.Empty);
+			base.StopLoop();
 		}
 
 		public List<Activity> GetActivityList()

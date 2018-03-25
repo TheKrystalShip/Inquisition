@@ -44,7 +44,7 @@ namespace Inquisition.Modules
             }
             catch (System.Exception e)
             {
-                ReportService.Report(Context, e);
+                ReportHandler.Report(Context, e);
             }
         }
     }

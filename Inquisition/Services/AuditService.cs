@@ -3,6 +3,7 @@
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Linq;
@@ -10,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class AuditService
+	public class AuditService : BaseService
     {
 		private DiscordSocketClient Client;
 		private static DatabaseContext db;
 
 		static AuditService() => db = new DatabaseContext();
-		public AuditService(DiscordSocketClient socketClient) => Client = socketClient;
+		public AuditService(DiscordSocketClient client) => Client = client;
 
 		public async Task ChannelCreated(SocketChannel socketChannel)
 		{
@@ -96,7 +97,7 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 		}
 
@@ -158,14 +159,7 @@ namespace Inquisition.Services
 		}
 		private async Task SendAuditMessageAsync(string message, SocketTextChannel channel)
 		{
-			try
-			{
-				await channel.SendMessageAsync(message);
-			}
-			catch (Exception e)
-			{
-				LogHandler.WriteLine(e);
-			}
+			await channel.SendMessageAsync(message);
 		}
 	}
 }

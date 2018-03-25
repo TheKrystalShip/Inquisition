@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class ConversionHandler
+	public class ConversionHandler : BaseHandler
     {
 		private static DatabaseContext db;
 		public static int UsersAdded = 0;
@@ -17,7 +17,6 @@ namespace Inquisition.Handlers
 		public static void AddUser(SocketGuildUser socketGuildUser)
 		{
 			string socketUserId = socketGuildUser.Id.ToString();
-
 			if (!db.Users.Any(x => x.Id == socketUserId))
 			{
 				Guild guild = ToGuild(socketGuildUser.Guild);
@@ -30,8 +29,6 @@ namespace Inquisition.Handlers
 					Discriminator = socketGuildUser.Discriminator,
 					Guild = guild
 				};
-
-				var state = db.Entry(user.Guild).State;
 
 				db.Users.Add(user);
 				db.SaveChanges();
@@ -53,7 +50,6 @@ namespace Inquisition.Handlers
 		private static Guild ToGuild(SocketGuild socketGuild)
 		{
 			string socketGuildId = socketGuild.Id.ToString();
-
 			return db.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
 				new Guild
 				{

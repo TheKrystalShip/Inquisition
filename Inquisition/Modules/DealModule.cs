@@ -5,6 +5,7 @@ using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
@@ -57,8 +58,8 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(e);
-				ReportService.Report(Context, e);
+				LogHandler.WriteLine(LogTarget.Console, e);
+				ReportHandler.Report(Context, e);
 			}
 		}
 

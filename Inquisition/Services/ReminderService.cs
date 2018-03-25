@@ -10,30 +10,26 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class ReminderService : IService
+	public class ReminderService : BaseService
 	{
 		private DiscordSocketClient Client;
 
-		public Timer Timer { get; set; }
-		public event EventHandler Start;
-		public event EventHandler Stop;
-		public event EventHandler Tick;
-
-		public ReminderService(DiscordSocketClient client) 
-			=> Client = client;
-
-		public void StartLoop()
+		public ReminderService(DiscordSocketClient client)
 		{
-			Timer = new Timer(Loop, null, 0, 1000);
-			Start?.Invoke(this, EventArgs.Empty);
+			Client = client;
 		}
 
-		public void Loop(object state)
+		public override void StartLoop()
 		{
+			base.StartLoop();
+		}
+
+		public override void Loop(object state)
+		{
+			base.Loop(state);
 			List<Reminder> RemindersList = GetReminderList(10);
 
 			foreach (Reminder r in RemindersList)
@@ -41,13 +37,11 @@ namespace Inquisition.Services
 				Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
 				RemoveReminder(r);
 			}
-			Tick?.Invoke(this, EventArgs.Empty);
 		}
 
-		public void StopLoop()
+		public override void StopLoop()
 		{
-			Timer.Dispose();
-			Stop?.Invoke(this, EventArgs.Empty);
+			base.StopLoop();
 		}
 
 		private List<Reminder> GetReminderList(int amount)

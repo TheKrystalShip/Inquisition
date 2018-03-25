@@ -3,7 +3,7 @@ using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Concurrent;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class AudioService
+	public class AudioService : BaseService
     {
         private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels =
             new ConcurrentDictionary<ulong, IAudioClient>();
@@ -41,7 +41,7 @@ namespace Inquisition.Services
             }
             catch (Exception)
             {
-				LogHandler.WriteLine("Disconnected");
+				LogHandler.WriteLine(LogTarget.Console, "Disconnected");
             }
         }
 
@@ -66,7 +66,7 @@ namespace Inquisition.Services
                     }
                     catch (Exception)
                     {
-						LogHandler.WriteLine("Stopped audio stream");
+						LogHandler.WriteLine(LogTarget.Console, "Stopped audio stream");
                     }
                     finally
                     {

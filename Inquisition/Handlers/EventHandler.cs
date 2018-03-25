@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
+using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class EventHandler
+	public class EventHandler : BaseHandler
     {
         private DiscordSocketClient Client;
 		private AuditService AuditService;
@@ -26,7 +27,7 @@ namespace Inquisition.Handlers
 
 		private Task Log(LogMessage msg)
         {
-            Console.WriteLine(msg);
+			Console.WriteLine(msg);
 			return Task.CompletedTask;
         }
 
@@ -38,8 +39,7 @@ namespace Inquisition.Handlers
 
 		private async Task RegisterUsers()
 		{
-			LogHandler.WriteLine("Starting user registration...");
-			await Task.Delay(2000);
+			LogHandler.WriteLine(LogTarget.Console, "Starting user registration...");
 
 			try
 			{
@@ -57,11 +57,11 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e.Message);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 			finally
 			{
-				LogHandler.WriteLine(ConversionHandler.UsersAdded > 0 ? $"Done, added {ConversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
+				LogHandler.WriteLine(LogTarget.Console, ConversionHandler.UsersAdded > 0 ? $"Done, added {ConversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
 			}
 		}
 

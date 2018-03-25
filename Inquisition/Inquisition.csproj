@@ -53,6 +53,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
+    <ProjectReference Include="..\Inquisition.Exceptions\Inquisition.Exceptions.csproj" />
+    <ProjectReference Include="..\Inquisition.Logging\Inquisition.Logging.csproj" />
     <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
   </ItemGroup>
 

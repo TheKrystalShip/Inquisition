@@ -1,11 +1,11 @@
-﻿using Inquisition.Handlers;
+﻿using Inquisition.Logging;
 
 using System;
 using System.Diagnostics;
 
 namespace Inquisition.Services
 {
-	public class Benchmark : IDisposable
+	public class Benchmark : BaseService, IDisposable
 	{
 		private Stopwatch Stopwatch;
 
@@ -14,7 +14,7 @@ namespace Inquisition.Services
 		public void Dispose()
 		{
 			Stopwatch.Stop();
-			LogHandler.WriteLine($"{Stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
+			LogHandler.WriteLine(LogTarget.Console, $"{Stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
 		}
 	}
 }

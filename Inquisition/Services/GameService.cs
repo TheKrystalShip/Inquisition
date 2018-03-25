@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class GameService
+	public class GameService : BaseService
 	{
 		public static Dictionary<string, Process> RunningServers { get; set; } = new Dictionary<string, Process>();
 		public static string Path = $"";
@@ -22,7 +22,7 @@ namespace Inquisition.Services
 			{
 				if (RunningServers.TryGetValue(game.Name, out Process temp))
 				{
-					await ReportService.Report(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
+					await ReportHandler.Report(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
 					return;
 				}
 
@@ -40,7 +40,7 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				ReportService.Report(context, e);
+				ReportHandler.Report(context, e);
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				ReportService.Report(context, e);
+				ReportHandler.Report(context, e);
 			}
 		}
 

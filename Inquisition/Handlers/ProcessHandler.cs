@@ -1,6 +1,7 @@
 ﻿using Inquisition.Data.Models;
 using Inquisition.Database.Core;
 using Inquisition.Database.Models;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class ProcessHandler
+	public class ProcessHandler : BaseHandler
     {
 		private static DatabaseContext db;
 		public static Dictionary<Game, Process> GameProcessDictionary { get; set; } = new Dictionary<Game, Process>();
@@ -48,7 +49,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 				return Result.Failed;
 			}
 		}
@@ -79,7 +80,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 				return Result.Failed;
 			}
 		}
@@ -105,7 +106,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 				return Result.Failed;
 			}
 		}
@@ -126,7 +127,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 				return Result.Failed;
 			}
 		}

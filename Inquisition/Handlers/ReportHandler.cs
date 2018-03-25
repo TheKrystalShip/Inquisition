@@ -3,7 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-using Inquisition.Handlers;
+using Inquisition.Logging;
 using Inquisition.Properties;
 using Inquisition.Reporting.Core;
 
@@ -11,28 +11,23 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Inquisition.Services
+namespace Inquisition.Handlers
 {
-	public class ReportService
+	public class ReportHandler : BaseHandler
 	{
-		private static Reporter Reporter;
-
-		static ReportService()
+		private static Reporter Reporter = new Reporter
 		{
-			Reporter = new Reporter
-			{
-				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
-				FileName = $"{DateTime.Now:hh-mm-ss}",
-				SendEmail = true,
-				Host = EmailInfo.Host,
-				Port = 587,
-				Username = EmailInfo.Username,
-				Password = EmailInfo.Password,
-				FromAddress = EmailInfo.SenderAddress,
-				ToAddress = EmailInfo.TargetAddress,
-				XSLFile = Path.Combine("Data", "XSL.xslt")
-			};
-		}
+			OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
+			FileName = $"{DateTime.Now:hh-mm-ss}",
+			SendEmail = true,
+			Host = EmailInfo.Host,
+			Port = 587,
+			Username = EmailInfo.Username,
+			Password = EmailInfo.Password,
+			FromAddress = EmailInfo.SenderAddress,
+			ToAddress = EmailInfo.TargetAddress,
+			XSLFile = Path.Combine("Data", "XSL.xslt")
+		};
 
 		// CommandService.ExecuteAsync errors
 		public static async Task Report(string error, SocketMessage msg)
@@ -50,7 +45,7 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(e);
+				LogHandler.WriteLine(LogTarget.Console, e);
 			}
 		}
 
@@ -72,7 +67,7 @@ namespace Inquisition.Services
 			}
 			catch (InvalidOperationException ex)
 			{
-				LogHandler.WriteLine(ex);
+				LogHandler.WriteLine(LogTarget.Console, ex);
 			}
 		}
 
@@ -100,7 +95,7 @@ namespace Inquisition.Services
 			}
 			catch (InvalidOperationException ex)
 			{
-				LogHandler.WriteLine(ex);
+				LogHandler.WriteLine(LogTarget.Console, ex);
 			}
 		}
 

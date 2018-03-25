@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Inquisition.Handlers
+namespace Inquisition.Logging
 {
-	public class LogHandler
+	internal class ConsoleLog : LogBase
 	{
-		public static void WriteLine<T>(params T[] value) where T: class
+		public override void Log<T>(params T[] value)
 		{
 			string data = "";
 			foreach (T t in value)
