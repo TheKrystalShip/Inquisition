@@ -5,6 +5,7 @@
 		File,
 		Database,
 		Event,
-		Console
+		Console,
+		All
     }
 }

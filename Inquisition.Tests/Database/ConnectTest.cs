@@ -1,4 +1,4 @@
-﻿using Inquisition.Database.Core;
+﻿using Inquisition.Database;
 
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace Inquisition.Tests.Database
 		[Fact]
 		public void DatabaseEnsureCreated()
 		{
-			Assert.True(db.Database.EnsureCreated());
+			
 		}
     }
 }

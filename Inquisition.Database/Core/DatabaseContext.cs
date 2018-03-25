@@ -3,11 +3,11 @@ using Inquisition.Database.Properties;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Inquisition.Database.Core
+namespace Inquisition.Database
 {
 	public class DatabaseContext : DbContext
     {
-		private string ConnectionString = Resources.ConnectionStringTesting;
+		private string ConnectionString = Resources.ConnectionStringDocker;
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
@@ -18,17 +18,25 @@ namespace Inquisition.Database.Core
 		public DbSet<Guild> Guilds { get; set; }
 		public DbSet<Activity> Activities { get; set; }
 
+		public DatabaseContext() : base()
+		{
+			Database.Migrate();
+		}
+
 		public void MigrateDatabase() => Database.Migrate();
 
 		protected override void OnConfiguring(DbContextOptionsBuilder ob)
 		{
 			base.OnConfiguring(ob);
+
 			ob.UseSqlServer(ConnectionString);
 			ob.EnableSensitiveDataLogging(true);
 		}
 
 		protected override void OnModelCreating(ModelBuilder mb)
 		{
+			base.OnModelCreating(mb);
+
 			mb.Entity<User>()
 				.HasMany(x => x.Jokes)
 				.WithOne(x => x.User);

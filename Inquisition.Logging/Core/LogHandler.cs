@@ -24,6 +24,16 @@
 					logBase = new ConsoleLog();
 					logBase.Log<T>(value);
 					break;
+				case LogTarget.All:
+					logBase = new FileLog();
+					logBase.Log<T>(value);
+					logBase = new DbLog();
+					logBase.Log<T>(value);
+					logBase = new EventLog();
+					logBase.Log<T>(value);
+					logBase = new ConsoleLog();
+					logBase.Log<T>(value);
+					break;
 				default:
 					break;
 			}

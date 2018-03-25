@@ -1,12 +1,9 @@
 ﻿using Inquisition.Excepitions;
-using Inquisition.Reporting.Handlers;
-using Inquisition.Reporting.Models;
-using Inquisition.Reporting.Services;
 
 using System;
 using System.IO;
 
-namespace Inquisition.Reporting.Core
+namespace Inquisition.Reporting
 {
 	public class Reporter
     {

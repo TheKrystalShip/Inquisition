@@ -1,13 +1,13 @@
 ﻿using Discord.WebSocket;
 
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 
 using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class ConversionHandler : BaseHandler
+	public class ConversionHandler : Handler
     {
 		private static DatabaseContext db;
 		public static int UsersAdded = 0;

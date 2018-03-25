@@ -1,7 +1,8 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Exceptions;
 using Inquisition.Logging;
 using Inquisition.Properties;
@@ -15,18 +16,26 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class CommandHandler : BaseHandler
+	public class CommandHandler : Handler
     {
         private DiscordSocketClient Client;
         private CommandService CommandService;
         private IServiceProvider ServiceCollection;
 
-        public CommandHandler(DiscordSocketClient client)
-        {
-            Client = client;
+		public CommandHandler(DiscordSocketClient client)
+			=> Init(client).Wait();
 
-            CommandService = new CommandService();
-            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
+		private async Task Init(DiscordSocketClient client)
+		{
+			Client = client;
+
+			CommandService = new CommandService(new CommandServiceConfig() {
+				DefaultRunMode = RunMode.Async,
+				LogLevel = LogSeverity.Debug,
+				CaseSensitiveCommands = false
+			});
+
+			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
 			ServiceCollection = new ServiceCollection()
 				.AddLogging()
@@ -37,10 +46,12 @@ namespace Inquisition.Handlers
 				.AddSingleton(new ReminderService(Client))
 				.AddSingleton(new DealService())
 				.AddDbContext<DatabaseContext>()
-                .BuildServiceProvider();
+				.BuildServiceProvider();
 
-            Client.MessageReceived += HandleCommands;
-        }
+			Console.Title = "Inquisition";
+
+			Client.MessageReceived += HandleCommands;
+		}
 
         private async Task HandleCommands(SocketMessage msg)
         {

@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  inquisition:
+    container_name: inquisition
+    image: inquisition
+    build:
+      context: .
+      dockerfile: Inquisition/Dockerfile
+    depends_on:
+      - sqlserver
+  sqlserver:
+    image: 'microsoft/mssql-server-linux:latest'
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA='Y'
+      - SA_PASSWORD=OperationHusky99
+    ports:
+      - '1433:1433'

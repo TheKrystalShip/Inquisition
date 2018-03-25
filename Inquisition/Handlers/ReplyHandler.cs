@@ -5,7 +5,7 @@ using Inquisition.Database.Models;
 
 namespace Inquisition.Handlers
 {
-	public class ReplyHandler : BaseHandler
+	public class ReplyHandler : Handler
     {
         public static string Generic = $"Here you go:";
 

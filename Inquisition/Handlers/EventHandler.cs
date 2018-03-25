@@ -9,35 +9,42 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class EventHandler : BaseHandler
+	public class EventHandler : Handler
     {
         private DiscordSocketClient Client;
-		private AuditService AuditService;
+		private EventService EventService;
 
-        public EventHandler(DiscordSocketClient client)
-        {
+		public EventHandler(DiscordSocketClient client)
+			=> Init(client);
+
+		private void Init(DiscordSocketClient client)
+		{
 			Client = client;
-			AuditService = new AuditService(Client);
+			EventService = new EventService(Client);
 
-            Client.Log += Log;
+			Client.Log += Log;
 			Client.Ready += Ready;
 
 			SubscribeToAuditService();
-        }
+		}
 
 		private Task Log(LogMessage msg)
         {
-			Console.WriteLine(msg);
+			if (!msg.Message.Contains("OpCode"))
+			{
+				Console.WriteLine(msg);
+			}
+
 			return Task.CompletedTask;
         }
 
-		private async Task Ready()
+		private Task Ready()
 		{
-			await RegisterUsers();
-			//ServiceHandler.StartAllLoops();
+			RegisterUsers();
+			return Task.CompletedTask;
 		}
 
-		private async Task RegisterUsers()
+		private void RegisterUsers()
 		{
 			LogHandler.WriteLine(LogTarget.Console, "Starting user registration...");
 
@@ -53,7 +60,7 @@ namespace Inquisition.Handlers
 						}
 					}
 				}
-				
+
 			}
 			catch (Exception e)
 			{
@@ -67,22 +74,22 @@ namespace Inquisition.Handlers
 
 		private void SubscribeToAuditService()
 		{
-			Client.ChannelCreated += (channel) => AuditService.ChannelCreated(channel);
-			Client.ChannelDestroyed += (channel) => AuditService.ChannelDestroyed(channel);
-			Client.ChannelUpdated += (before, after) => AuditService.ChannelUpdated(before, after);
+			Client.ChannelCreated += (channel) => EventService.ChannelCreated(channel);
+			Client.ChannelDestroyed += (channel) => EventService.ChannelDestroyed(channel);
+			Client.ChannelUpdated += (before, after) => EventService.ChannelUpdated(before, after);
 
-			Client.GuildMemberUpdated += (before, after) => AuditService.GuildMemberUpdated(before, after);
-			Client.GuildUpdated += (before, after) => AuditService.GuildUpdated(before, after);
+			Client.GuildMemberUpdated += (before, after) => EventService.GuildMemberUpdated(before, after);
+			Client.GuildUpdated += (before, after) => EventService.GuildUpdated(before, after);
 
-			Client.RoleCreated += (role) => AuditService.RoleCreated(role);
-			Client.RoleDeleted += (role) => AuditService.RoleDeleted(role);
-			Client.RoleUpdated += (before, after) => AuditService.RoleUpdated(before, after);
+			Client.RoleCreated += (role) => EventService.RoleCreated(role);
+			Client.RoleDeleted += (role) => EventService.RoleDeleted(role);
+			Client.RoleUpdated += (before, after) => EventService.RoleUpdated(before, after);
 
-			Client.UserBanned += (user, guild) => AuditService.UserBanned(user, guild);
-			Client.UserJoined += (user) => AuditService.UserJoined(user);
-			Client.UserLeft += (user) => AuditService.UserLeft(user);
-			Client.UserUnbanned += (user, guild) => AuditService.UserUnbanned(user, guild);
-			Client.UserUpdated += (before, after) => AuditService.UserUpdated(before, after);
+			Client.UserBanned += (user, guild) => EventService.UserBanned(user, guild);
+			Client.UserJoined += (user) => EventService.UserJoined(user);
+			Client.UserLeft += (user) => EventService.UserLeft(user);
+			Client.UserUnbanned += (user, guild) => EventService.UserUnbanned(user, guild);
+			Client.UserUpdated += (before, after) => EventService.UserUpdated(before, after);
 		}
 	}
 }

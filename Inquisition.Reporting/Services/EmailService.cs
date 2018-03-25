@@ -1,13 +1,10 @@
-﻿using Inquisition.Reporting.Handlers;
-using Inquisition.Reporting.Models;
-
-using System;
+﻿using System;
 using System.Net.Mail;
 using System.Threading;
 
-namespace Inquisition.Reporting.Services
+namespace Inquisition.Reporting
 {
-	public class EmailService
+	internal class EmailService
 	{
 		public string Host { get; set; }
 		public int Port { get; set; }

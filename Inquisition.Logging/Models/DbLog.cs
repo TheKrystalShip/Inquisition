@@ -2,11 +2,11 @@
 
 namespace Inquisition.Logging
 {
-	internal class FileLog : LogBase
+	internal class DbLog : LogBase
 	{
 		public override void Log<T>(params T[] value)
 		{
-			throw new InquisitionLoggingException("Not implemented");
+			throw new InquisitionLogException("No implemented");
 		}
 	}
 }

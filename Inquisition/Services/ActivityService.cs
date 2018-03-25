@@ -1,4 +1,4 @@
-﻿using Inquisition.Database.Core;
+﻿using Inquisition.Database;
 using Inquisition.Database.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +8,11 @@ using System.Linq;
 
 namespace Inquisition.Services
 {
-	public class ActivityService : BaseService
+	public class ActivityService : Service
     {
-		public override void StartLoop()
+		public override void Init(int startDelay = 0, int interval = 1000)
 		{
-			base.StartLoop();
+			base.Init(startDelay, interval);
 		}
 
 		public override void Loop(object state)
@@ -20,9 +20,9 @@ namespace Inquisition.Services
 			base.Loop(state);
 		}
 
-		public override void StopLoop()
+		public override void Dispose()
 		{
-			base.StopLoop();
+			base.Dispose();
 		}
 
 		public List<Activity> GetActivityList()
@@ -32,11 +32,6 @@ namespace Inquisition.Services
 				.Include(x => x.Guild)
 				.Include(x => x.User)
 				.ToList() ?? new List<Activity>();
-		}
-
-		public override string ToString()
-		{
-			return "Activity service";
 		}
 	}
 }

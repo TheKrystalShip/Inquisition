@@ -1,5 +1,5 @@
 ﻿using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Logging;
 
@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class ProcessHandler : BaseHandler
+	public class ProcessHandler : Handler
     {
 		private static DatabaseContext db;
 		public static Dictionary<Game, Process> GameProcessDictionary { get; set; } = new Dictionary<Game, Process>();

@@ -2,9 +2,8 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ namespace Inquisition.Modules
 
 		public MemeModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("meme", RunMode = RunMode.Async)]
+		[Command("meme")]
 		[Alias("meme by")]
 		[Summary("Displays a random meme by random user unless user is specified")]
 		public async Task ShowMemeAsync(SocketGuildUser user = null)
@@ -32,7 +31,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("meme random", RunMode = RunMode.Async)]
+		[Command("meme random")]
 		[Alias("random meme")]
 		[Summary("Shows a random meme")]
 		public async Task ShowRandomMemeAsync()
@@ -56,7 +55,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("memes", RunMode = RunMode.Async)]
+		[Command("memes")]
 		[Alias("memes by")]
 		[Summary("Shows a list of all memes from all users unless user is specified")]
 		public async Task ListMemesAsync(SocketUser user = null)
@@ -71,7 +70,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("add meme", RunMode = RunMode.Async)]
+		[Command("add meme")]
 		[Summary("Adds a new meme")]
 		public async Task AddMemeAsync([Remainder] string url)
 		{
@@ -85,7 +84,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("delete meme", RunMode = RunMode.Async)]
+		[Command("delete meme")]
 		[Alias("remove meme")]
 		[Summary("Delete a meme")]
 		public async Task RemoveMemeAsync(int id)

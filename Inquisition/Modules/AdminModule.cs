@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Handlers;
 
 using System;
@@ -20,7 +20,7 @@ namespace Inquisition.Modules
 
 		public AdminModule(DatabaseContext dbHandler) => db = dbHandler;
 
-        [Command("prune", RunMode = RunMode.Async)]
+        [Command("prune")]
         [Summary("[Admin] Prunes all inactive members from the server")]
         public async Task PruneMembersAsync(int days)
         {
@@ -41,7 +41,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("ban", RunMode = RunMode.Async)]
+        [Command("ban")]
         [Summary("[Admin] Bans a user from the server")]
         public async Task BanMemberAsync(SocketGuildUser user, [Remainder] string reason = "")
         {
@@ -57,7 +57,8 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("wipe", RunMode = RunMode.Async), Alias("wipe last", "wipe the last")]
+        [Command("wipe")]
+		[Alias("wipe last", "wipe the last")]
         [Summary("[Admin] Wipes X number of messages from a text channel")]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
         {
@@ -78,7 +79,7 @@ namespace Inquisition.Modules
             }
         }
 
-        [Command("error", RunMode = RunMode.Async)]
+        [Command("error")]
         public async Task RaiseErrorAsync()
         {
 			try
@@ -106,7 +107,7 @@ namespace Inquisition.Modules
 			}
         }
 
-		[Command("test", RunMode = RunMode.Async)]
+		[Command("test")]
 		public async Task TestCommandAsync()
 		{
 

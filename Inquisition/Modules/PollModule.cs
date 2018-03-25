@@ -2,7 +2,6 @@
 using Discord.Commands;
 
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Inquisition.Modules
 {
 	public class PollModule : ModuleBase<SocketCommandContext>
     {
-		[Command("poll", RunMode = RunMode.Async)]
+		[Command("poll")]
 		[Alias("poll:")]
 		[Summary("Create a poll")]
 		public async Task CreatePollAsync([Remainder] string question = "")
@@ -38,7 +37,7 @@ namespace Inquisition.Modules
 				foreach (Emoji e in reactions)
 				{
 					await msg.AddReactionAsync(e);
-					Task.Delay(1000);
+					await Task.Delay(1000);
 				}
 			}
 			catch (Exception e)

@@ -18,7 +18,7 @@ namespace Inquisition.Modules
             CommandService = commandService;
         }
 
-        [Command("help", RunMode = RunMode.Async)]
+        [Command("help")]
         [Summary("List of all available commands.")]
         public async Task Help()
         {

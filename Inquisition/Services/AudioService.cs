@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class AudioService : BaseService
+	public class AudioService : Service
     {
         private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels =
             new ConcurrentDictionary<ulong, IAudioClient>();

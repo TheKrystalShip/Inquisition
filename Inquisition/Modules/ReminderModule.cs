@@ -2,10 +2,9 @@
 using Discord.Commands;
 
 using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace Inquisition.Modules
 
 		public ReminderModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("reminders", RunMode = RunMode.Async)]
+		[Command("reminders")]
 		[Summary("Displays a list with all of your reminders")]
 		public async Task ListRemindersAsync()
 		{
@@ -50,7 +49,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("add reminder", RunMode = RunMode.Async)]
+		[Command("add reminder")]
 		[Summary("Add a new reminder")]
 		public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
 		{
@@ -96,7 +95,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("delete reminder", RunMode = RunMode.Async)]
+		[Command("delete reminder")]
 		[Alias("remove reminder")]
 		[Summary("Remove a reminder")]
 		public async Task RemoveReminderAsync(int id)

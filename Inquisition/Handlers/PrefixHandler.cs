@@ -1,18 +1,21 @@
-﻿using Inquisition.Exceptions;
-using Inquisition.Database.Core;
+﻿using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Exceptions;
 
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class PrefixHandler : BaseHandler
+	public class PrefixHandler : Handler
     {
 		private DatabaseContext db;
 		private static Dictionary<string, string> PrefixDictionary { get; set; } = new Dictionary<string, string>();
 
 		public PrefixHandler()
+			=> Init();
+
+		private void Init()
 		{
 			db = new DatabaseContext();
 
@@ -41,7 +44,7 @@ namespace Inquisition.Handlers
 			PrefixDictionary[guildId] = prefix;
 		}
 
-		public override void Dispose()
+		public void Dispose()
 		{
 			db = null;
 			PrefixDictionary = null;

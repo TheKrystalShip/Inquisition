@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inquisition.Reporting.Models
+namespace Inquisition.Reporting
 {
 	public interface IReport
 	{

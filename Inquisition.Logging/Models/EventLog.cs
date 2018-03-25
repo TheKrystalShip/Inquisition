@@ -6,7 +6,7 @@ namespace Inquisition.Logging
 	{
 		public override void Log<T>(params T[] value)
 		{
-			throw new InquisitionLoggingException("Not implemented");
+			throw new InquisitionLogException("Not implemented");
 		}
 	}
 }

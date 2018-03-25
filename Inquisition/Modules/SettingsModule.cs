@@ -3,7 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Logging;

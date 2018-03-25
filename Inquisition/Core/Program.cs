@@ -6,25 +6,31 @@ using Inquisition.Properties;
 
 using System.Threading.Tasks;
 
-namespace Inquisition.Core
+namespace Inquisition
 {
 	public class Program
     {
-		private DiscordSocketClient Client;
 		private string Token;
-		
+		private DiscordSocketClient Client;
+
 		private CommandHandler CommandHandler;
 		private EventHandler EventHandler;
 		private ServiceHandler ServiceHandler;
 		private PrefixHandler PrefixHandler;
 
 		static void Main(string[] args)
-			=> new Program().Run().Wait();
+			=> new Program().Init().Wait();
 
-        private async Task Run()
+        private async Task Init()
         {
-			Client = new DiscordSocketClient();
 			Token = BotInfo.Token;
+
+			Client = new DiscordSocketClient(new DiscordSocketConfig() {
+				LogLevel = LogSeverity.Debug,
+				DefaultRetryMode = RetryMode.AlwaysRetry,
+				ConnectionTimeout = 5000,
+				AlwaysDownloadUsers = true
+			});
 
 			CommandHandler = new CommandHandler(Client);
 			EventHandler = new EventHandler(Client);

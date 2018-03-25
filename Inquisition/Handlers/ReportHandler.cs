@@ -5,7 +5,7 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Logging;
 using Inquisition.Properties;
-using Inquisition.Reporting.Core;
+using Inquisition.Reporting;
 
 using System;
 using System.IO;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class ReportHandler : BaseHandler
+	public class ReportHandler : Handler
 	{
 		private static Reporter Reporter = new Reporter
 		{

@@ -1,12 +1,10 @@
-﻿using Inquisition.Reporting.Models;
-
-using System.IO;
+﻿using System.IO;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
 
-namespace Inquisition.Reporting.Handlers
+namespace Inquisition.Reporting
 {
-	public static class XmlHandler
+	internal static class XmlHandler
 	{
 		public static void Serialize<T>(T report) where T: IReport
 		{

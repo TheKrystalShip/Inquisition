@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
 using Inquisition.Logging;
@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class AuditService : BaseService
+	public class EventService : Service
     {
 		private DiscordSocketClient Client;
 		private static DatabaseContext db;
 
-		static AuditService() => db = new DatabaseContext();
-		public AuditService(DiscordSocketClient client) => Client = client;
+		static EventService() => db = new DatabaseContext();
+		public EventService(DiscordSocketClient client) => Client = client;
 
 		public async Task ChannelCreated(SocketChannel socketChannel)
 		{

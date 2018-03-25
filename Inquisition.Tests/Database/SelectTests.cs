@@ -1,4 +1,4 @@
-﻿using Inquisition.Database.Core;
+﻿using Inquisition.Database;
 
 using Xunit;
 

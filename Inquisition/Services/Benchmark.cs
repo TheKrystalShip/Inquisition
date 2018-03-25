@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Inquisition.Services
 {
-	public class Benchmark : BaseService, IDisposable
+	public class Benchmark : Service, IDisposable
 	{
 		private Stopwatch Stopwatch;
 

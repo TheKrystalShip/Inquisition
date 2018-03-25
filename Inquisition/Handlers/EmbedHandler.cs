@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class EmbedHandler : BaseHandler
+	public class EmbedHandler : Handler
     {
         private static EmbedBuilder Embed;
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class GameService : BaseService
+	public class GameService : Service
 	{
 		public static Dictionary<string, Process> RunningServers { get; set; } = new Dictionary<string, Process>();
 		public static string Path = $"";

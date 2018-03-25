@@ -3,10 +3,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +22,7 @@ namespace Inquisition.Modules
 
 		public AlertModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("alerts", RunMode = RunMode.Async)]
+		[Command("alerts")]
 		[Summary("Displays a list of all of your notifications")]
 		public async Task ListAlertsAsync()
 		{
@@ -60,7 +59,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("add alert", RunMode = RunMode.Async)]
+		[Command("add alert")]
 		[Summary("Add a new alert, must specify a target user")]
 		public async Task AddAlertAsync(SocketGuildUser targetAlert)
 		{
@@ -87,7 +86,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("delete alert", RunMode = RunMode.Async)]
+		[Command("delete alert")]
 		[Alias("remove alert")]
 		[Summary("Removes an alert, must specify a target user")]
 		public async Task RemoveAlertAsync(SocketGuildUser targetUser)

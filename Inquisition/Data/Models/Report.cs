@@ -1,4 +1,4 @@
-﻿using Inquisition.Reporting.Models;
+﻿using Inquisition.Reporting;
 
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,4 @@
-﻿using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+﻿using Inquisition.Database;
 using Inquisition.Database.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +8,11 @@ using System.Linq;
 
 namespace Inquisition.Services
 {
-	public class DealService : BaseService
+	public class DealService : Service
     {
-		public override void StartLoop()
+		public override void Init(int startDelay = 0, int interval = 1000)
 		{
-			base.StartLoop();
+			base.Init(startDelay, interval);
 		}
 
 		public override void Loop(object state)
@@ -21,9 +20,9 @@ namespace Inquisition.Services
 			base.Loop(state);
 		}
 
-		public override void StopLoop()
+		public override void Dispose()
 		{
-			base.StopLoop();
+			base.Dispose();
 		}
 
 		private List<Deal> GetDeals()
@@ -32,11 +31,6 @@ namespace Inquisition.Services
 			return db.Deals
 				.Include(x => x.User)
 				.ToList() ?? new List<Deal>();
-		}
-
-		public override string ToString()
-		{
-			return "Deal service";
 		}
 	}
 }

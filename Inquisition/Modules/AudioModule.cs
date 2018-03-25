@@ -16,7 +16,7 @@ namespace Inquisition.Modules
 
 		public AudioModule(AudioService service) => AudioService = service;
 
-		[Command("join", RunMode = RunMode.Async)]
+		[Command("join")]
 		[Summary("Joines the channel of the User or the one passed as an argument")]
 		public async Task JoinChannel(IVoiceChannel channel = null)
 		{
@@ -30,7 +30,7 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				await AudioService.JoinChannel(channel, Context.Guild.Id);
+				await AudioService.JoinChannel(voiceChannel, Context.Guild.Id);
 			}
 			catch (Exception e)
 			{
@@ -53,7 +53,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("play", RunMode = RunMode.Async)]
+		[Command("play")]
 		[Summary("Request a song to be played")]
 		public async Task PlayCmd([Remainder] string song)
 		{
@@ -159,7 +159,7 @@ namespace Inquisition.Modules
 		//	}
 		//}
 
-		//[Command("download", RunMode = RunMode.Async)]
+		//[Command("download")]
 		//public async Task DownloadSongAsync([Remainder] string name)
 		//{
 		//	try

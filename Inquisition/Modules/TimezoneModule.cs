@@ -1,10 +1,9 @@
 ﻿using Discord.Commands;
 
 using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace Inquisition.Modules
 
 		public TimezoneModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("timezone", RunMode = RunMode.Async)]
+		[Command("timezone")]
 		[Summary("Tells you your timezone from the database")]
 		public async Task ShowTimezoneAsync()
 		{
@@ -40,7 +39,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("set timezone", RunMode = RunMode.Async)]
+		[Command("set timezone")]
 		[Summary("Set your timezone")]
 		public async Task SetTimezoneAsync(int offset)
 		{

@@ -3,10 +3,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-using Inquisition.Database.Core;
+using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Services;
 
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ namespace Inquisition.Modules
 
 		public JokeModule(DatabaseContext dbHandler) => db = dbHandler;
 
-		[Command("joke", RunMode = RunMode.Async)]
+		[Command("joke")]
 		[Alias("joke by")]
 		[Summary("Displays a random joke by random user unless user is specified")]
 		public async Task ShowJokeAsync(SocketGuildUser user = null)
@@ -59,7 +58,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("jokes", RunMode = RunMode.Async)]
+		[Command("jokes")]
 		[Alias("jokes by")]
 		[Summary("Shows a list of all jokes from all users unless user is specified")]
 		public async Task ListJokesAsync(SocketGuildUser user = null)
@@ -100,7 +99,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("add joke", RunMode = RunMode.Async)]
+		[Command("add joke")]
 		[Summary("Adds a new joke")]
 		public async Task AddJokeAsync([Remainder] string jokeText)
 		{
@@ -132,7 +131,7 @@ namespace Inquisition.Modules
 			}
 		}
 
-		[Command("delete joke", RunMode = RunMode.Async)]
+		[Command("delete joke")]
 		[Alias("remove joke")]
 		[Summary("Delete a joke")]
 		public async Task RemoveJokeAsync(int id)
