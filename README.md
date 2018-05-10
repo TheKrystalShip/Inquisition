@@ -10,5 +10,5 @@ Use this command to deploy Inquisition and it's database container to Docker.
  - The database is a SQL Server container also running on a Linux (Ubuntu 16.04) container.
 
 ```powershell 
-docker-compose  -f "docker-compose.yml" -p dockercompose9695837040845040217 --no-ansi up -d --force-recreate --remove-orphans
+docker-compose  -f "docker-compose.yml" up -d --force-recreate --remove-orphans
 ```
