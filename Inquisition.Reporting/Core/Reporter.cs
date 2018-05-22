@@ -1,83 +1,60 @@
-﻿using Inquisition.Excepitions;
-
+﻿
 using System;
 using System.IO;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Inquisition.Reporting
 {
+	public class Test
+	{
+		private Reporter Reporter;
+
+		public Test()
+		{
+			Reporter = new Reporter(new ReporterConfig()
+			{
+				
+			});
+		}
+	}
+
 	public class Reporter
     {
-		/// <summary>
-		/// Directory to write XML file to.
-		/// </summary>
-		public string OutputPath { get; set; }
-		/// <summary>
-		/// XML Filename, extension added automatically.
-		/// </summary>
-		public string FileName { get; set; }
+		private readonly ReporterConfig Config;
 
-		/// <summary>
-		/// Bool value to send email after generating error log file. If set to true, must specify email
-		/// service details.
-		/// </summary>
-		public bool SendEmail { get; set; } = false;
-
-		//Email Service
-		/// <summary>
-		/// Email service host url (Example: smtp.gmail.com).
-		/// </summary>
-		public string Host { get; set; }
-		/// <summary>
-		/// SMTP Client port (Example: 587 for Gmail).
-		/// </summary>
-		public int Port { get; set; }
-		/// <summary>
-		/// Email account username.
-		/// </summary>
-		public string Username { get; set; }
-		/// <summary>
-		/// Email account password.
-		/// </summary>
-		public string Password { get; set; }
-		/// <summary>
-		/// Email address from which email is sent.
-		/// </summary>
-		public string FromAddress { get; set; }
-		/// <summary>
-		/// Email address to send email to.
-		/// </summary>
-		public string ToAddress { get; set; }
-		/// <summary>
-		/// XSLT file to transform IReport model into a valid Email body html.
-		/// </summary>
-		public string XSLFile { get; set; }
+		public Reporter(ReporterConfig config)
+		{
+			Config = config;
+		}
 
 		/// <summary>
 		/// Generates a log file based on a model implementing the IReport interface with
 		/// the option to also send it via email.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">Email parameters not specified</exception>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="report">Model implementing IReport interface</param>
+		/// <exception cref="InvalidOperationException">Email parameters not specified</exception>
 		public void Report<T>(T report) where T: IReport
 		{
-			Log(ref report, OutputPath, FileName);
+			Log(ref report, Config.OutputPath, Config.FileName);
 
-			if (SendEmail)
+			if (Config.SendEmail)
 			{
-				if (Host is null || Username is null || Password is null || FromAddress is null || ToAddress is null || XSLFile is null || Port == 0)
+				foreach (PropertyInfo property in Config.GetType().GetProperties())
 				{
-					throw new InquisitionReportException("Email parameters not specified");
+					if (property.GetValue(Config) is null)
+						throw new InvalidOperationException("Email parameters not specified");
 				}
 
 				EmailService emailService = new EmailService() {
-					Host = Host,
-					Port = Port,
-					Username = Username,
-					Password = Password,
-					FromAddress = FromAddress,
-					ToAddress = ToAddress,
-					XSLFile = XSLFile
+					Host = Config.Host,
+					Port = Config.Port,
+					Username = Config.Username,
+					Password = Config.Password,
+					FromAddress = Config.FromAddress,
+					ToAddress = Config.ToAddress,
+					XSLFile = Config.XSLFile
 				};
 
 				emailService.SendReport(report);

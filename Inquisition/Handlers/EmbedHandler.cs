@@ -149,5 +149,10 @@ namespace Inquisition.Handlers
 
 			return Embed;
 		}
-    }
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

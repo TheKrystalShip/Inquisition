@@ -19,9 +19,9 @@ namespace Inquisition.Modules
 		private DatabaseContext db;
 		private DiscordSocketClient Client;
 
-		public SettingsModule(DatabaseContext dbHandler, DiscordSocketClient socketClient)
+		public SettingsModule(DiscordSocketClient socketClient)
 		{
-			db = dbHandler;
+			db = new DatabaseContext();
 			Client = socketClient;
 		}
 
@@ -58,15 +58,16 @@ namespace Inquisition.Modules
 		public async Task ShowPrefixAsync()
 		{
 			string contextGuildId = Context.Guild.Id.ToString();
+			string prefix = PrefixHandler.GetPrefix(contextGuildId);
 
-			Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
-			if (guild is null)
+			if (prefix is null)
 			{
 				await ReplyAsync("Your guild is not in the database for some reason...");
-				return;
 			}
-
-			await ReplyAsync($"Prefix for this guild is: **{guild.Prefix}**");
+			else
+			{
+				await ReplyAsync($"Prefix for this guild is: **{prefix}**");
+			}			
 		}
     }
 
@@ -74,7 +75,11 @@ namespace Inquisition.Modules
 	public class SetSettingsModule : ModuleBase<SocketCommandContext>
 	{
 		private DatabaseContext db;
-		public SetSettingsModule(DatabaseContext dbHandler) => db = dbHandler;
+
+		public SetSettingsModule(DatabaseContext dbHandler)
+		{
+			db = new DatabaseContext();
+		}
 
 		[Command("audit channel")]
 		[Alias("default audit channel")]

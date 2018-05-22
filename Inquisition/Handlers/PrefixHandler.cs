@@ -1,7 +1,9 @@
-﻿using Inquisition.Database;
+﻿
+using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Exceptions;
+using Inquisition.Logging;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,33 +12,31 @@ namespace Inquisition.Handlers
 	public class PrefixHandler : Handler
     {
 		private DatabaseContext db;
-		private static Dictionary<string, string> PrefixDictionary { get; set; } = new Dictionary<string, string>();
+		private static Dictionary<string, string> PrefixDictionary { get; set; }
 
 		public PrefixHandler()
-			=> Init();
-
-		private void Init()
 		{
-			db = new DatabaseContext();
+			PrefixDictionary = new Dictionary<string, string>();
 
-			List<Guild> Guilds = db.Guilds.ToList();
-
-			foreach (Guild guild in Guilds)
+			try
 			{
-				PrefixDictionary.Add(guild.Id, guild.Prefix);
+				db = new DatabaseContext();
+				List<Guild> Guilds = db.Guilds.ToList();
+
+				foreach (Guild guild in Guilds)
+				{
+					PrefixDictionary.Add(guild.Id, guild.Prefix);
+				}
+			}
+			catch (Exception e)
+			{
+				LogHandler.WriteLine(LogTarget.Console, e.Message);
 			}
 		}
 
 		public static string GetPrefix(string guildId)
 		{
-			try
-			{
-				return PrefixDictionary[guildId];
-			}
-			catch
-			{
-				throw new InquisitionNotFoundException("Prefix not found in dictionary");
-			}
+			return PrefixDictionary.GetValueOrDefault(guildId);
 		}
 
 		public static void SetPrefix(string guildId, string prefix)
@@ -44,7 +44,7 @@ namespace Inquisition.Handlers
 			PrefixDictionary[guildId] = prefix;
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			db = null;
 			PrefixDictionary = null;

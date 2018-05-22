@@ -2,11 +2,8 @@
 
 namespace Inquisition.Handlers
 {
-	public class Handler : IDisposable
+	public abstract class Handler : IDisposable
 	{
-		public virtual void Dispose()
-		{
-			
-		}
+		public abstract void Dispose();
 	}
 }

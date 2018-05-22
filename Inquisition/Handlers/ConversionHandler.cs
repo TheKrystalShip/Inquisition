@@ -3,18 +3,22 @@
 using Inquisition.Database;
 using Inquisition.Database.Models;
 
+using System;
 using System.Linq;
 
 namespace Inquisition.Handlers
 {
 	public class ConversionHandler : Handler
     {
-		private static DatabaseContext db;
+		private DatabaseContext db;
 		public static int UsersAdded = 0;
 
-		static ConversionHandler() => db = new DatabaseContext();
+		public ConversionHandler()
+		{
+			db = new DatabaseContext();
+		}
 
-		public static void AddUser(SocketGuildUser socketGuildUser)
+		public void AddUser(SocketGuildUser socketGuildUser)
 		{
 			string socketUserId = socketGuildUser.Id.ToString();
 			if (!db.Users.Any(x => x.Id == socketUserId))
@@ -36,7 +40,7 @@ namespace Inquisition.Handlers
 			}
 		}
 
-		public static void RemoveUser(SocketGuildUser user)
+		public void RemoveUser(SocketGuildUser user)
 		{
 			string userId = user.Id.ToString();
 			if (db.Users.Any(x => x.Id == userId))
@@ -47,7 +51,7 @@ namespace Inquisition.Handlers
 			}
 		}
 
-		private static Guild ToGuild(SocketGuild socketGuild)
+		private Guild ToGuild(SocketGuild socketGuild)
 		{
 			string socketGuildId = socketGuild.Id.ToString();
 			return db.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
@@ -58,6 +62,11 @@ namespace Inquisition.Handlers
 					Id = socketGuild.Id.ToString(),
 					MemberCount = socketGuild.MemberCount
 				};
+		}
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

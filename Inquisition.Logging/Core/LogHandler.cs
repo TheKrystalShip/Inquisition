@@ -2,7 +2,7 @@
 {
 	public static class LogHandler
 	{
-		public static void WriteLine<T>(LogTarget target, params T[] value)
+		public static void WriteLine(LogTarget target, params object[] value)
 		{
 			LogBase logBase;
 
@@ -10,29 +10,29 @@
 			{
 				case LogTarget.File:
 					logBase = new FileLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					break;
 				case LogTarget.Database:
 					logBase = new DbLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					break;
 				case LogTarget.Event:
 					logBase = new EventLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					break;
 				case LogTarget.Console:
 					logBase = new ConsoleLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					break;
 				case LogTarget.All:
 					logBase = new FileLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					logBase = new DbLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					logBase = new EventLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					logBase = new ConsoleLog();
-					logBase.Log<T>(value);
+					logBase.Log(value);
 					break;
 				default:
 					break;

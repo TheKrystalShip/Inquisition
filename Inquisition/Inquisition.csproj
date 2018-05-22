@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -50,7 +50,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
-    <ProjectReference Include="..\Inquisition.Exceptions\Inquisition.Exceptions.csproj" />
+    <ProjectReference Include="..\Inquisition.IoC\Inquisition.IoC.csproj" />
     <ProjectReference Include="..\Inquisition.Logging\Inquisition.Logging.csproj" />
     <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
   </ItemGroup>

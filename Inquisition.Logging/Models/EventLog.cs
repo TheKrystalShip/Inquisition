@@ -1,12 +1,12 @@
-﻿using Inquisition.Exceptions;
+﻿using System;
 
 namespace Inquisition.Logging
 {
 	internal class EventLog : LogBase
 	{
-		public override void Log<T>(params T[] value)
+		public override void Log(params object[] value)
 		{
-			throw new InquisitionLogException("Not implemented");
+			throw new NotImplementedException();
 		}
 	}
 }

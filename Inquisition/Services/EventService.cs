@@ -16,8 +16,11 @@ namespace Inquisition.Services
 		private DiscordSocketClient Client;
 		private static DatabaseContext db;
 
-		static EventService() => db = new DatabaseContext();
-		public EventService(DiscordSocketClient client) => Client = client;
+		public EventService(DiscordSocketClient client)
+		{
+			Client = client;
+			db = new DatabaseContext();
+		}
 
 		public async Task ChannelCreated(SocketChannel socketChannel)
 		{

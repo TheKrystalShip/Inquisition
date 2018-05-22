@@ -1,37 +1,38 @@
-﻿using Discord.WebSocket;
-
+﻿
 using Inquisition.Logging;
 using Inquisition.Services;
 
+using System;
 using System.Collections.Generic;
 
 namespace Inquisition.Handlers
 {
 	public class ServiceHandler : Handler
 	{
-		private static List<Service> ServiceList { get; set; } = new List<Service>();
+		private static List<Service> ServiceList = new List<Service>();
 		private const int InitDelay = 5000;
 		private const int Interval = 1000;
 
-		public ServiceHandler(DiscordSocketClient client)
-			=> Init(client);
-
-		private async void Init(DiscordSocketClient client)
+		public ServiceHandler()
 		{
-			RegisterService(new ReminderService(client));
-			RegisterService(new DealService());
-			RegisterService(new ActivityService());
+			//ReminderService reminderService = ContainerHandler.Resolve<ReminderService>();
+			//DealService dealService = ContainerHandler.Resolve<DealService>();
+			//ActivityService activityService = ContainerHandler.Resolve<ActivityService>();
+
+			//RegisterService(reminderService);
+			//RegisterService(dealService);
+			//RegisterService(activityService);
 
 			//StartAllLoops();
 		}
 
-		private void RegisterService<T>(T service) where T: Service
+		private void RegisterService(Service service)
 		{
 			HandleEvents(service);
 			ServiceList.Add(service);
 		}
 
-		private void HandleEvents<T>(T service) where T : Service
+		private void HandleEvents(Service service)
 		{
 			service.Start += Service_Start;
 			service.Tick += Service_Tick;
@@ -71,6 +72,11 @@ namespace Inquisition.Handlers
 			{
 				service.Dispose();
 			}
+		}
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -15,10 +15,12 @@ namespace Inquisition.Services
 	public class ReminderService : Service
 	{
 		private DiscordSocketClient Client;
+		private DatabaseContext db;
 
 		public ReminderService(DiscordSocketClient client)
 		{
 			Client = client;
+			db = new DatabaseContext();
 		}
 
 		public override void Init(int startDelay = 0, int interval = 1000)
@@ -46,7 +48,6 @@ namespace Inquisition.Services
 
 		private List<Reminder> GetReminderList(int amount)
 		{
-			DatabaseContext db = new DatabaseContext();
 			return db.Reminders
 				.Where(x => x.DueDate <= DateTimeOffset.UtcNow)
 				.Include(x => x.User)
@@ -56,7 +57,6 @@ namespace Inquisition.Services
 
 		private void RemoveReminderList(List<Reminder> r)
 		{
-			DatabaseContext db = new DatabaseContext();
 			db.Reminders.RemoveRange(r);
 			db.SaveChanges();
 		}

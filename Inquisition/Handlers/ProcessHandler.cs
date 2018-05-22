@@ -10,13 +10,17 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
+	[Obsolete("Needs to be changed, do not use", true)]
 	public class ProcessHandler : Handler
     {
 		private static DatabaseContext db;
 		public static Dictionary<Game, Process> GameProcessDictionary { get; set; } = new Dictionary<Game, Process>();
 		public static Dictionary<string, Process> ProcessDictionary { get; set; } = new Dictionary<string, Process>();
 
-		public ProcessHandler(DatabaseContext dbHandler) => db = dbHandler;
+		public ProcessHandler()
+		{
+			db = new DatabaseContext();
+		}
 
 		public static Result StartProcess(string process)
 		{
@@ -140,6 +144,11 @@ namespace Inquisition.Handlers
 		private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{
 
+		}
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

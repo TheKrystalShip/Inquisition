@@ -38,6 +38,11 @@ namespace Inquisition.Handlers
 			}
 		}
 
+		public override void Dispose()
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public class Error
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";

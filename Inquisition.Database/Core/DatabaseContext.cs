@@ -7,7 +7,7 @@ namespace Inquisition.Database
 {
 	public class DatabaseContext : DbContext
     {
-		private string ConnectionString = Resources.ConnectionStringDocker;
+		private string ConnectionString = Resources.ConnectionStringLocal;
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
@@ -20,10 +20,10 @@ namespace Inquisition.Database
 
 		public DatabaseContext() : base()
 		{
-			Database.Migrate();
+
 		}
 
-		public void MigrateDatabase() => Database.Migrate();
+		public void Migrate() => Database.Migrate();
 
 		protected override void OnConfiguring(DbContextOptionsBuilder ob)
 		{
