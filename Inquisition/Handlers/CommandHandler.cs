@@ -1,89 +1,100 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
-using Inquisition.Data;
-using Inquisition.Modules;
-using Inquisition.Services;
+
+using Inquisition.Properties;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-    public class CommandHandler
+	public class CommandHandler : Handler
     {
-        private DiscordSocketClient DiscordClient;
+        private DiscordSocketClient Client;
         private CommandService CommandService;
         private IServiceProvider ServiceCollection;
-        private HelpModule HelpModule;
-        private string logFilePath;
 
-        public CommandHandler(DiscordSocketClient discordClient)
-        {
-            DiscordClient = discordClient;
+		public CommandHandler(DiscordSocketClient client)
+			=> Init(client).Wait();
 
-            CommandService = new CommandService();
+		private async Task Init(DiscordSocketClient client)
+		{
+			Client = client;
 
-            ServiceCollection = new ServiceCollection()
-                .AddSingleton(DiscordClient)
-                .AddSingleton(CommandService)
-                .AddSingleton(new GameService())
-                .BuildServiceProvider();
+			CommandService = new CommandService(new CommandServiceConfig()
+				{
+					DefaultRunMode = RunMode.Async,
+					LogLevel = LogSeverity.Debug,
+					CaseSensitiveCommands = false
+				}
+			);
 
-            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
+			await CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
 
-            Directory.CreateDirectory("Data/Logs");
+			//AudioService audioService = new AudioService();
+			//ReportHandler reportHandler = new ReportHandler();
+			//ReminderService reminderService = new ReminderService(Client);
+			//DealService dealService = new DealService();
+			//ActivityService activityService = new ActivityService();
 
-            logFilePath = String.Format("Data/Logs/{0:yyyy-MM-dd}.log", DateTime.Now);
+			//ContainerHandler.Register<AudioService>(audioService);
+			//ContainerHandler.Register<ReportHandler>(reportHandler);
+			//ContainerHandler.Register<ReminderService>(reminderService);
+			//ContainerHandler.Register<DealService>(dealService);
+			//ContainerHandler.Register<ActivityService>(activityService);
 
-            if (!File.Exists(logFilePath))
-            {
-                Console.WriteLine($"Creating log file {logFilePath}...");
-                File.Create(logFilePath);
-                Console.WriteLine("Done.");
-            }
+			ServiceCollection = new ServiceCollection()
+				.AddSingleton(Client)
+				.AddSingleton(CommandService)
+				//.AddSingleton(audioService)
+				//.AddSingleton(reportHandler)
+				//.AddSingleton(reminderService)
+				//.AddSingleton(dealService)
+				//.AddSingleton(activityService)
+				.BuildServiceProvider();
 
-            HelpModule = new HelpModule(CommandService);
+			Console.Title = "Inquisition";
 
-            DiscordClient.MessageReceived += HandleCommands;
-        }
+			Client.MessageReceived += HandleCommands;
+		}
 
         private async Task HandleCommands(SocketMessage msg)
         {
-            var message = msg as SocketUserMessage;
+			SocketUserMessage message = msg as SocketUserMessage;
 
             if (message is null || message.Author.IsBot)
                 return;
 
-            User localUser = DbHandler.Select.User(msg.Author);
+			string prefix = GetGuildPrefix(message) ?? BotInfo.DefaultPrefix;
+			int argPos = 0;
 
-            if (localUser is null)
-            {
-                DbHandler.Insert.User(localUser);
-            }
+			bool messageHasMention = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
+			bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
 
-            using (StreamWriter sw = new StreamWriter(logFilePath, true))
-            {
-                sw.WriteLine($"{msg.Channel} | {msg.Author}: {msg.Content}");
-            }
+			if (!messageHasMention && !messageHasPrefix)
+				return;
 
-            string prefix = "rip ";
+            SocketCommandContext context = new SocketCommandContext(Client, message);
+            IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
 
-            int argPos = 0;
-
-            if (message.HasMentionPrefix(DiscordClient.CurrentUser, ref argPos) ||
-                message.HasStringPrefix(prefix, ref argPos) ||
-                message.Channel.GetType() == typeof(SocketDMChannel))
-            {
-                SocketCommandContext context = new SocketCommandContext(DiscordClient, message);
-                IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
-
-                if (!result.IsSuccess)
-                {
-                    Console.WriteLine($"{DateTimeOffset.UtcNow} - {result.ErrorReason}");
-                }
-            }
+            if (!result.IsSuccess)
+                await ReportHandler.Report(result.ErrorReason, message);
         }
-    }
+
+		private string GetGuildPrefix(SocketUserMessage message)
+		{
+			var guildChannel = message.Channel as SocketGuildChannel;
+			string socketGuildId = guildChannel.Guild.Id.ToString();
+			return PrefixHandler.GetPrefix(socketGuildId);
+		}
+
+		public override void Dispose()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

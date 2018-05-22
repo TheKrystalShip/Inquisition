@@ -1,29 +1,49 @@
 ﻿using Discord.WebSocket;
 
-namespace Inquisition.Data
+using Inquisition.Data.Models;
+using Inquisition.Database.Models;
+
+namespace Inquisition.Handlers
 {
-    public class Reply
+	public class ReplyHandler : Handler
     {
         public static string Generic = $"Here you go:";
 
-        public static string Context(Result result)
-        {
-            switch (result)
-            {
-                case Result.Failed:
-                    return $"Operation failed";
-                case Result.Successful:
-                    return $"Operation was successful";
-                case Result.AlreadyExists:
-                    return $"It already exists";
-                case Result.DoesNotExist:
-                    return $"It doesn't exist";
-                default:
-                    return $"";
-            }
-        }
+		public static string Context(Result result)
+		{
+			switch (result)
+			{
+				case Result.Failed:
+					return $"Operation failed";
+				case Result.Successful:
+					return $"Operation was successful";
+				case Result.Exists:
+					return $"It already exists";
+				case Result.DoesNotExist:
+					return $"It doesn't exist";
+				case Result.AlreadyRunning:
+					return "Server is already running";
+				case Result.Offline:
+					return "Server is offline";
+				case Result.Online:
+					return "Server is online";
+				case Result.ProcessRunningButOfflineInDb:
+					return "Server has a process running, but is marked as offline";
+				case Result.ProcessNotRunningButOnlineInDb:
+					return $"Server is not running, but is marked as online";
+				case Result.GenericError:
+					return "Generic error";
+				default:
+					return "";
+			}
+		}
 
-        public class Error
+		public override void Dispose()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public class Error
         {
             public static string Generic = $"Something went wrong, please let the Admin know about this, thanks";
 
@@ -38,12 +58,12 @@ namespace Inquisition.Data
             public static string NoContent(User user) => $"{user.Username} doesn't have anything in the database";
             public static string NoContentGeneric = $"You don't have anything in the database";
 
-            public static string GameNotRunning(Game game) => $"{game.Name} doesn't seem to be running";
-            public static string GameAlreadyRunning(Game game) => $"{game.Name} server seems to already be running version {game.Version}, on port {game.Port}";
-            public static string UnableToStopGameServer(Game game) => $"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this.";
-            public static string UnableToStartGameServer(Game game) => $"Something went wrong, couldn't start {game.Name} server, please let the Admin know about this.";
+			public static string GameNotRunning(Game game) => $"{game.Name} doesn't seem to be running";
+			public static string GameAlreadyRunning(Game game) => $"{game.Name} server seems to already be running version {game.Version}, on port {game.Port}";
+			public static string UnableToStopGameServer(Game game) => $"Something went wrong, couldn't stop {game.Name} server, please let the Admin know about this.";
+			public static string UnableToStartGameServer(Game game) => $"Something went wrong, couldn't start {game.Name} server, please let the Admin know about this.";
 
-            public struct Command
+			public struct Command
             {
                 private static string Common(string data) => $"Incorrect command structure, use: {data}";
 
@@ -85,11 +105,11 @@ namespace Inquisition.Data
         }
 
         public class Info
-        {
-            public static string GameStarting(Game game) => $"{game.Name} is starting up";
-            public static string GameStopping(Game game) => $"{game.Name} is stopping";
+		{
+			public static string GameStarting(Game game) => $"{game.Name} is starting up";
+			public static string GameStopping(Game game) => $"{game.Name} is stopping";
 
-            public static string UsersPruned(int users, int days) => $"{users} users were pruned for innactivity in the last {days} days";
+			public static string UsersPruned(int users, int days) => $"{users} users were pruned for innactivity in the last {days} days";
             public static string UserLeft(SocketGuildUser user) => $"{user.Username} left the server";
             public static string UserLeft(SocketUser user) => $"{user.Username} left the server";
             public static string UserLeft(User user) => $"{user.Username} left the server";

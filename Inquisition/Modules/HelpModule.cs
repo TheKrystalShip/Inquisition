@@ -1,12 +1,15 @@
 ﻿using Discord;
 using Discord.Commands;
+
+using Inquisition.Handlers;
+using Inquisition.Services;
+
 using System.Linq;
 using System.Threading.Tasks;
-using Inquisition.Data;
 
 namespace Inquisition.Modules
 {
-    public class HelpModule : ModuleBase<SocketCommandContext>
+	public class HelpModule : ModuleBase<SocketCommandContext>
     {
         private static CommandService CommandService;
 
@@ -15,27 +18,34 @@ namespace Inquisition.Modules
             CommandService = commandService;
         }
 
-        [Command("help", RunMode = RunMode.Async)]
+        [Command("help")]
         [Summary("List of all available commands.")]
         public async Task Help()
         {
-            var embed = EmbedTemplate.Create(Context.Client.CurrentUser, Context.User);
-
-            embed.Title = "Inquisition Help:";
-
-            foreach (var c in CommandService.Commands)
+            try
             {
-                string str = "";
-                foreach (var a in c.Aliases.Skip(1))
+                var embed = EmbedHandler.Create(Context.User);
+
+                embed.Title = "Inquisition Help:";
+
+                foreach (var c in CommandService.Commands)
                 {
-                    if (a != null)
+                    string str = "";
+                    foreach (var a in c.Aliases.Skip(1))
                     {
-                        str += a + " | ";
+                        if (a != null)
+                        {
+                            str += a + " | ";
+                        }
                     }
+                    embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
                 }
-                embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
+                await Context.User.SendMessageAsync(ReplyHandler.Generic, false, embed.Build());
             }
-            await Context.User.SendMessageAsync(Reply.Generic, false, embed.Build());
+            catch (System.Exception e)
+            {
+                ReportHandler.Report(Context, e);
+            }
         }
     }
 }
