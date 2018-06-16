@@ -6,7 +6,7 @@ namespace Inquisition.Reporting
 {
 	internal static class XmlHandler
 	{
-		public static void Serialize<T>(T report) where T: IReport
+		public static void Serialize<T>(T report) where T: class, IReport
 		{
 			XmlSerializer serializer = new XmlSerializer(typeof(T));
 			using (TextWriter writer = new StreamWriter(report.Path))

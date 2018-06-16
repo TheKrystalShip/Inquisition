@@ -12,21 +12,18 @@ namespace Inquisition
 {
 	public class Program
     {
-		private string Token;
-		private DiscordSocketClient Client;
+		private static string Token;
+		private static DiscordSocketClient Client;
 
-		private CommandHandler CommandHandler;
-		private EventHandler EventHandler;
-		private ServiceHandler ServiceHandler;
-		private PrefixHandler PrefixHandler;
+		private static CommandHandler CommandHandler;
+		private static EventHandler EventHandler;
+		private static ServiceHandler ServiceHandler;
+		private static PrefixHandler PrefixHandler;
 
-		private DatabaseContext DatabaseContext;
+		private static DatabaseContext DatabaseContext;
 
 		static async Task Main(string[] args)
-			=> await new Program().Init();
-
-        private async Task Init()
-        {
+		{
 			Token = BotInfo.Token;
 
 			Client = new DiscordSocketClient(new DiscordSocketConfig()
@@ -55,10 +52,10 @@ namespace Inquisition
 			}
 
 			await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
-            await Client.SetGameAsync($"God");
+			await Client.StartAsync();
+			await Client.SetGameAsync($"God");
 
-            await Task.Delay(-1);
-        }
+			await Task.Delay(-1);
+		}
     }
 }

@@ -8,17 +8,12 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class ConversionHandler : Handler
+	public static class ConversionHandler
     {
-		private DatabaseContext db;
+		private static DatabaseContext db = new DatabaseContext();
 		public static int UsersAdded = 0;
 
-		public ConversionHandler()
-		{
-			db = new DatabaseContext();
-		}
-
-		public void AddUser(SocketGuildUser socketGuildUser)
+		public static void AddUser(SocketGuildUser socketGuildUser)
 		{
 			string socketUserId = socketGuildUser.Id.ToString();
 			if (!db.Users.Any(x => x.Id == socketUserId))
@@ -40,7 +35,7 @@ namespace Inquisition.Handlers
 			}
 		}
 
-		public void RemoveUser(SocketGuildUser user)
+		public static void RemoveUser(SocketGuildUser user)
 		{
 			string userId = user.Id.ToString();
 			if (db.Users.Any(x => x.Id == userId))
@@ -51,7 +46,7 @@ namespace Inquisition.Handlers
 			}
 		}
 
-		private Guild ToGuild(SocketGuild socketGuild)
+		private static Guild ToGuild(SocketGuild socketGuild)
 		{
 			string socketGuildId = socketGuild.Id.ToString();
 			return db.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
@@ -62,11 +57,6 @@ namespace Inquisition.Handlers
 					Id = socketGuild.Id.ToString(),
 					MemberCount = socketGuild.MemberCount
 				};
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

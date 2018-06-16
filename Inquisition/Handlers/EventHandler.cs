@@ -45,14 +45,13 @@ namespace Inquisition.Handlers
 
 				try
 				{
-					ConversionHandler conversionHandler = new ConversionHandler();
 					foreach (SocketGuild guild in Client.Guilds)
 					{
 						foreach (SocketGuildUser user in guild.Users)
 						{
 							if (!user.IsBot)
 							{
-								conversionHandler.AddUser(user);
+								ConversionHandler.AddUser(user);
 							}
 						}
 					}

@@ -7,7 +7,7 @@ namespace Inquisition.Database
 {
 	public class DatabaseContext : DbContext
     {
-		private string ConnectionString = Resources.ConnectionStringLocal;
+		private readonly string ConnectionString = Resources.ConnectionStringLocal;
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }

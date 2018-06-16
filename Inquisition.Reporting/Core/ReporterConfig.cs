@@ -1,4 +1,7 @@
-﻿namespace Inquisition.Reporting
+﻿using System;
+using System.IO;
+
+namespace Inquisition.Reporting
 {
 	public class ReporterConfig
     {
@@ -10,13 +13,11 @@
 		/// XML Filename, extension added automatically.
 		/// </summary>
 		public string FileName { get; set; }
-
 		/// <summary>
 		/// Bool value to send email after generating error log file. If set to true, must specify email
 		/// service details.
 		/// </summary>
 		public bool SendEmail { get; set; } = false;
-
 		//Email Service
 		/// <summary>
 		/// Email service host url (Example: smtp.gmail.com).
@@ -47,9 +48,14 @@
 		/// </summary>
 		public string XSLFile { get; set; }
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
 		public ReporterConfig()
 		{
-			
+			OutputPath = Path.Combine("Reporter", "Logs");
+			FileName = String.Format("{0:HH-mm-ss}.xml", DateTime.Now);
+			SendEmail = false;
 		}
 	}
 }

@@ -1,28 +1,20 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
-using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Inquisition.Reporting
 {
-	public class Test
-	{
-		private Reporter Reporter;
-
-		public Test()
-		{
-			Reporter = new Reporter(new ReporterConfig()
-			{
-				
-			});
-		}
-	}
-
 	public class Reporter
     {
 		private readonly ReporterConfig Config;
 
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		/// <param name="config">
+		/// ReporterConfig to specify some paramenters on how to make reports
+		/// </param>
 		public Reporter(ReporterConfig config)
 		{
 			Config = config;
@@ -32,19 +24,21 @@ namespace Inquisition.Reporting
 		/// Generates a log file based on a model implementing the IReport interface with
 		/// the option to also send it via email.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="T">Implementation of IReport interface</typeparam>
 		/// <param name="report">Model implementing IReport interface</param>
-		/// <exception cref="InvalidOperationException">Email parameters not specified</exception>
-		public void Report<T>(T report) where T: IReport
+		/// <exception cref="ArgumentNullException"></exception>
+		public async Task Report<T>(T report) where T: class, IReport
 		{
-			Log(ref report, Config.OutputPath, Config.FileName);
+			Directory.CreateDirectory(Config.OutputPath);
+			report.Path = Path.Combine(Config.OutputPath, Config.FileName);
+			XmlHandler.Serialize(report);
 
 			if (Config.SendEmail)
 			{
 				foreach (PropertyInfo property in Config.GetType().GetProperties())
 				{
 					if (property.GetValue(Config) is null)
-						throw new InvalidOperationException("Email parameters not specified");
+						throw new ArgumentNullException($"{nameof(property)} not specified");
 				}
 
 				EmailService emailService = new EmailService() {
@@ -57,19 +51,8 @@ namespace Inquisition.Reporting
 					XSLFile = Config.XSLFile
 				};
 
-				emailService.SendReport(report);
+				await emailService.SendReport(report);
 			}
-		}
-
-		private void Log<T>(ref T report, string outputPath, string fileName) where T: IReport
-		{
-			string reportFilePath = outputPath ?? Path.Combine("Data", "Logs");
-			Directory.CreateDirectory(reportFilePath);
-
-			string reportFileName = fileName ?? String.Format("{0:HH-mm-ss}", DateTime.Now);
-			report.Path = Path.Combine(reportFilePath, reportFileName + ".xml");
-
-			XmlHandler.Serialize(report);
 		}
 	}
 }

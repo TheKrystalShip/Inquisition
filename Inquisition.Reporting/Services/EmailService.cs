@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Mail;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace Inquisition.Reporting
 {
@@ -14,14 +15,16 @@ namespace Inquisition.Reporting
 		public string ToAddress { get; set; }
 		public string XSLFile { get; set; }
 
-		public void SendReport<T>(T report) where T: IReport
-			=> new Thread(SendReportThread).Start(report);
-
-		private void SendReportThread(object parameter)
+		/// <summary>
+		/// Send email with an error report
+		/// </summary>
+		/// <param name="report"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public async Task SendReport(IReport report)
 		{
 			try
 			{
-				IReport report = parameter as IReport;
 				SmtpClient client = new SmtpClient
 				{
 					Host = Host,
@@ -29,7 +32,7 @@ namespace Inquisition.Reporting
 					DeliveryMethod = SmtpDeliveryMethod.Network,
 					EnableSsl = true,
 					UseDefaultCredentials = false,
-					Credentials = new System.Net.NetworkCredential(Username, Password)
+					Credentials = new NetworkCredential(Username, Password)
 				};
 
 				MailAddress from = new MailAddress(FromAddress);
@@ -42,11 +45,11 @@ namespace Inquisition.Reporting
 					Body = XmlHandler.Transform(report.Path, XSLFile)
 				};
 
-				client.Send(email);
+				await client.SendMailAsync(email);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				Console.WriteLine(e);
+				throw;
 			}
 		}
 	}
