@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class AudioModule : ModuleBase<SocketCommandContext>
+    public class AudioModule : ModuleBase<SocketCommandContext>
 	{
 		private readonly AudioService AudioService;
 
@@ -59,7 +59,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
+				SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
 
 				if (voiceChannel is null)
 				{

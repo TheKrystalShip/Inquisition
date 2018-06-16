@@ -13,10 +13,10 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	[RequireUserPermission(GuildPermission.Administrator)]
+    [RequireUserPermission(GuildPermission.Administrator)]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext db;
 
 		public AdminModule(DatabaseContext dbHandler) => db = dbHandler;
 
@@ -107,10 +107,10 @@ namespace Inquisition.Modules
 			}
         }
 
-		[Command("test")]
+		[Command("hello there")]
 		public async Task TestCommandAsync()
 		{
-
+            await ReplyAsync("General Kenobi ⚔️⚔️");
 		}
 
 		[Command("restart")]
@@ -119,15 +119,14 @@ namespace Inquisition.Modules
 		{
 			await ReplyAsync("Rebooting...");
 
-			ProcessStartInfo Info = new ProcessStartInfo
-			{
-				Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
-				WindowStyle = ProcessWindowStyle.Normal,
-				CreateNoWindow = false,
-				FileName = "dotnet"
-			};
-
-			Process.Start(Info);
+			Process.Start(new ProcessStartInfo()
+                {
+                    FileName = "dotnet",
+                    Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    CreateNoWindow = false
+                }
+            );
 
 			Environment.Exit(0);
 		}

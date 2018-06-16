@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition
 {
-	public class Program
+    public class Program
     {
 		private static string Token;
 		private static DiscordSocketClient Client;
@@ -22,13 +22,13 @@ namespace Inquisition
 
 		private static DatabaseContext DatabaseContext;
 
-		static async Task Main(string[] args)
+        static async Task Main(string[] args)
 		{
 			Token = BotInfo.Token;
 
 			Client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
-					LogLevel = LogSeverity.Debug,
+					LogLevel = LogSeverity.Info,
 					DefaultRetryMode = RetryMode.AlwaysRetry,
 					ConnectionTimeout = 5000,
 					AlwaysDownloadUsers = true
@@ -51,11 +51,11 @@ namespace Inquisition
 				LogHandler.WriteLine(LogTarget.Console, "Program", "Failed to migrate database");
 			}
 
-			await Client.LoginAsync(TokenType.Bot, Token);
-			await Client.StartAsync();
-			await Client.SetGameAsync($"God");
+            await Client.LoginAsync(TokenType.Bot, Token);
+            await Client.StartAsync();
+            await Client.SetGameAsync($"God");
 
-			await Task.Delay(-1);
-		}
+            await Task.Delay(-1);
+        }
     }
 }

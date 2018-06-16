@@ -291,3 +291,6 @@ __pycache__/
 /Inquisition.Reporting/Properties
 /Inquisition/Libraries
 /Inquisition/Programs
+/Inquisition.Database/Properties
+/Inquisition/libopus.dll
+/Inquisition/ffmpeg.exe

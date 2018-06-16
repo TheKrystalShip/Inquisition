@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class ActivityModule : ModuleBase<SocketCommandContext>
+    public class ActivityModule : ModuleBase<SocketCommandContext>
 	{
 		private DatabaseContext db;
 		public ActivityModule(DatabaseContext dbHandler) => db = dbHandler;

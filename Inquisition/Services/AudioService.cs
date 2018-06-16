@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class AudioService : Service
+    public class AudioService : Service
     {
         private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels =
             new ConcurrentDictionary<ulong, IAudioClient>();
@@ -80,7 +80,7 @@ namespace Inquisition.Services
         {
             return Process.Start(new ProcessStartInfo
             {
-                FileName = "Programs/ffmpeg.exe",
+                FileName = "ffmpeg.exe",
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true

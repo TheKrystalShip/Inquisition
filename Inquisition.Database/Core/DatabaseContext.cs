@@ -7,7 +7,7 @@ namespace Inquisition.Database
 {
 	public class DatabaseContext : DbContext
     {
-		private readonly string ConnectionString = Resources.ConnectionStringLocal;
+		private readonly string ConnectionString = DbInfo.ConnectionString;
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
@@ -22,6 +22,11 @@ namespace Inquisition.Database
 		{
 
 		}
+
+        public DatabaseContext(DbContextOptions options) : base(options)
+        {
+
+        }
 
 		public void Migrate() => Database.Migrate();
 
