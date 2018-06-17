@@ -19,12 +19,18 @@ namespace Inquisition.Modules
     public class JokeModule : ModuleBase<SocketCommandContext>
     {
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<JokeModule> _logger;
 
-		public JokeModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<JokeModule> logger)
+		public JokeModule(
+            DatabaseContext dbContext,
+            ReportHandler reportHandler,
+            IRepositoryWrapper repository,
+            ILogger<JokeModule> logger)
         {
             _dbContext = dbContext;
+            _reportHandler = reportHandler;
             _repository = repository;
             _logger = logger;
         }
@@ -63,7 +69,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -105,7 +112,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -138,7 +146,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -167,7 +175,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

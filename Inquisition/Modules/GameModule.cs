@@ -17,15 +17,22 @@ namespace Inquisition.Modules
 {
     public class GameModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly GameService _gameService;
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
+		private readonly GameService _gameService;
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<GameModule> _logger;
 
-		public GameModule(GameService gameService, DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<GameModule> logger)
+		public GameModule(
+            DatabaseContext dbContext,
+            ReportHandler reportHandler,
+            GameService gameService,
+            IRepositoryWrapper repository,
+            ILogger<GameModule> logger)
 		{
-			_gameService = gameService;
 			_dbContext = dbContext;
+            _reportHandler = reportHandler;
+			_gameService = gameService;
             _repository = repository;
             _logger = logger;
 		}
@@ -48,7 +55,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -70,7 +77,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -94,7 +101,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -116,7 +123,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -138,7 +145,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -170,7 +177,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Error.Generic);
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

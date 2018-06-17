@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Inquisition.Reporting
 {
-	public class Reporter
+    public class Reporter
     {
 		private readonly ReporterConfig Config;
 
@@ -20,6 +21,11 @@ namespace Inquisition.Reporting
 			Config = config;
 		}
 
+        public Reporter(Expression<Action<ReporterConfig>> expression)
+        {
+            
+        }
+
 		/// <summary>
 		/// Generates a log file based on a model implementing the IReport interface with
 		/// the option to also send it via email.
@@ -27,7 +33,7 @@ namespace Inquisition.Reporting
 		/// <typeparam name="T">Implementation of IReport interface</typeparam>
 		/// <param name="report">Model implementing IReport interface</param>
 		/// <exception cref="ArgumentNullException"></exception>
-		public async Task Report<T>(T report) where T: class, IReport
+		public async Task ReportAsync<T>(T report) where T: class, IReport
 		{
 			Directory.CreateDirectory(Config.OutputPath);
 			report.Path = Path.Combine(Config.OutputPath, Config.FileName);

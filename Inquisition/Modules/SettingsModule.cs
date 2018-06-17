@@ -18,6 +18,7 @@ namespace Inquisition.Modules
     public class SettingsModule : ModuleBase<SocketCommandContext>
     {
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
 		private readonly DiscordSocketClient _client;
         private readonly PrefixHandler _prefixHandler;
         private readonly IRepositoryWrapper _repository;
@@ -25,12 +26,14 @@ namespace Inquisition.Modules
 
 		public SettingsModule(
             DatabaseContext dbContext,
+            ReportHandler reportHandler,
             DiscordSocketClient client,
             PrefixHandler prefixHandler,
             IRepositoryWrapper repository,
             ILogger<SettingsModule> logger)
 		{
 			_dbContext = dbContext;
+            _reportHandler = reportHandler;
 			_client = client;
             _prefixHandler = prefixHandler;
             _repository = repository;
@@ -62,6 +65,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -79,7 +83,7 @@ namespace Inquisition.Modules
 			else
 			{
 				await ReplyAsync($"Prefix for this guild is: **{prefix}**");
-			}			
+			}
 		}
     }
 
@@ -87,17 +91,20 @@ namespace Inquisition.Modules
 	public class SetSettingsModule : ModuleBase<SocketCommandContext>
 	{
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
         private readonly PrefixHandler _prefixHandler;
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<SetSettingsModule> _logger;
 
 		public SetSettingsModule(
             DatabaseContext dbContext,
+            ReportHandler reportHandler,
             PrefixHandler prefixHandler,
             IRepositoryWrapper repository,
             ILogger<SetSettingsModule> logger)
 		{
             _dbContext = dbContext;
+            _reportHandler = reportHandler;
             _prefixHandler = prefixHandler;
             _repository = repository;
             _logger = logger;
@@ -125,7 +132,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                ReportHandler.Report(Context, e);
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -157,7 +164,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
                 await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                ReportHandler.Report(Context, e);
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

@@ -18,12 +18,18 @@ namespace Inquisition.Modules
     public class DealModule : ModuleBase<SocketCommandContext>
     {
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<DealModule> _logger;
 
-		public DealModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<DealModule> logger)
+		public DealModule(
+            DatabaseContext dbContext,
+            ReportHandler reportHandler,
+            IRepositoryWrapper repository,
+            ILogger<DealModule> logger)
         {
             _dbContext = dbContext;
+            _reportHandler = reportHandler;
             _repository = repository;
             _logger = logger;
         }
@@ -65,7 +71,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

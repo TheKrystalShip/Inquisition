@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 
 using Inquisition.Handlers;
+using Inquisition.Logging;
 using Inquisition.Properties;
 
 using System;
@@ -23,7 +24,7 @@ namespace Inquisition
 
 			_client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
-					LogLevel = LogSeverity.Debug,
+					LogLevel = LogSeverity.Info,
 					DefaultRetryMode = RetryMode.AlwaysRetry,
 					ConnectionTimeout = 5000,
 					AlwaysDownloadUsers = true

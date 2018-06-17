@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
+using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
@@ -15,12 +16,18 @@ namespace Inquisition.Modules
     public class MemeModule : ModuleBase<SocketCommandContext>
     {
 		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<MemeModule> _logger;
 
-		public MemeModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<MemeModule> logger)
+		public MemeModule(
+            DatabaseContext dbContext,
+            ReportHandler reportHandler,
+            IRepositoryWrapper repository,
+            ILogger<MemeModule> logger)
         {
             _dbContext = dbContext;
+            _reportHandler = reportHandler;
             _repository = repository;
             _logger = logger;
         }
@@ -36,7 +43,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -61,7 +69,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -77,7 +86,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -92,7 +102,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -108,7 +119,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

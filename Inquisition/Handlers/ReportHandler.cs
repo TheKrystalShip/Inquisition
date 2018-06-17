@@ -3,34 +3,18 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Data.Models;
-using Inquisition.Properties;
 using Inquisition.Reporting;
 
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
     public class ReportHandler
 	{
-		private static Reporter Reporter = new Reporter(new ReporterConfig()
-			{
-				OutputPath = Path.Combine("Data", "Logs", $"{DateTime.Now:yyyy}", $"{DateTime.Now:MMMM}", $"{DateTime.Now:dd-dddd}"),
-				FileName = $"{DateTime.Now:HH-mm-ss}",
-				SendEmail = true,
-				Host = EmailInfo.Host,
-				Port = 587,
-				Username = EmailInfo.Username,
-				Password = EmailInfo.Password,
-				FromAddress = EmailInfo.SenderAddress,
-				ToAddress = EmailInfo.TargetAddress,
-				XSLFile = Path.Combine("Data", "XSL.xslt")
-			}
-		);
+		private Reporter Reporter = new Reporter(new ReporterConfig());
 
 		// CommandService.ExecuteAsync errors
-		public static async Task ReportAsync(string errorReason, SocketUserMessage message)
+		public async void ReportAsync(string errorReason, SocketUserMessage message)
 		{
 			EmbedBuilder embed = EmbedHandler
 				.Create()
@@ -43,7 +27,7 @@ namespace Inquisition.Handlers
 		}
 
 		// Non-Guild related
-		public static void Report(Exception e)
+		public async void ReportAsync(Exception e)
 		{
 			Report report = new Report
 			{
@@ -54,11 +38,11 @@ namespace Inquisition.Handlers
 
 			CatchInnerReports(ref report, e);
 
-			Reporter.Report(report);
+			await Reporter.ReportAsync(report);
 		}
 
 		// Guild related
-		public static void Report(SocketCommandContext context, Exception e)
+		public async void ReportAsync(SocketCommandContext context, Exception e)
         {
 			Report report = new Report
 			{
@@ -75,10 +59,10 @@ namespace Inquisition.Handlers
 
 			CatchInnerReports(ref report, e);
 
-			Reporter.Report(report);
+			await Reporter.ReportAsync(report);
 		}
 
-		private static void CatchInnerReports(ref Report report, Exception e)
+		private void CatchInnerReports(ref Report report, Exception e)
 		{
 			while (e.InnerException != null)
 			{

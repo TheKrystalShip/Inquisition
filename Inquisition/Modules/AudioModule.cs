@@ -14,11 +14,16 @@ namespace Inquisition.Modules
     public class AudioModule : ModuleBase<SocketCommandContext>
 	{
 		private readonly AudioService _audioService;
+        private readonly ReportHandler _reportHandler;
         private readonly ILogger<AudioService> _logger;
 
-		public AudioModule(AudioService audioService, ILogger<AudioService> logger)
+		public AudioModule(
+            AudioService audioService,
+            ReportHandler reportHandler,
+            ILogger<AudioService> logger)
         {
             _audioService = audioService;
+            _reportHandler = reportHandler;
             _logger = logger;
         }
 
@@ -40,7 +45,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -56,7 +61,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -84,7 +89,7 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+				_reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

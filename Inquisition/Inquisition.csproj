@@ -29,6 +29,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Logs\**" />
+    <EmbeddedResource Remove="Data\Logs\**" />
+    <None Remove="Data\Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>mscorlib</HintPath>
     </Reference>
@@ -41,16 +47,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Logs\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
-    <ProjectReference Include="..\Inquisition.IoC\Inquisition.IoC.csproj" />
     <ProjectReference Include="..\Inquisition.Logging\Inquisition.Logging.csproj" />
     <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
   </ItemGroup>

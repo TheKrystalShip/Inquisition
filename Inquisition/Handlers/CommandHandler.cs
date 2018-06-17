@@ -18,18 +18,20 @@ namespace Inquisition.Handlers
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commandService;
+        private readonly ReportHandler _reportHandler;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<CommandHandler> _logger;
 
 		public CommandHandler(DiscordSocketClient client)
         {
             _client = client;
+
             _logger = new Logger<CommandHandler>();
 
             _commandService = new CommandService(new CommandServiceConfig()
                 {
                     DefaultRunMode = RunMode.Async,
-                    LogLevel = LogSeverity.Debug,
+                    LogLevel = LogSeverity.Verbose,
                     CaseSensitiveCommands = false
                 }
             );
@@ -49,6 +51,8 @@ namespace Inquisition.Handlers
             // Call some handlers/services to start them up
             _serviceProvider.GetService<EventHandler>();
             //_serviceProvider.GetService<ServiceHandler>(); // Not finished yet
+
+            _reportHandler = _serviceProvider.GetService<ReportHandler>();
 
             _client.MessageReceived += HandleCommands;
         }
@@ -74,8 +78,8 @@ namespace Inquisition.Handlers
 
             if (!result.IsSuccess)
             {
-                await ReportHandler.ReportAsync(result.ErrorReason, message);
-                _logger.LogError("Command", result.ErrorReason);
+                _reportHandler.ReportAsync(result.ErrorReason, message);
+                _logger.LogError(result.ErrorReason);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 
+using Inquisition.Data.Models;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -12,10 +13,14 @@ namespace Inquisition.Modules
 {
     public class PollModule : ModuleBase<SocketCommandContext>
     {
+        private readonly ReportHandler _reportHandler;
         private readonly ILogger<PollModule> _logger;
 
-        public PollModule(ILogger<PollModule> logger)
+        public PollModule(
+            ReportHandler reportHandler,
+            ILogger<PollModule> logger)
         {
+            _reportHandler = reportHandler;
             _logger = logger;
         }
 
@@ -50,7 +55,8 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
 			}
 		}

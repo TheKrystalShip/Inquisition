@@ -14,7 +14,7 @@ namespace Inquisition.Handlers
         private readonly DiscordSocketClient _client;
 		private readonly EventService _eventService;
         private readonly ILogger<EventHandler> _logger;
-        private readonly ConversionHandler _conversionGandler;
+        private readonly ConversionHandler _conversionHandler;
 
 		public EventHandler(
             DiscordSocketClient client,
@@ -25,7 +25,7 @@ namespace Inquisition.Handlers
 			_client = client;
             _eventService = eventService;
             _logger = logger;
-            _conversionGandler = conversionHandler;
+            _conversionHandler = conversionHandler;
 
 			_client.Log += Log;
 			_client.Ready += Ready;
@@ -67,7 +67,7 @@ namespace Inquisition.Handlers
 						{
 							if (!user.IsBot)
 							{
-								_conversionGandler.AddUser(user);
+								_conversionHandler.AddUser(user);
 							}
 						}
 					}
@@ -75,11 +75,11 @@ namespace Inquisition.Handlers
 				}
 				catch (Exception e)
 				{
-                    _logger.LogInformation(e.Message);
+                    _logger.LogError(e);
 				}
 				finally
 				{
-                    _logger.LogInformation(_conversionGandler.UsersAdded > 0 ? $"Done, added {_conversionGandler.UsersAdded} user(s)" : "Done, no new users were added");
+                    _logger.LogInformation(_conversionHandler.UsersAdded > 0 ? $"Done, added {_conversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
 				}
 			});
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed

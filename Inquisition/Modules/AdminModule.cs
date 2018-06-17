@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
+using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Database.Repositories;
@@ -9,6 +10,7 @@ using Inquisition.Handlers;
 using Inquisition.Logging;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -19,14 +21,20 @@ namespace Inquisition.Modules
     [RequireUserPermission(GuildPermission.Administrator)]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
-		private readonly DatabaseContext db;
-        private readonly IRepositoryWrapper Repository;
+		private readonly DatabaseContext _dbContext;
+        private readonly ReportHandler _reportHandler;
+        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<AdminModule> _logger;
 
-        public AdminModule(DatabaseContext dbHandler, IRepositoryWrapper repository, ILogger<AdminModule> logger)
+        public AdminModule(
+            DatabaseContext dbContext,
+            ReportHandler reportHandler,
+            IRepositoryWrapper repository,
+            ILogger<AdminModule> logger)
         {
-            db = dbHandler;
-            Repository = repository;
+            _dbContext = dbContext;
+            _reportHandler = reportHandler;
+            _repository = repository;
             _logger = logger;
         }
 
@@ -42,12 +50,14 @@ namespace Inquisition.Modules
                     return;
                 }
 
-                var members = await Context.Guild.PruneUsersAsync(days);
+                int members = await Context.Guild.PruneUsersAsync(days);
                 await ReplyAsync(ReplyHandler.Info.UsersPruned(members, days));
             }
             catch (Exception e)
             {
-                ReportHandler.Report(e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(e);
+                _logger.LogError(e);
             }
         }
 
@@ -63,7 +73,9 @@ namespace Inquisition.Modules
             }
             catch (Exception e)
             {
-                ReportHandler.Report(e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(e);
+                _logger.LogError(e);
             }
         }
 
@@ -74,18 +86,24 @@ namespace Inquisition.Modules
         {
             try
             {
-                var messages = await Context.Channel.GetMessagesAsync((int)amount + 1).Flatten();
-                await Context.Channel.DeleteMessagesAsync(messages);
+                IEnumerable<IMessage> messages = await Context.Channel
+                    .GetMessagesAsync((int)amount + 1)
+                    .Flatten();
+
+                await Context.Channel
+                    .DeleteMessagesAsync(messages);
 
                 const int delay = 5000;
-                var m = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
+                IUserMessage reply = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
 
                 await Task.Delay(delay);
-                await m.DeleteAsync();
+                await reply.DeleteAsync();
             }
             catch (Exception e)
             {
-                ReportHandler.Report(e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(e);
+                _logger.LogError(e);
             }
         }
 
@@ -112,16 +130,16 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(Context, e);
-				await ReplyAsync("", false, EmbedHandler.Create(e));
+				await ReplyAsync("", false, EmbedHandler.Create(e).Build());
+				_reportHandler.ReportAsync(Context, e);
+                _logger.LogError(e);
 			}
         }
 
 		[Command("hello there")]
 		public async Task TestCommandAsync()
 		{
-            User me = Repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
-            _logger.LogInformation(me.Username);
+            User me = _repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
             await ReplyAsync($"General {me.Username} ⚔️⚔️");
 		}
 
@@ -156,10 +174,12 @@ namespace Inquisition.Modules
 	public class StopAdminModule : ModuleBase<SocketCommandContext>
 	{
         private readonly ServiceHandler _serviceHandler;
+        private readonly ILogger<AdminModule> _logger;
 
-        public StopAdminModule(ServiceHandler serviceHandler)
+        public StopAdminModule(ServiceHandler serviceHandler, ILogger<AdminModule> logger)
         {
             _serviceHandler = serviceHandler;
+            _logger = logger;
         }
 
 		[Command("loops")]
@@ -168,6 +188,7 @@ namespace Inquisition.Modules
 		{
 			_serviceHandler.StopAllLoops();
 			await ReplyAsync("All loops stopped");
+            _logger.LogInformation("Stopped all loops");
 		}
 	}
 

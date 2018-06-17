@@ -16,11 +16,15 @@ namespace Inquisition.Services
 	{
         private readonly Dictionary<string, Process> _runningServers;
 		private readonly string _path = $"";
+        private readonly ReportHandler _reportHandler;
         private readonly ILogger<GameService> _logger;
 
-        public GameService(ILogger<GameService> logger)
+        public GameService(
+            ReportHandler reportHandler,
+            ILogger<GameService> logger)
         {
             _runningServers = new Dictionary<string, Process>();
+            _reportHandler = reportHandler;
             _logger = logger;
         }
 
@@ -30,7 +34,7 @@ namespace Inquisition.Services
 			{
 				if (_runningServers.TryGetValue(game.Name, out Process temp))
 				{
-					await ReportHandler.ReportAsync(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
+					_reportHandler.ReportAsync(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
 					return;
 				}
 
@@ -48,7 +52,8 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(context, e);
+                await context.Channel.SendMessageAsync(ReplyHandler.Context(Result.Failed));
+				_reportHandler.ReportAsync(context, e);
                 _logger.LogError(e);
 			}
 		}
@@ -74,7 +79,8 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				ReportHandler.Report(context, e);
+                await context.Channel.SendMessageAsync(ReplyHandler.Context(Result.Failed));
+                _reportHandler.ReportAsync(context, e);
                 _logger.LogError(e);
 			}
 		}

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Inquisition.Reporting
 {
-	public class ReporterConfig
+    public class ReporterConfig
     {
 		/// <summary>
 		/// Directory to write XML file to.

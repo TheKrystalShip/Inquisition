@@ -96,7 +96,7 @@ namespace Inquisition.Services
         public Process YTDownload(string path)
         {
             return Process.Start(new ProcessStartInfo {
-                FileName = "Programs/youtube-dl.exe",
+                FileName = "youtube-dl.exe",
                 Arguments = $"-i -x --no-playlist --max-filesize 100m --write-thumbnail " +
                 $"-o \"Data/Music/%(title)s.mp3\" \"ytsearch:{path}\""
             });

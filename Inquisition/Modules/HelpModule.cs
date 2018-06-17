@@ -4,6 +4,7 @@ using Discord.Commands;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,11 +13,16 @@ namespace Inquisition.Modules
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
         private readonly CommandService _commandService;
+        private readonly ReportHandler _reportHandler;
         private readonly ILogger<HelpModule> _logger;
 
-        public HelpModule(CommandService commandService, ILogger<HelpModule> logger)
+        public HelpModule(
+            CommandService commandService,
+            ReportHandler reportHandler,
+            ILogger<HelpModule> logger)
         {
             _commandService = commandService;
+            _reportHandler = reportHandler;
             _logger = logger;
         }
 
@@ -26,14 +32,14 @@ namespace Inquisition.Modules
         {
             try
             {
-                var embed = EmbedHandler.Create(Context.User);
+                EmbedBuilder embed = EmbedHandler.Create(Context.User);
 
                 embed.Title = "Inquisition Help:";
 
-                foreach (var c in _commandService.Commands)
+                foreach (CommandInfo c in _commandService.Commands)
                 {
                     string str = "";
-                    foreach (var a in c.Aliases.Skip(1))
+                    foreach (string a in c.Aliases.Skip(1))
                     {
                         if (a != null)
                         {
@@ -44,9 +50,9 @@ namespace Inquisition.Modules
                 }
                 await Context.User.SendMessageAsync(ReplyHandler.Generic, false, embed.Build());
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
-                ReportHandler.Report(Context, e);
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
             }
         }

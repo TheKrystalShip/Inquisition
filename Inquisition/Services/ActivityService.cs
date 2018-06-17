@@ -15,7 +15,9 @@ namespace Inquisition.Services
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ActivityService> _logger;
 
-        public ActivityService(IRepositoryWrapper repository, ILogger<ActivityService> logger)
+        public ActivityService(
+            IRepositoryWrapper repository,
+            ILogger<ActivityService> logger)
         {
             _repository = repository;
             _logger = logger;
