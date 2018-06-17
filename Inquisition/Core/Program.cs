@@ -23,7 +23,7 @@ namespace Inquisition
 
 			_client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
-					LogLevel = LogSeverity.Info,
+					LogLevel = LogSeverity.Debug,
 					DefaultRetryMode = RetryMode.AlwaysRetry,
 					ConnectionTimeout = 5000,
 					AlwaysDownloadUsers = true

@@ -48,7 +48,7 @@ namespace Inquisition.Handlers
 
             // Call some handlers/services to start them up
             _serviceProvider.GetService<EventHandler>();
-            _serviceProvider.GetService<ServiceHandler>(); // Not finished yet
+            //_serviceProvider.GetService<ServiceHandler>(); // Not finished yet
 
             _client.MessageReceived += HandleCommands;
         }
