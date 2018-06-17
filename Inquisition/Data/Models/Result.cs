@@ -6,6 +6,7 @@
 		Successful,
 		Exists,
 		DoesNotExist,
+        AlreadyExists,
 		AlreadyRunning,
 		Offline,
 		Online,

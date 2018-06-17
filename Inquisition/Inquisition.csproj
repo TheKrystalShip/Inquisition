@@ -66,30 +66,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BotInfo.resx</DependentUpon>
     </Compile>
-    <Compile Update="Properties\BotInfo.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BotInfo.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\BotInfo.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BotInfo.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\EmailInfo.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>EmailInfo.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Properties\BotInfo.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>BotInfo.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Properties\BotInfo.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>BotInfo.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Properties\BotInfo.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -104,7 +86,7 @@
     <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="libopus.dll">
+    <None Update="opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Libraries\libsodium.dll">

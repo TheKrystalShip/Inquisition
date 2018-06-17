@@ -18,7 +18,7 @@ namespace Inquisition.Modules
     {
 		private readonly DatabaseContext db;
 
-		public AdminModule(DatabaseContext dbHandler) => db = dbHandler;
+        public AdminModule(DatabaseContext dbHandler) => db = dbHandler;
 
         [Command("prune")]
         [Summary("[Admin] Prunes all inactive members from the server")]
