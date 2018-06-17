@@ -39,7 +39,7 @@ namespace Inquisition.Handlers
 
 		private async Task Ready()
 		{
-			await Task.Run(() => 
+			await Task.Run(() =>
 			{
 				LogHandler.WriteLine(LogTarget.Console, "Starting user registration...");
 
