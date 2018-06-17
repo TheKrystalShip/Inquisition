@@ -5,7 +5,9 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,18 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class JokeModule : ModuleBase<SocketCommandContext>
+    public class JokeModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<JokeModule> _logger;
 
-		public JokeModule(DatabaseContext dbHandler) => db = dbHandler;
+		public JokeModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<JokeModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("joke")]
 		[Alias("joke by")]
@@ -32,11 +41,11 @@ namespace Inquisition.Modules
 				switch (user)
 				{
 					case null:
-						joke = db.Jokes.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+						joke = _dbContext.Jokes.OrderBy(x => Guid.NewGuid()).FirstOrDefault();
 						break;
 					default:
-						User temp = db.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
-						joke = db.Jokes.Where(x => x.User == temp).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
+						User temp = _dbContext.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
+						joke = _dbContext.Jokes.Where(x => x.User == temp).OrderBy(x => Guid.NewGuid()).FirstOrDefault();
 						break;
 				}
 
@@ -55,6 +64,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -70,11 +80,11 @@ namespace Inquisition.Modules
 				switch (user)
 				{
 					case null:
-						Jokes = db.Jokes.Take(10).ToList();
+						Jokes = _dbContext.Jokes.Take(10).ToList();
 						break;
 					default:
-						User temp = db.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
-						Jokes = db.Jokes.Where(x => x.User == temp).Take(10).ToList();
+						User temp = _dbContext.Users.FirstOrDefault(x => x.Id == user.Id.ToString());
+						Jokes = _dbContext.Jokes.Where(x => x.User == temp).Take(10).ToList();
 						break;
 				}
 
@@ -96,6 +106,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -105,7 +116,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User author = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User author = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
 				if (jokeText is null)
 				{
@@ -119,8 +130,8 @@ namespace Inquisition.Modules
 					User = author
 				};
 
-				db.Jokes.Add(joke);
-				db.SaveChanges();
+				_dbContext.Jokes.Add(joke);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -128,6 +139,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -138,8 +150,8 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				Joke joke = db.Jokes.Where(x => x.User == localUser && x.Id == id).FirstOrDefault();
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				Joke joke = _dbContext.Jokes.Where(x => x.User == localUser && x.Id == id).FirstOrDefault();
 
 				if (joke is null)
 				{
@@ -147,8 +159,8 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				db.Jokes.Remove(joke);
-				db.SaveChanges();
+				_dbContext.Jokes.Remove(joke);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -156,6 +168,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

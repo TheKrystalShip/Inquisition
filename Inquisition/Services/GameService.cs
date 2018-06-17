@@ -3,6 +3,7 @@
 using Inquisition.Data.Models;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -11,18 +12,25 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class GameService : Service
+    public class GameService : Service
 	{
-		public static Dictionary<string, Process> RunningServers { get; set; } = new Dictionary<string, Process>();
-		public static string Path = $"";
+        private readonly Dictionary<string, Process> _runningServers;
+		private readonly string _path = $"";
+        private readonly ILogger<GameService> _logger;
+
+        public GameService(ILogger<GameService> logger)
+        {
+            _runningServers = new Dictionary<string, Process>();
+            _logger = logger;
+        }
 
 		public async Task StartServer(Game game, SocketCommandContext context)
 		{
 			try
 			{
-				if (RunningServers.TryGetValue(game.Name, out Process temp))
+				if (_runningServers.TryGetValue(game.Name, out Process temp))
 				{
-					await ReportHandler.Report(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
+					await ReportHandler.ReportAsync(ReplyHandler.Error.GameAlreadyRunning(game), context.Message);
 					return;
 				}
 
@@ -31,7 +39,7 @@ namespace Inquisition.Services
 				p.StartInfo.Arguments = game.Arguments;
 				p.Start();
 
-				RunningServers.Add(game.Name, p);
+				_runningServers.Add(game.Name, p);
 
 				game.IsOnline = true;
 				//Update.Game(game);
@@ -41,6 +49,7 @@ namespace Inquisition.Services
 			catch (Exception e)
 			{
 				ReportHandler.Report(context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -48,11 +57,11 @@ namespace Inquisition.Services
 		{
 			try
 			{
-				if (RunningServers.TryGetValue(game.Name, out Process p))
+				if (_runningServers.TryGetValue(game.Name, out Process p))
 				{
 					p.CloseMainWindow();
 					p.Close();
-					RunningServers.Remove(game.Name);
+					_runningServers.Remove(game.Name);
 
 					game.IsOnline = false;
 					//Update.Game(game);
@@ -66,12 +75,13 @@ namespace Inquisition.Services
 			catch (Exception e)
 			{
 				ReportHandler.Report(context, e);
+                _logger.LogError(e);
 			}
 		}
 
 		public Result ServerStatus(Game game, SocketCommandContext context)
 		{
-			bool ProcessRunning = RunningServers.TryGetValue(game.Name, out Process p);
+			bool ProcessRunning = _runningServers.TryGetValue(game.Name, out Process p);
 			bool GameMarkedOnline = game.IsOnline;
 
 			if (ProcessRunning && GameMarkedOnline)

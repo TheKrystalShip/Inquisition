@@ -3,7 +3,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Database;
+using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Diagnostics;
@@ -17,8 +20,15 @@ namespace Inquisition.Modules
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
 		private readonly DatabaseContext db;
+        private readonly IRepositoryWrapper Repository;
+        private readonly ILogger<AdminModule> _logger;
 
-        public AdminModule(DatabaseContext dbHandler) => db = dbHandler;
+        public AdminModule(DatabaseContext dbHandler, IRepositoryWrapper repository, ILogger<AdminModule> logger)
+        {
+            db = dbHandler;
+            Repository = repository;
+            _logger = logger;
+        }
 
         [Command("prune")]
         [Summary("[Admin] Prunes all inactive members from the server")]
@@ -110,7 +120,9 @@ namespace Inquisition.Modules
 		[Command("hello there")]
 		public async Task TestCommandAsync()
 		{
-            await ReplyAsync("General Kenobi ⚔️⚔️");
+            User me = Repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
+            _logger.LogInformation(me.Username);
+            await ReplyAsync($"General {me.Username} ⚔️⚔️");
 		}
 
 		[Command("restart")]
@@ -143,11 +155,18 @@ namespace Inquisition.Modules
 	[Group("stop")]
 	public class StopAdminModule : ModuleBase<SocketCommandContext>
 	{
+        private readonly ServiceHandler _serviceHandler;
+
+        public StopAdminModule(ServiceHandler serviceHandler)
+        {
+            _serviceHandler = serviceHandler;
+        }
+
 		[Command("loops")]
 		[Alias("all loops")]
 		public async Task StopAllLoopsAsync()
 		{
-			ServiceHandler.StopAllLoops();
+			_serviceHandler.StopAllLoops();
 			await ReplyAsync("All loops stopped");
 		}
 	}
@@ -155,11 +174,18 @@ namespace Inquisition.Modules
 	[Group("start")]
 	public class StartAdminModule : ModuleBase<SocketCommandContext>
 	{
+        private readonly ServiceHandler _serviceHandler;
+
+        public StartAdminModule(ServiceHandler serviceHandler)
+        {
+            _serviceHandler = serviceHandler;
+        }
+
 		[Command("loops")]
 		[Alias("all loops")]
 		public async Task StartAllLoopsAsync()
 		{
-			ServiceHandler.StartAllLoops();
+			_serviceHandler.StartAllLoops();
 			await ReplyAsync("All loops started");
 		}
 	}

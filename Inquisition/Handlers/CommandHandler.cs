@@ -3,7 +3,8 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Database;
-using Inquisition.Services;
+using Inquisition.Extensions;
+using Inquisition.Logging;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,17 +14,19 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-    public class CommandHandler : Handler
+    public class CommandHandler
     {
-        private DiscordSocketClient Client;
-        private CommandService CommandService;
-        private readonly IServiceProvider ServiceCollection;
+        private readonly DiscordSocketClient _client;
+        private readonly CommandService _commandService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<CommandHandler> _logger;
 
 		public CommandHandler(DiscordSocketClient client)
         {
-            Client = client;
+            _client = client;
+            _logger = new Logger<CommandHandler>();
 
-            CommandService = new CommandService(new CommandServiceConfig()
+            _commandService = new CommandService(new CommandServiceConfig()
                 {
                     DefaultRunMode = RunMode.Async,
                     LogLevel = LogSeverity.Debug,
@@ -31,29 +34,23 @@ namespace Inquisition.Handlers
                 }
             );
 
-            CommandService.AddModulesAsync(Assembly.GetEntryAssembly());
+            _commandService.AddModulesAsync(Assembly.GetEntryAssembly()).Wait();
 
-            AudioService audioService = new AudioService();
-            ReportHandler reportHandler = new ReportHandler();
-            ReminderService reminderService = new ReminderService(Client);
-            //DealService dealService = new DealService();
-            ActivityService activityService = new ActivityService();
-
-            ServiceCollection = new ServiceCollection()
+            _serviceProvider = new ServiceCollection()
                 .AddDbContext<DatabaseContext>()
-                .AddLogging()
-                .AddSingleton(Client)
-                .AddSingleton(CommandService)
-                .AddSingleton(audioService)
-                .AddSingleton(reportHandler)
-                .AddSingleton(reminderService)
-                //.AddSingleton(dealService)
-                .AddSingleton(activityService)
+                .AddSingleton(_client)
+                .AddSingleton(_commandService)
+                .AddHandlers()
+                .AddServices()
+                .AddRepository()
+                .AddLogger()
                 .BuildServiceProvider();
 
-            Console.Title = "Inquisition";
+            // Call some handlers/services to start them up
+            _serviceProvider.GetService<EventHandler>();
+            _serviceProvider.GetService<ServiceHandler>(); // Not finished yet
 
-            Client.MessageReceived += HandleCommands;
+            _client.MessageReceived += HandleCommands;
         }
 
         private async Task HandleCommands(SocketMessage msg)
@@ -66,29 +63,30 @@ namespace Inquisition.Handlers
 			//string prefix = GetGuildPrefix(message) ?? BotInfo.DefaultPrefix;
 			int argPos = 0;
 
-			bool messageHasMention = message.HasMentionPrefix(Client.CurrentUser, ref argPos);
+			bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);
 			//bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
 
 			if (!messageHasMention)
 				return;
 
-            SocketCommandContext context = new SocketCommandContext(Client, message);
-            IResult result = await CommandService.ExecuteAsync(context, argPos, ServiceCollection);
+            SocketCommandContext context = new SocketCommandContext(_client, message);
+            IResult result = await _commandService.ExecuteAsync(context, argPos, _serviceProvider);
 
             if (!result.IsSuccess)
-                await ReportHandler.Report(result.ErrorReason, message);
+            {
+                await ReportHandler.ReportAsync(result.ErrorReason, message);
+                _logger.LogError("Command", result.ErrorReason);
+            }
         }
 
 		private string GetGuildPrefix(SocketUserMessage message)
 		{
 			var guildChannel = message.Channel as SocketGuildChannel;
 			string socketGuildId = guildChannel.Guild.Id.ToString();
-			return PrefixHandler.GetPrefix(socketGuildId);
-		}
 
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
+            PrefixHandler prefixHandler = _serviceProvider.GetService<PrefixHandler>();
+
+			return prefixHandler.GetPrefix(socketGuildId);
 		}
 	}
 }

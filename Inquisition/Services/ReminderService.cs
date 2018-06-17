@@ -3,6 +3,8 @@ using Discord.WebSocket;
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
+using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -12,15 +14,23 @@ using System.Linq;
 
 namespace Inquisition.Services
 {
-	public class ReminderService : Service
+    public class ReminderService : Service
 	{
-		private DiscordSocketClient Client;
-		private DatabaseContext db;
+		private readonly DiscordSocketClient _client;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<ReminderService> _logger;
 
-		public ReminderService(DiscordSocketClient client)
+		public ReminderService(
+            DiscordSocketClient client,
+            DatabaseContext dbContext,
+            IRepositoryWrapper repository,
+            ILogger<ReminderService> logger)
 		{
-			Client = client;
-			db = new DatabaseContext();
+			_client = client;
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
 		}
 
 		public override void Init(int startDelay = 0, int interval = 1000)
@@ -35,7 +45,7 @@ namespace Inquisition.Services
 
 			foreach (Reminder r in RemindersList)
 			{
-				Client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
+				_client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
 			}
 
 			RemoveReminderList(RemindersList);
@@ -48,7 +58,7 @@ namespace Inquisition.Services
 
 		private List<Reminder> GetReminderList(int amount)
 		{
-			return db.Reminders
+			return _dbContext.Reminders
 				.Where(x => x.DueDate <= DateTimeOffset.UtcNow)
 				.Include(x => x.User)
 				.Take(amount)
@@ -57,8 +67,8 @@ namespace Inquisition.Services
 
 		private void RemoveReminderList(List<Reminder> r)
 		{
-			db.Reminders.RemoveRange(r);
-			db.SaveChanges();
+			_dbContext.Reminders.RemoveRange(r);
+			_dbContext.SaveChanges();
 		}
 	}
 }

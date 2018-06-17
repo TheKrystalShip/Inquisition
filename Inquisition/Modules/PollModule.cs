@@ -2,6 +2,7 @@
 using Discord.Commands;
 
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,15 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class PollModule : ModuleBase<SocketCommandContext>
+    public class PollModule : ModuleBase<SocketCommandContext>
     {
+        private readonly ILogger<PollModule> _logger;
+
+        public PollModule(ILogger<PollModule> logger)
+        {
+            _logger = logger;
+        }
+
 		[Command("poll")]
 		[Alias("poll:")]
 		[Summary("Create a poll")]
@@ -43,6 +51,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

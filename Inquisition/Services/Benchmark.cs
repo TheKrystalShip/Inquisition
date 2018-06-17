@@ -4,19 +4,21 @@ using System.Diagnostics;
 
 namespace Inquisition.Services
 {
-	public class Benchmark : Service
+    public class Benchmark : Service
 	{
 		private Stopwatch Stopwatch;
+        private readonly ILogger<Benchmark> _logger;
 
 		public Benchmark()
 		{
 			Stopwatch = Stopwatch.StartNew();
+            _logger = new Logger<Benchmark>();
 		}
 
 		public override void Dispose()
 		{
 			Stopwatch.Stop();
-			LogHandler.WriteLine(LogTarget.Console, $"{Stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
+            _logger.LogInformation($"{Stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
 		}
 	}
 }

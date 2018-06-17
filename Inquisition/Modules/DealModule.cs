@@ -4,6 +4,7 @@ using Discord.Commands;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -14,11 +15,18 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class DealModule : ModuleBase<SocketCommandContext>
+    public class DealModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<DealModule> _logger;
 
-		public DealModule(DatabaseContext dbHandler) => db = dbHandler;
+		public DealModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<DealModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("add deal")]
 		[Summary("Adds a deal")]
@@ -26,11 +34,11 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				var messages = await Context.Channel.GetMessagesAsync(1).Flatten();
+                IEnumerable<IMessage> messages = await Context.Channel.GetMessagesAsync(1).Flatten();
 				await Context.Channel.DeleteMessagesAsync(messages);
-				var reply = await ReplyAsync("Adding your deal...");
+                IUserMessage reply = await ReplyAsync("Adding your deal...");
 
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
 				Deal deal = new Deal
 				{
@@ -46,19 +54,19 @@ namespace Inquisition.Modules
 
 				EmbedBuilder embed = EmbedHandler.Create(deal, (messages.First() as IUserMessage));
 
-				var msg = await ReplyAsync(ReplyHandler.Context(Result.Successful), false, embed.Build());
+                IUserMessage msg = await ReplyAsync(ReplyHandler.Context(Result.Successful), false, embed.Build());
 
 				deal.MessageId = msg.Id.ToString();
 
-				db.Deals.Add(deal);
-				db.SaveChanges();
+				_dbContext.Deals.Add(deal);
+				_dbContext.SaveChanges();
 
 			}
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(LogTarget.Console, e);
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -66,7 +74,7 @@ namespace Inquisition.Modules
 		[Summary("Returns all active deals")]
 		public async Task ShowDealsAsync()
 		{
-			List<Deal> dealList = db.Deals.ToList();
+			List<Deal> dealList = _dbContext.Deals.ToList();
 
 			EmbedBuilder embed = EmbedHandler.Create(dealList);
 

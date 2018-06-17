@@ -1,32 +1,27 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Database;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 using Inquisition.Properties;
 
+using System;
 using System.Threading.Tasks;
 
 namespace Inquisition
 {
     public class Program
     {
-		private static string Token;
-		private static DiscordSocketClient Client;
+		private static string _token;
+		private static DiscordSocketClient _client;
+		private static CommandHandler _commandHandler;
 
-		private static CommandHandler CommandHandler;
-		private static EventHandler EventHandler;
-		private static ServiceHandler ServiceHandler;
-		private static PrefixHandler PrefixHandler;
-
-		private static DatabaseContext DatabaseContext;
-
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
 		{
-			Token = BotInfo.Token;
+            Console.Title = "Inquisition";
 
-			Client = new DiscordSocketClient(new DiscordSocketConfig()
+            _token = BotInfo.Token;
+
+			_client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
 					LogLevel = LogSeverity.Info,
 					DefaultRetryMode = RetryMode.AlwaysRetry,
@@ -35,25 +30,11 @@ namespace Inquisition
 				}
 			);
 
-			CommandHandler = new CommandHandler(Client);
-			EventHandler = new EventHandler(Client);
-			ServiceHandler = new ServiceHandler();
-			PrefixHandler = new PrefixHandler();
+			_commandHandler = new CommandHandler(_client);
 
-			try
-			{
-				DatabaseContext = new DatabaseContext();
-				DatabaseContext.Migrate();
-			}
-			catch (System.Exception e)
-			{
-				ReportHandler.Report(e);
-				LogHandler.WriteLine(LogTarget.Console, "Program", "Failed to migrate database");
-			}
-
-            await Client.LoginAsync(TokenType.Bot, Token);
-            await Client.StartAsync();
-            await Client.SetGameAsync($"God");
+            await _client.LoginAsync(TokenType.Bot, _token);
+            await _client.StartAsync();
+            await _client.SetGameAsync($"God");
 
             await Task.Delay(-1);
         }

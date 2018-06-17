@@ -2,21 +2,36 @@
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
+using Inquisition.Logging;
 
-using System;
 using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public static class ConversionHandler
+    public class ConversionHandler
     {
-		private static DatabaseContext db = new DatabaseContext();
-		public static int UsersAdded = 0;
+        private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<ConversionHandler> _logger;
 
-		public static void AddUser(SocketGuildUser socketGuildUser)
+        public int UsersAdded { get; private set; }
+
+        public ConversionHandler(
+            DatabaseContext dbContext,
+            IRepositoryWrapper repository,
+            ILogger<ConversionHandler> logger)
+        {
+            UsersAdded = 0;
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
+
+		public void AddUser(SocketGuildUser socketGuildUser)
 		{
 			string socketUserId = socketGuildUser.Id.ToString();
-			if (!db.Users.Any(x => x.Id == socketUserId))
+			if (!_dbContext.Users.Any(x => x.Id == socketUserId))
 			{
 				Guild guild = ToGuild(socketGuildUser.Guild);
 				User user = new User
@@ -29,27 +44,27 @@ namespace Inquisition.Handlers
 					Guild = guild
 				};
 
-				db.Users.Add(user);
-				db.SaveChanges();
+				_dbContext.Users.Add(user);
+				_dbContext.SaveChanges();
 				UsersAdded++;
 			}
 		}
 
-		public static void RemoveUser(SocketGuildUser user)
+		public void RemoveUser(SocketGuildUser user)
 		{
 			string userId = user.Id.ToString();
-			if (db.Users.Any(x => x.Id == userId))
+			if (_dbContext.Users.Any(x => x.Id == userId))
 			{
-				User toRemove = db.Users.FirstOrDefault(x => x.Id == userId);
-				db.Users.Remove(toRemove);
-				db.SaveChanges();
+				User toRemove = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
+				_dbContext.Users.Remove(toRemove);
+				_dbContext.SaveChanges();
 			}
 		}
 
-		private static Guild ToGuild(SocketGuild socketGuild)
+		private Guild ToGuild(SocketGuild socketGuild)
 		{
 			string socketGuildId = socketGuild.Id.ToString();
-			return db.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
+			return _dbContext.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
 				new Guild
 				{
 					Name = socketGuild.Name,

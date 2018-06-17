@@ -3,7 +3,9 @@ using Discord.Commands;
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -15,17 +17,25 @@ namespace Inquisition.Modules
 {
     public class ActivityModule : ModuleBase<SocketCommandContext>
 	{
-		private DatabaseContext db;
-		public ActivityModule(DatabaseContext dbHandler) => db = dbHandler;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<ActivityModule> _logger;
+
+		public ActivityModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<ActivityModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("activities")]
 		[Alias("tasks")]
 		public async Task ShowActivitiesAsync()
 		{
 			string contextUserId = Context.User.Id.ToString();
-			User user = db.Users.FirstOrDefault(x => x.Id == contextUserId);
+			User user = _dbContext.Users.FirstOrDefault(x => x.Id == contextUserId);
 
-			List<Database.Models.Activity> ActivityList = db.Activities.Where(x => x.User == user).ToList();
+			List<Database.Models.Activity> ActivityList = _dbContext.Activities.Where(x => x.User == user).ToList();
 
 			if (ActivityList.Count == 0)
 			{

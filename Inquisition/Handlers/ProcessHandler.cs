@@ -11,13 +11,15 @@ using System.Linq;
 namespace Inquisition.Handlers
 {
 	[Obsolete("Needs to be changed, do not use", true)]
-	public class ProcessHandler : Handler
+	public class ProcessHandler
     {
 		private static DatabaseContext db;
 		public static Dictionary<Game, Process> GameProcessDictionary { get; set; } = new Dictionary<Game, Process>();
 		public static Dictionary<string, Process> ProcessDictionary { get; set; } = new Dictionary<string, Process>();
 
-		public ProcessHandler()
+        private static readonly ILogger<ProcessHandler> _logger = new Logger<ProcessHandler>();
+
+        public ProcessHandler()
 		{
 			db = new DatabaseContext();
 		}
@@ -53,7 +55,7 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
+                _logger.LogError(e);
 				return Result.Failed;
 			}
 		}
@@ -84,8 +86,8 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
-				return Result.Failed;
+                _logger.LogError(e);
+                return Result.Failed;
 			}
 		}
 
@@ -110,8 +112,8 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
-				return Result.Failed;
+                _logger.LogError(e);
+                return Result.Failed;
 			}
 		}
 
@@ -131,8 +133,8 @@ namespace Inquisition.Handlers
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
-				return Result.Failed;
+                _logger.LogError(e);
+                return Result.Failed;
 			}
 		}
 
@@ -144,11 +146,6 @@ namespace Inquisition.Handlers
 		private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
 		{
 
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

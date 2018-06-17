@@ -4,7 +4,9 @@ using Discord.Commands;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -13,11 +15,18 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class ReminderModule : ModuleBase<SocketCommandContext>
+    public class ReminderModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<ReminderModule> _logger;
 
-		public ReminderModule(DatabaseContext dbHandler) => db = dbHandler;
+		public ReminderModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<ReminderModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("reminders")]
 		[Summary("Displays a list with all of your reminders")]
@@ -25,8 +34,8 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				List<Reminder> Reminders = db.Reminders.Where(x => x.User == localUser).ToList();
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				List<Reminder> Reminders = _dbContext.Reminders.Where(x => x.User == localUser).ToList();
 
 				if (Reminders.Count == 0)
 				{
@@ -46,6 +55,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -55,7 +65,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
 				if (localUser.TimezoneOffset is null)
 				{
@@ -83,8 +93,8 @@ namespace Inquisition.Modules
 					User = localUser
 				};
 
-				db.Reminders.Add(reminder);
-				db.SaveChanges();
+				_dbContext.Reminders.Add(reminder);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -92,6 +102,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -102,11 +113,11 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				Reminder reminder = db.Reminders.FirstOrDefault(x => x.Id == id && x.User == localUser);
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				Reminder reminder = _dbContext.Reminders.FirstOrDefault(x => x.Id == id && x.User == localUser);
 
-				db.Reminders.Remove(reminder);
-				db.SaveChanges();
+				_dbContext.Reminders.Remove(reminder);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -114,6 +125,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

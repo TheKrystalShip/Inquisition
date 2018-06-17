@@ -9,18 +9,26 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class EventHandler : Handler
+    public class EventHandler
     {
-        private DiscordSocketClient Client;
-		private EventService EventService;
+        private readonly DiscordSocketClient _client;
+		private readonly EventService _eventService;
+        private readonly ILogger<EventHandler> _logger;
+        private readonly ConversionHandler _conversionGandler;
 
-		public EventHandler(DiscordSocketClient client)
+		public EventHandler(
+            DiscordSocketClient client,
+            EventService eventService,
+            ILogger<EventHandler> logger,
+            ConversionHandler conversionHandler)
 		{
-			Client = client;
-			EventService = new EventService(Client);
+			_client = client;
+            _eventService = eventService;
+            _logger = logger;
+            _conversionGandler = conversionHandler;
 
-			Client.Log += Log;
-			Client.Ready += Ready;
+			_client.Log += Log;
+			_client.Ready += Ready;
 
 			SubscribeToAuditService();
 		}
@@ -31,27 +39,35 @@ namespace Inquisition.Handlers
 			// can be ignored aparently...
 			if (!logMessage.Message.Contains("OpCode"))
 			{
-				Console.WriteLine(logMessage);
+                _logger.LogInformation(logMessage.Source, logMessage.Message);
 			}
 
 			return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// This method is not awaited because Inquisition can keep adding
+        /// members to the database in the background, it doesn't need to wait
+        /// for this to finish.
+        /// </summary>
+        /// <returns></returns>
 		private async Task Ready()
 		{
-			await Task.Run(() =>
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            Task.Run(() =>
 			{
-				LogHandler.WriteLine(LogTarget.Console, "Starting user registration...");
+                _logger.LogInformation("Starting user registration...");
 
 				try
 				{
-					foreach (SocketGuild guild in Client.Guilds)
+					foreach (SocketGuild guild in _client.Guilds)
 					{
 						foreach (SocketGuildUser user in guild.Users)
 						{
 							if (!user.IsBot)
 							{
-								ConversionHandler.AddUser(user);
+								_conversionGandler.AddUser(user);
 							}
 						}
 					}
@@ -59,38 +75,34 @@ namespace Inquisition.Handlers
 				}
 				catch (Exception e)
 				{
-					LogHandler.WriteLine(LogTarget.Console, "EventHandler", e.Message.Substring(0, 50));
+                    _logger.LogInformation(e.Message);
 				}
 				finally
 				{
-					LogHandler.WriteLine(LogTarget.Console, ConversionHandler.UsersAdded > 0 ? $"Done, added {ConversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
+                    _logger.LogInformation(_conversionGandler.UsersAdded > 0 ? $"Done, added {_conversionGandler.UsersAdded} user(s)" : "Done, no new users were added");
 				}
 			});
-		}
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        }
 
 		private void SubscribeToAuditService()
 		{
-			Client.ChannelCreated += (channel) => EventService.ChannelCreated(channel);
-			Client.ChannelDestroyed += (channel) => EventService.ChannelDestroyed(channel);
-			Client.ChannelUpdated += (before, after) => EventService.ChannelUpdated(before, after);
+			_client.ChannelCreated += (channel) => _eventService.ChannelCreated(channel);
+			_client.ChannelDestroyed += (channel) => _eventService.ChannelDestroyed(channel);
+			_client.ChannelUpdated += (before, after) => _eventService.ChannelUpdated(before, after);
 
-			Client.GuildMemberUpdated += (before, after) => EventService.GuildMemberUpdated(before, after);
-			Client.GuildUpdated += (before, after) => EventService.GuildUpdated(before, after);
+			_client.GuildMemberUpdated += (before, after) => _eventService.GuildMemberUpdated(before, after);
+			_client.GuildUpdated += (before, after) => _eventService.GuildUpdated(before, after);
 
-			Client.RoleCreated += (role) => EventService.RoleCreated(role);
-			Client.RoleDeleted += (role) => EventService.RoleDeleted(role);
-			Client.RoleUpdated += (before, after) => EventService.RoleUpdated(before, after);
+			_client.RoleCreated += (role) => _eventService.RoleCreated(role);
+			_client.RoleDeleted += (role) => _eventService.RoleDeleted(role);
+			_client.RoleUpdated += (before, after) => _eventService.RoleUpdated(before, after);
 
-			Client.UserBanned += (user, guild) => EventService.UserBanned(user, guild);
-			Client.UserJoined += (user) => EventService.UserJoined(user);
-			Client.UserLeft += (user) => EventService.UserLeft(user);
-			Client.UserUnbanned += (user, guild) => EventService.UserUnbanned(user, guild);
-			Client.UserUpdated += (before, after) => EventService.UserUpdated(before, after);
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
+			_client.UserBanned += (user, guild) => _eventService.UserBanned(user, guild);
+			_client.UserJoined += (user) => _eventService.UserJoined(user);
+			_client.UserLeft += (user) => _eventService.UserLeft(user);
+			_client.UserUnbanned += (user, guild) => _eventService.UserUnbanned(user, guild);
+			_client.UserUpdated += (before, after) => _eventService.UserUpdated(before, after);
 		}
 	}
 }

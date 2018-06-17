@@ -11,22 +11,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Inquisition.Logging\Inquisition.Logging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\DbInfo.Designer.cs">
+      <DependentUpon>DbInfo.resx</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>DbInfo.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\DbInfo.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DbInfo.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

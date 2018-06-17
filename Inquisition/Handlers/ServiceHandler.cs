@@ -1,35 +1,37 @@
-﻿
-using Inquisition.Logging;
+﻿using Inquisition.Logging;
 using Inquisition.Services;
 
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class ServiceHandler : Handler
+    public class ServiceHandler
 	{
-		private static List<Service> ServiceList = new List<Service>();
+        private List<Service> _serviceList;
 		private const int InitDelay = 5000;
 		private const int Interval = 1000;
+        private readonly ILogger<ServiceHandler> _logger;
 
-		public ServiceHandler()
+        /// <summary>
+        /// Services can be directly injected from the IoC container,
+        /// CommandHandler takes care of it automatically
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="reminderService"></param>
+		public ServiceHandler(ILogger<ServiceHandler> logger, ReminderService reminderService)
 		{
-			//ReminderService reminderService = ContainerHandler.Resolve<ReminderService>();
-			//DealService dealService = ContainerHandler.Resolve<DealService>();
-			//ActivityService activityService = ContainerHandler.Resolve<ActivityService>();
+            _logger = logger;
+            _serviceList = new List<Service>();
 
-			//RegisterService(reminderService);
-			//RegisterService(dealService);
-			//RegisterService(activityService);
-
-			//StartAllLoops();
+            RegisterService(reminderService);
+            StartAllLoops();
 		}
 
 		private void RegisterService(Service service)
 		{
 			HandleEvents(service);
-			ServiceList.Add(service);
+			_serviceList.Add(service);
 		}
 
 		private void HandleEvents(Service service)
@@ -41,42 +43,39 @@ namespace Inquisition.Handlers
 
 		private void Service_Start(Service service)
 		{
-			LogHandler.WriteLine(LogTarget.Console, service.ToString(), "Started");
+            _logger.LogInformation(service.ToString(), "Started");
 		}
 
 		private void Service_Tick(Service service)
 		{
-			LogHandler.WriteLine(LogTarget.Console, service.ToString(), "Ticked");
-		}
+            _logger.LogInformation(service.ToString(), "Ticked");
+        }
 
 		private void Service_Stop(Service service)
 		{
-			LogHandler.WriteLine(LogTarget.Console, service.ToString(), "Stopped");
-		}
+            _logger.LogInformation(service.ToString(), "Stopped");
+        }
 
-		public static void StartAllLoops()
+		public async void StartAllLoops()
 		{
-			LogHandler.WriteLine(LogTarget.Console, "Starting loops...");
+            await Task.Delay(InitDelay);
 
-			foreach (Service service in ServiceList)
+            _logger.LogInformation("Starting loops...");
+
+            foreach (Service service in _serviceList)
 			{
 				service.Init(InitDelay, Interval);
 			}
 		}
 
-		public static void StopAllLoops()
+		public void StopAllLoops()
 		{
-			LogHandler.WriteLine(LogTarget.Console, "Stopping loops...");
+            _logger.LogInformation("Stopping loops...");
 
-			foreach (Service service in ServiceList)
+            foreach (Service service in _serviceList)
 			{
 				service.Dispose();
 			}
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

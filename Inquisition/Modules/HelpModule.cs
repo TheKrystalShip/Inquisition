@@ -2,20 +2,22 @@
 using Discord.Commands;
 
 using Inquisition.Handlers;
-using Inquisition.Services;
+using Inquisition.Logging;
 
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : ModuleBase<SocketCommandContext>
     {
-        private static CommandService CommandService;
+        private readonly CommandService _commandService;
+        private readonly ILogger<HelpModule> _logger;
 
-        public HelpModule(CommandService commandService)
+        public HelpModule(CommandService commandService, ILogger<HelpModule> logger)
         {
-            CommandService = commandService;
+            _commandService = commandService;
+            _logger = logger;
         }
 
         [Command("help")]
@@ -28,7 +30,7 @@ namespace Inquisition.Modules
 
                 embed.Title = "Inquisition Help:";
 
-                foreach (var c in CommandService.Commands)
+                foreach (var c in _commandService.Commands)
                 {
                     string str = "";
                     foreach (var a in c.Aliases.Skip(1))
@@ -45,6 +47,7 @@ namespace Inquisition.Modules
             catch (System.Exception e)
             {
                 ReportHandler.Report(Context, e);
+                _logger.LogError(e);
             }
         }
     }

@@ -5,7 +5,9 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -16,11 +18,18 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class AlertModule : ModuleBase<SocketCommandContext>
+    public class AlertModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private DatabaseContext _dbContext;
+        private readonly ILogger<AlertModule> _logger;
+        private readonly IRepositoryWrapper _repository;
 
-		public AlertModule(DatabaseContext dbHandler) => db = dbHandler;
+		public AlertModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<AlertModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("alerts")]
 		[Summary("Displays a list of all of your notifications")]
@@ -28,8 +37,9 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				List<Alert> Alerts = db.Alerts
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+
+				List<Alert> Alerts = _dbContext.Alerts
 					.Where(x => x.User == localUser)
 					.Include(x => x.User)
 					.Include(x => x.TargetUser)
@@ -56,6 +66,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -65,8 +76,8 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User author = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				User target = db.Users.FirstOrDefault(x => x.Id == targetAlert.Id.ToString());
+				User author = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User target = _dbContext.Users.FirstOrDefault(x => x.Id == targetAlert.Id.ToString());
 
 				Alert alert = new Alert
 				{
@@ -74,8 +85,8 @@ namespace Inquisition.Modules
 					TargetUser = target
 				};
 
-				db.Alerts.Add(alert);
-				db.SaveChanges();
+				_dbContext.Alerts.Add(alert);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -83,6 +94,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -93,10 +105,17 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User author = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
-				User target = db.Users.FirstOrDefault(x => x.Id == targetUser.Id.ToString());
+				User author = _dbContext
+                    .Users
+                    .FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
-				Alert alert = db.Alerts.Where(x => x.User == author && x.TargetUser == target).FirstOrDefault();
+				User target = _dbContext
+                    .Users
+                    .FirstOrDefault(x => x.Id == targetUser.Id.ToString());
+
+				Alert alert = _dbContext
+                    .Alerts
+                    .FirstOrDefault(x => x.User == author && x.TargetUser == target);
 
 				if (alert is null)
 				{
@@ -104,8 +123,8 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				db.Alerts.Remove(alert);
-				db.SaveChanges();
+				_dbContext.Alerts.Remove(alert);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
@@ -113,6 +132,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

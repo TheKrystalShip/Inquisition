@@ -3,18 +3,27 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Database;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class MemeModule : ModuleBase<SocketCommandContext>
+    public class MemeModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<MemeModule> _logger;
 
-		public MemeModule(DatabaseContext dbHandler) => db = dbHandler;
+		public MemeModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<MemeModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("meme")]
 		[Alias("meme by")]
@@ -28,6 +37,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -52,6 +62,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -67,6 +78,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -81,6 +93,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -96,6 +109,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Inquisition.Handlers;
+using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
@@ -12,9 +13,14 @@ namespace Inquisition.Modules
 {
     public class AudioModule : ModuleBase<SocketCommandContext>
 	{
-		private readonly AudioService AudioService;
+		private readonly AudioService _audioService;
+        private readonly ILogger<AudioService> _logger;
 
-		public AudioModule(AudioService service) => AudioService = service;
+		public AudioModule(AudioService audioService, ILogger<AudioService> logger)
+        {
+            _audioService = audioService;
+            _logger = logger;
+        }
 
 		[Command("join")]
 		[Summary("Joines the channel of the User or the one passed as an argument")]
@@ -30,11 +36,12 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				await AudioService.JoinChannel(voiceChannel, Context.Guild.Id);
+				await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -45,11 +52,12 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				await AudioService.LeaveChannel(Context);
+				await _audioService.LeaveChannel(Context);
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -69,14 +77,15 @@ namespace Inquisition.Modules
 
 				if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
 				{
-					await AudioService.JoinChannel(voiceChannel, Context.Guild.Id);
+					await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
 				}
 
-				await AudioService.SendAudioAsync(Context.Guild, Context.Channel, song);
+				await _audioService.SendAudioAsync(Context.Guild, Context.Channel, song);
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -165,89 +174,6 @@ namespace Inquisition.Modules
 		//	try
 		//	{
 		//		AudioService.YTDownload(name);
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		ReportService.Report(Context, e);
-		//	}
-		//}
-	}
-
-	[Group("add")]
-	public class AddAudioModule : ModuleBase<SocketCommandContext>
-	{
-		private readonly AudioService AudioService;
-
-		public AddAudioModule(AudioService service)
-		{
-			AudioService = service;
-		}
-
-		//[Command("playlist")]
-		//[Summary("Create a new playlist")]
-		//public async Task AddPlaylistAsync([Remainder] string name)
-		//{
-		//	try
-		//	{
-		//		User localUser = UserHandler.ToUser(Context.User);
-
-		//		if (localUser.TimezoneOffset is null)
-		//		{
-		//			await ReplyAsync(ReplyHandler.Error.TimezoneNotSet);
-		//			return;
-		//		}
-
-		//		Playlist playlist = new Playlist
-		//		{
-		//			Name = name,
-		//			User = localUser
-		//		};
-
-		//		if (Inspect.Exists(playlist) == Result.Exists)
-		//		{
-		//			await ReplyAsync("Already exists in the database");
-		//			return;
-		//		}
-
-		//		Result result = Insert.Playlist(playlist);
-		//		await ReplyAsync(ReplyHandler.Context(result));
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		ReportService.Report(Context, e);
-		//	}
-		//}
-
-		//[Command("song")]
-		//[Summary("Adds a song to the queue")]
-		//public async Task AddSongAsync([Remainder] string name)
-		//{
-			
-		//}
-	}
-
-	[Group("remove")]
-	[Alias("delete")]
-	public class RemoveAudioModule : ModuleBase<SocketCommandContext>
-	{
-		//[Command("playlist")]
-		//[Summary("Delete a playlist")]
-		//public async Task RemovePlaylistAsync(int id)
-		//{
-		//	try
-		//	{
-		//		User localUser = UserHandler.ToUser(Context.User);
-
-		//		Playlist playlist = Select.Playlist(id, localUser);
-
-		//		if (playlist is null)
-		//		{
-		//			await ReplyAsync(ReplyHandler.Error.NotTheOwner);
-		//			return;
-		//		}
-
-		//		Result result = Delete.Playlist(playlist);
-		//		await ReplyAsync(ReplyHandler.Context(result));
 		//	}
 		//	catch (Exception e)
 		//	{

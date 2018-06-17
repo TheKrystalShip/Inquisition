@@ -3,7 +3,9 @@
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 
 using System;
 using System.Linq;
@@ -11,11 +13,18 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class TimezoneModule : ModuleBase<SocketCommandContext>
+    public class TimezoneModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<TimezoneModule> _logger;
 
-		public TimezoneModule(DatabaseContext dbHandler) => db = dbHandler;
+		public TimezoneModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<TimezoneModule> logger)
+        {
+            _dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
+        }
 
 		[Command("timezone")]
 		[Summary("Tells you your timezone from the database")]
@@ -23,7 +32,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 
 				if (localUser.TimezoneOffset is null)
 				{
@@ -36,6 +45,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -45,11 +55,11 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				User localUser = db.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
+				User localUser = _dbContext.Users.FirstOrDefault(x => x.Id == Context.User.Id.ToString());
 				localUser.TimezoneOffset = offset;
 
-				db.Users.Update(localUser);
-				db.SaveChanges();
+				_dbContext.Users.Update(localUser);
+				_dbContext.SaveChanges();
 
 				await ReplyAsync(ReplyHandler.Info.UserTimezone(localUser));
 			}
@@ -57,6 +67,7 @@ namespace Inquisition.Modules
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

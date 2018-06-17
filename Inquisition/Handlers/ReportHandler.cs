@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-	public class ReportHandler : Handler
+    public class ReportHandler
 	{
 		private static Reporter Reporter = new Reporter(new ReporterConfig()
 			{
@@ -30,7 +30,7 @@ namespace Inquisition.Handlers
 		);
 
 		// CommandService.ExecuteAsync errors
-		public static async Task Report(string errorReason, SocketUserMessage message)
+		public static async Task ReportAsync(string errorReason, SocketUserMessage message)
 		{
 			EmbedBuilder embed = EmbedHandler
 				.Create()
@@ -89,11 +89,6 @@ namespace Inquisition.Handlers
 					StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
 				});
 			}
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

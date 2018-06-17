@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class EmbedHandler : Handler
+    public class EmbedHandler
     {
         private static EmbedBuilder Embed;
 
@@ -148,11 +148,6 @@ namespace Inquisition.Handlers
 			}
 
 			return Embed;
-		}
-
-		public override void Dispose()
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

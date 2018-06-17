@@ -3,7 +3,9 @@ using Discord.Commands;
 
 using Inquisition.Data.Models;
 using Inquisition.Database;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
+using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
@@ -13,15 +15,19 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class GameModule : ModuleBase<SocketCommandContext>
+    public class GameModule : ModuleBase<SocketCommandContext>
 	{
-		private GameService GameService;
-		private DatabaseContext db;
+		private readonly GameService _gameService;
+		private readonly DatabaseContext _dbContext;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<GameModule> _logger;
 
-		public GameModule(GameService gameService, DatabaseContext dbHandler)
+		public GameModule(GameService gameService, DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<GameModule> logger)
 		{
-			GameService = gameService;
-			db = dbHandler;
+			_gameService = gameService;
+			_dbContext = dbContext;
+            _repository = repository;
+            _logger = logger;
 		}
 
 		[Command("start")]
@@ -30,7 +36,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = _dbContext.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 
 				if (game is null)
 				{
@@ -38,11 +44,12 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				await GameService.StartServer(game, Context);
+				await _gameService.StartServer(game, Context);
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -52,18 +59,19 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = _dbContext.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
 					return;
 				}
 
-				await GameService.StopServer(game, Context);
+				await _gameService.StopServer(game, Context);
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -74,19 +82,20 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = _dbContext.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
 					return;
 				}
 
-				Result result = GameService.ServerStatus(game, Context);
+				Result result = _gameService.ServerStatus(game, Context);
 				await ReplyAsync(ReplyHandler.Context(result));
 			}
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -96,7 +105,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = _dbContext.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -108,6 +117,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -117,7 +127,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				Database.Models.Game game = db.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+				Database.Models.Game game = _dbContext.Games.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
 				if (game is null)
 				{
 					await ReplyAsync(ReplyHandler.Error.NotFound.Game);
@@ -129,6 +139,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -138,7 +149,7 @@ namespace Inquisition.Modules
 		{
 			try
 			{
-				List<Database.Models.Game> Games = db.Games.ToList();
+				List<Database.Models.Game> Games = _dbContext.Games.ToList();
 
 				if (Games.Count == 0)
 				{
@@ -158,8 +169,9 @@ namespace Inquisition.Modules
 			}
 			catch (Exception e)
 			{
-				await ReplyAsync("Exception ocurred: " + e.Message);
+				await ReplyAsync(ReplyHandler.Error.Generic);
 				ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

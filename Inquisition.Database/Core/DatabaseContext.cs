@@ -1,14 +1,11 @@
 ﻿using Inquisition.Database.Models;
 using Inquisition.Database.Properties;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace Inquisition.Database
 {
-	public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext
     {
-		private readonly string ConnectionString = DbInfo.ConnectionString;
-
 		public DbSet<User> Users { get; set; }
 		public DbSet<Joke> Jokes { get; set; }
 		public DbSet<Reminder> Reminders { get; set; }
@@ -18,10 +15,10 @@ namespace Inquisition.Database
 		public DbSet<Guild> Guilds { get; set; }
 		public DbSet<Activity> Activities { get; set; }
 
-		public DatabaseContext() : base()
-		{
+        public DatabaseContext() : base()
+        {
 
-		}
+        }
 
         public DatabaseContext(DbContextOptions options) : base(options)
         {
@@ -30,13 +27,10 @@ namespace Inquisition.Database
 
 		public void Migrate() => Database.Migrate();
 
-		protected override void OnConfiguring(DbContextOptionsBuilder ob)
-		{
-			base.OnConfiguring(ob);
-
-			ob.UseSqlServer(ConnectionString);
-			ob.EnableSensitiveDataLogging(true);
-		}
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlServer(DbInfo.ConnectionString);
+        }
 
 		protected override void OnModelCreating(ModelBuilder mb)
 		{

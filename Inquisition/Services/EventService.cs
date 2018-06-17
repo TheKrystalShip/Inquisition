@@ -2,6 +2,7 @@
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -11,15 +12,26 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Services
 {
-	public class EventService : Service
+    public class EventService : Service
     {
-		private DiscordSocketClient Client;
-		private static DatabaseContext db;
+		private readonly DiscordSocketClient _client;
+		private readonly DatabaseContext _dbContext;
+        private readonly ConversionHandler _conversionHandler;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<EventService> _logger;
 
-		public EventService(DiscordSocketClient client)
+		public EventService(
+            DiscordSocketClient client,
+            DatabaseContext dbContext,
+            ConversionHandler conversionHandler,
+            IRepositoryWrapper repository,
+            ILogger<EventService> logger)
 		{
-			Client = client;
-			db = new DatabaseContext();
+			_client = client;
+            _dbContext = dbContext;
+            _conversionHandler = conversionHandler;
+            _repository = repository;
+            _logger = logger;
 		}
 
 		public async Task ChannelCreated(SocketChannel socketChannel)
@@ -100,20 +112,20 @@ namespace Inquisition.Services
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
+                _logger.LogError(e);
 			}
 		}
 
 		public async Task UserJoined(SocketGuildUser user)
 		{
 			await SendAuditMessageAsync($"User joined: {user.Mention}", GetGuildAuditChannel(user.Guild));
-			ConversionHandler.AddUser(user);
+			_conversionHandler.AddUser(user);
 		}
 
 		public async Task UserLeft(SocketGuildUser user)
 		{
 			await SendAuditMessageAsync($"User left: {user.Mention}", GetGuildAuditChannel(user.Guild));
-			ConversionHandler.RemoveUser(user);
+			_conversionHandler.RemoveUser(user);
 		}
 
 		public async Task UserUpdated(SocketUser before, SocketUser after)
@@ -127,7 +139,7 @@ namespace Inquisition.Services
 			SocketGuildChannel channel = (SocketGuildChannel)socketChannel;
 
 			string channelGuildId = channel.Guild.Id.ToString();
-			Guild guild = db.Guilds.FirstOrDefault(x => x.Id == channelGuildId);
+			Guild guild = _dbContext.Guilds.FirstOrDefault(x => x.Id == channelGuildId);
 
 			if (guild is null)
 			{
@@ -139,13 +151,13 @@ namespace Inquisition.Services
 				throw new InvalidOperationException("Audit log channel is not specified");
 			}
 			
-			SocketGuildChannel auditChannel = (SocketGuildChannel)Client.GetChannel(Convert.ToUInt64(guild.AuditChannelId));
+			SocketGuildChannel auditChannel = (SocketGuildChannel)_client.GetChannel(Convert.ToUInt64(guild.AuditChannelId));
 			return auditChannel as SocketTextChannel;
 		}
 		private SocketTextChannel GetGuildAuditChannel(SocketGuild socketGuild)
 		{
 			string channelGuildId = socketGuild.Id.ToString();
-			Guild guild = db.Guilds.FirstOrDefault(x => x.Id == channelGuildId);
+			Guild guild = _dbContext.Guilds.FirstOrDefault(x => x.Id == channelGuildId);
 
 			if (guild is null)
 			{
@@ -157,7 +169,7 @@ namespace Inquisition.Services
 				throw new InvalidOperationException("Audit log channel is not specified");
 			}
 
-			SocketGuildChannel auditChannel = (SocketGuildChannel)Client.GetChannel(Convert.ToUInt64(guild.AuditChannelId));
+			SocketGuildChannel auditChannel = (SocketGuildChannel)_client.GetChannel(Convert.ToUInt64(guild.AuditChannelId));
 			return auditChannel as SocketTextChannel;
 		}
 		private async Task SendAuditMessageAsync(string message, SocketTextChannel channel)

@@ -1,5 +1,7 @@
 ﻿using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
+using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +10,17 @@ using System.Linq;
 
 namespace Inquisition.Services
 {
-	public class ActivityService : Service
+    public class ActivityService : Service
     {
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<ActivityService> _logger;
+
+        public ActivityService(IRepositoryWrapper repository, ILogger<ActivityService> logger)
+        {
+            _repository = repository;
+            _logger = logger;
+        }
+
 		public override void Init(int startDelay = 0, int interval = 1000)
 		{
 			base.Init(startDelay, interval);

@@ -15,18 +15,24 @@ namespace Inquisition.Services
 {
     public class AudioService : Service
     {
-        private readonly ConcurrentDictionary<ulong, IAudioClient> ConnectedChannels =
-            new ConcurrentDictionary<ulong, IAudioClient>();
+        private readonly ConcurrentDictionary<ulong, IAudioClient> _audioClients;
+        private readonly ILogger<AudioService> _logger;
+
+        public AudioService(ILogger<AudioService> logger)
+        {
+            _audioClients = new ConcurrentDictionary<ulong, IAudioClient>();
+            _logger = logger;
+        }
 
         public async Task JoinChannel(IVoiceChannel channel, ulong guildID)
         {
             var audioClient = await channel.ConnectAsync();
-            ConnectedChannels.TryAdd(guildID, audioClient);
+            _audioClients.TryAdd(guildID, audioClient);
         }
 
         public async Task LeaveChannel(SocketCommandContext Context)
         {
-            ConnectedChannels.TryGetValue(Context.Guild.Id, out IAudioClient aClient);
+            _audioClients.TryGetValue(Context.Guild.Id, out IAudioClient aClient);
 
             if (aClient is null)
             {
@@ -37,11 +43,11 @@ namespace Inquisition.Services
             try
             {
                 await aClient.StopAsync();
-                ConnectedChannels.TryRemove(Context.Guild.Id, out aClient);
+                _audioClients.TryRemove(Context.Guild.Id, out aClient);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-				LogHandler.WriteLine(LogTarget.Console, "Disconnected");
+                _logger.LogError(e, "Disconnected");
             }
         }
 
@@ -55,7 +61,7 @@ namespace Inquisition.Services
                 return;
             }
 
-            if (ConnectedChannels.TryGetValue(guild.Id, out IAudioClient client))
+            if (_audioClients.TryGetValue(guild.Id, out IAudioClient client))
             {
                 using (var output = CreateStream(filePath).StandardOutput.BaseStream)
                 using (var stream = client.CreatePCMStream(AudioApplication.Music))
@@ -64,9 +70,9 @@ namespace Inquisition.Services
                     {
                         await output.CopyToAsync(stream);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-						LogHandler.WriteLine(LogTarget.Console, "Stopped audio stream");
+                        _logger.LogError(e, "Stopped audio stream");
                     }
                     finally
                     {

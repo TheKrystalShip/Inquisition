@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -14,15 +15,26 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Modules
 {
-	public class SettingsModule : ModuleBase<SocketCommandContext>
+    public class SettingsModule : ModuleBase<SocketCommandContext>
     {
-		private DatabaseContext db;
-		private DiscordSocketClient Client;
+		private readonly DatabaseContext _dbContext;
+		private readonly DiscordSocketClient _client;
+        private readonly PrefixHandler _prefixHandler;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<SettingsModule> _logger;
 
-		public SettingsModule(DiscordSocketClient socketClient)
+		public SettingsModule(
+            DatabaseContext dbContext,
+            DiscordSocketClient client,
+            PrefixHandler prefixHandler,
+            IRepositoryWrapper repository,
+            ILogger<SettingsModule> logger)
 		{
-			db = new DatabaseContext();
-			Client = socketClient;
+			_dbContext = dbContext;
+			_client = client;
+            _prefixHandler = prefixHandler;
+            _repository = repository;
+            _logger = logger;
 		}
 
 		[Command("audit channel")]
@@ -32,7 +44,7 @@ namespace Inquisition.Modules
 			try
 			{
 				string contextGuildId = Context.Guild.Id.ToString();
-				Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
+				Guild guild = _dbContext.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
 
 				if (guild is null)
 				{
@@ -41,7 +53,7 @@ namespace Inquisition.Modules
 				}
 
 				string defaultChannelId = guild.AuditChannelId;
-				SocketTextChannel channel = Client.GetChannel(Convert.ToUInt64(defaultChannelId)) as SocketTextChannel;
+				SocketTextChannel channel = _client.GetChannel(Convert.ToUInt64(defaultChannelId)) as SocketTextChannel;
 
 				EmbedBuilder embed = EmbedHandler.Create(channel);
 
@@ -50,7 +62,7 @@ namespace Inquisition.Modules
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(LogTarget.Console, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -58,7 +70,7 @@ namespace Inquisition.Modules
 		public async Task ShowPrefixAsync()
 		{
 			string contextGuildId = Context.Guild.Id.ToString();
-			string prefix = PrefixHandler.GetPrefix(contextGuildId);
+			string prefix = _prefixHandler.GetPrefix(contextGuildId);
 
 			if (prefix is null)
 			{
@@ -74,11 +86,21 @@ namespace Inquisition.Modules
 	[Group("set")]
 	public class SetSettingsModule : ModuleBase<SocketCommandContext>
 	{
-		private DatabaseContext db;
+		private readonly DatabaseContext _dbContext;
+        private readonly PrefixHandler _prefixHandler;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<SetSettingsModule> _logger;
 
-		public SetSettingsModule(DatabaseContext dbHandler)
+		public SetSettingsModule(
+            DatabaseContext dbContext,
+            PrefixHandler prefixHandler,
+            IRepositoryWrapper repository,
+            ILogger<SetSettingsModule> logger)
 		{
-			db = new DatabaseContext();
+            _dbContext = dbContext;
+            _prefixHandler = prefixHandler;
+            _repository = repository;
+            _logger = logger;
 		}
 
 		[Command("audit channel")]
@@ -88,7 +110,7 @@ namespace Inquisition.Modules
 			try
 			{
 				string ContextGuildId = Context.Guild.Id.ToString();
-				Guild guild = db.Guilds.FirstOrDefault(x => x.Id == ContextGuildId);
+				Guild guild = _dbContext.Guilds.FirstOrDefault(x => x.Id == ContextGuildId);
 
 				if (guild is null)
 				{
@@ -97,13 +119,14 @@ namespace Inquisition.Modules
 				}
 
 				guild.AuditChannelId = channel.Id.ToString();
-				db.SaveChanges();
+				_dbContext.SaveChanges();
 				await ReplyAsync(ReplyHandler.Context(Result.Successful));
 			}
 			catch (Exception e)
 			{
 				await ReplyAsync(ReplyHandler.Context(Result.Failed));
-				LogHandler.WriteLine(LogTarget.Console, e);
+                ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 
@@ -114,7 +137,7 @@ namespace Inquisition.Modules
 			{
 				string contextGuildId = Context.Guild.Id.ToString();
 
-				Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
+				Guild guild = _dbContext.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
 
 				if (guild is null)
 				{
@@ -124,16 +147,18 @@ namespace Inquisition.Modules
 
 				string currentPrefix = guild.Prefix;
 				guild.Prefix = newPrefix.Trim();
-				db.Guilds.Update(guild);
-				db.SaveChanges();
+				_dbContext.Guilds.Update(guild);
+				_dbContext.SaveChanges();
 				
-				PrefixHandler.SetPrefix(contextGuildId, newPrefix);
+				_prefixHandler.SetPrefix(contextGuildId, newPrefix);
 
 				await ReplyAsync($"Prefix was **{currentPrefix}**, now changed to **{newPrefix}**");
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e);
+                await ReplyAsync(ReplyHandler.Context(Result.Failed));
+                ReportHandler.Report(Context, e);
+                _logger.LogError(e);
 			}
 		}
 	}

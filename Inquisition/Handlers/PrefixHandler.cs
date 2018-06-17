@@ -1,6 +1,6 @@
-﻿
-using Inquisition.Database;
+﻿using Inquisition.Database;
 using Inquisition.Database.Models;
+using Inquisition.Database.Repositories;
 using Inquisition.Logging;
 
 using System;
@@ -9,45 +9,43 @@ using System.Linq;
 
 namespace Inquisition.Handlers
 {
-	public class PrefixHandler : Handler
+    public class PrefixHandler
     {
-		private DatabaseContext db;
-		private static Dictionary<string, string> PrefixDictionary { get; set; }
+		private readonly DatabaseContext _dbContext;
+        private readonly Dictionary<string, string> _prefixDictionary;
+        private readonly IRepositoryWrapper _repository;
+        private readonly ILogger<PrefixHandler> _logger;
 
-		public PrefixHandler()
+		public PrefixHandler(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<PrefixHandler> logger)
 		{
-			PrefixDictionary = new Dictionary<string, string>();
+            _dbContext = dbContext;
+			_prefixDictionary = new Dictionary<string, string>();
+            _repository = repository;
+            _logger = logger;
 
 			try
 			{
-				db = new DatabaseContext();
-				List<Guild> Guilds = db.Guilds.ToList();
+				List<Guild> Guilds = _dbContext.Guilds.ToList();
 
 				foreach (Guild guild in Guilds)
 				{
-					PrefixDictionary.Add(guild.Id, guild.Prefix);
+					_prefixDictionary.Add(guild.Id, guild.Prefix);
 				}
 			}
 			catch (Exception e)
 			{
-				LogHandler.WriteLine(LogTarget.Console, e.Message);
+                _logger.LogError(e);
 			}
 		}
 
-		public static string GetPrefix(string guildId)
+		public string GetPrefix(string guildId)
 		{
-			return PrefixDictionary.GetValueOrDefault(guildId);
+			return _prefixDictionary.GetValueOrDefault(guildId);
 		}
 
-		public static void SetPrefix(string guildId, string prefix)
+		public void SetPrefix(string guildId, string prefix)
 		{
-			PrefixDictionary[guildId] = prefix;
-		}
-
-		public override void Dispose()
-		{
-			db = null;
-			PrefixDictionary = null;
+			_prefixDictionary[guildId] = prefix;
 		}
 	}
 }

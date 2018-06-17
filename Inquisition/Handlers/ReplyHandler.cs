@@ -5,7 +5,7 @@ using Inquisition.Database.Models;
 
 namespace Inquisition.Handlers
 {
-	public class ReplyHandler : Handler
+    public class ReplyHandler
     {
         public static string Generic = $"Here you go:";
 
@@ -36,11 +36,6 @@ namespace Inquisition.Handlers
 				default:
 					return "";
 			}
-		}
-
-		public override void Dispose()
-		{
-			throw new System.NotImplementedException();
 		}
 
 		public class Error

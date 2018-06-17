@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-	public class Service : IDisposable
+    public class Service : IDisposable
     {
 		public Timer Timer { get; set; }
 		public event Action<Service> Start;
@@ -25,11 +25,6 @@ namespace Inquisition.Services
 		{
 			Timer.Dispose();
 			Stop?.Invoke(this);
-		}
-
-		public override string ToString()
-		{
-			return base.ToString().Replace("Inquisition.Services.", "");
 		}
 	}
 }
