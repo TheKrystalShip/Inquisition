@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Inquisition.Database;
 using Inquisition.Extensions;
 using Inquisition.Logging;
+using Inquisition.Logging.Extensions;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -85,8 +86,8 @@ namespace Inquisition.Handlers
 
 		private string GetGuildPrefix(SocketUserMessage message)
 		{
-			var guildChannel = message.Channel as SocketGuildChannel;
-			string socketGuildId = guildChannel.Guild.Id.ToString();
+            SocketGuildChannel guildChannel = message.Channel as SocketGuildChannel;
+			string socketGuildId = guildChannel?.Guild.Id.ToString();
 
             PrefixHandler prefixHandler = _serviceProvider.GetService<PrefixHandler>();
 

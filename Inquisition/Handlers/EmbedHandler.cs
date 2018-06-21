@@ -11,143 +11,143 @@ namespace Inquisition.Handlers
 {
     public class EmbedHandler
     {
-        private static EmbedBuilder Embed;
+        private static EmbedBuilder _embed;
 
         public static EmbedBuilder Create()
         {
-            Embed = new EmbedBuilder();
-            Embed.WithCurrentTimestamp();
-            Embed.WithColor(Color.Gold);
+            _embed = new EmbedBuilder();
+            _embed.WithCurrentTimestamp();
+            _embed.WithColor(Color.Gold);
 
-            return Embed;
+            return _embed;
         }
 
 		public static EmbedBuilder Create(Exception e)
 		{
-			Embed = new EmbedBuilder();
-			Embed.WithColor(Color.DarkRed);
-			Embed.WithTitle("Critical error ocurred");
-			Embed.WithDescription("A report has been sent to Heisenberg");
-			Embed.WithCurrentTimestamp();
+			_embed = new EmbedBuilder();
+			_embed.WithColor(Color.DarkRed);
+			_embed.WithTitle("Critical error ocurred");
+			_embed.WithDescription("A report has been sent to Heisenberg");
+			_embed.WithCurrentTimestamp();
 
-			return Embed;
+			return _embed;
 		}
 
         public static EmbedBuilder Create(SocketSelfUser user)
         {
-            Embed = new EmbedBuilder();
-            Embed.WithCurrentTimestamp();
-            Embed.WithColor(Color.Gold);
+            _embed = new EmbedBuilder();
+            _embed.WithCurrentTimestamp();
+            _embed.WithColor(Color.Gold);
 
-            return Embed;
+            return _embed;
         }
 
         public static EmbedBuilder Create(SocketUser user)
         {
-            Embed = new EmbedBuilder();
-            Embed.WithCurrentTimestamp();
-            Embed.WithColor(Color.Gold);
-            Embed.WithFooter($"{user.Username}", user.GetAvatarUrl());
+            _embed = new EmbedBuilder();
+            _embed.WithCurrentTimestamp();
+            _embed.WithColor(Color.Gold);
+            _embed.WithFooter($"{user.Username}", user.GetAvatarUrl());
 
-            return Embed;
+            return _embed;
         }
 
 		public static EmbedBuilder Create(Deal deal)
 		{
-			Embed = new EmbedBuilder();
+			_embed = new EmbedBuilder();
 
 			if (deal.ExpireDate != null)
 			{
 				string expires = string.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", deal.ExpireDate.Subtract(DateTime.Now));
-				Embed.WithTitle("Expires in: " + expires);
+				_embed.WithTitle("Expires in: " + expires);
 			} else
 			{
-				Embed.WithTitle("No expiration date set");
+				_embed.WithTitle("No expiration date set");
 			}
 
-			Embed.WithDescription(deal.Url);
-			Embed.WithCurrentTimestamp();
-			Embed.WithColor(Color.DarkGreen);
-			Embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
+			_embed.WithDescription(deal.Url);
+			_embed.WithCurrentTimestamp();
+			_embed.WithColor(Color.DarkGreen);
+			_embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
 
-			return Embed;
+			return _embed;
 		}
 
 		public static EmbedBuilder Create(Deal deal, IUserMessage msg)
 		{
-			Embed = new EmbedBuilder();
+			_embed = new EmbedBuilder();
 			var existingEmbed = msg.Embeds.First();
 
 			if (deal.ExpireDate != null)
 			{
 				string expires = string.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", deal.ExpireDate.Subtract(DateTime.Now));
-				Embed.WithTitle("Expires in: " + expires);
+				_embed.WithTitle("Expires in: " + expires);
 			}
 			else
 			{
-				Embed.WithTitle("No expiration date set");
+				_embed.WithTitle("No expiration date set");
 			}
 
-			Embed.WithImageUrl(existingEmbed.Image.ToString());
-			Embed.WithDescription(existingEmbed.Description);
-			Embed.WithCurrentTimestamp();
-			Embed.WithColor(Color.DarkGreen);
-			Embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
+			_embed.WithImageUrl(existingEmbed.Image.ToString());
+			_embed.WithDescription(existingEmbed.Description);
+			_embed.WithCurrentTimestamp();
+			_embed.WithColor(Color.DarkGreen);
+			_embed.WithFooter($"{deal.User.Username}", deal.User.AvatarUrl);
 
-			return Embed;
+			return _embed;
 		}
 
 		public static EmbedBuilder Create(List<Deal> dealList)
 		{
-			Embed = new EmbedBuilder();
-			Embed.WithTitle("Active deals");
-			Embed.WithCurrentTimestamp();
-			Embed.WithColor(Color.DarkGreen);
+			_embed = new EmbedBuilder();
+			_embed.WithTitle("Active deals");
+			_embed.WithCurrentTimestamp();
+			_embed.WithColor(Color.DarkGreen);
 
 			foreach (Deal offer in dealList)
 			{
 				string timeRemaining = String.Format("{0:dd} day(s), {0:hh}h:{0:mm}m:{0:ss}s", offer.ExpireDate.Subtract(DateTime.Now));
-				Embed.AddField(offer.Url, $"Time remaining: {timeRemaining}");
+				_embed.AddField(offer.Url, $"Time remaining: {timeRemaining}");
 			}
 
-			return Embed;
+			return _embed;
 		}
 
 		public static EmbedBuilder Create(SocketTextChannel channel)
 		{
-			Embed = new EmbedBuilder();
-			Embed.WithTitle(channel.Guild.Name);
-			Embed.WithColor(Color.Gold);
-			Embed.WithCurrentTimestamp();
-			Embed.AddField("Default channel: ", channel.Mention);
+			_embed = new EmbedBuilder();
+			_embed.WithTitle(channel.Guild.Name);
+			_embed.WithColor(Color.Gold);
+			_embed.WithCurrentTimestamp();
+			_embed.AddField("Default channel: ", channel.Mention);
 
-			return Embed;
+			return _embed;
 		}
 
 		public static EmbedBuilder Create(Activity activity)
 		{
-			Embed = new EmbedBuilder();
-			Embed.WithColor(Color.Gold);
-			Embed.WithCurrentTimestamp();
-			Embed.WithFooter($"{activity.User.Username}", activity.User.AvatarUrl);
+			_embed = new EmbedBuilder();
+			_embed.WithColor(Color.Gold);
+			_embed.WithCurrentTimestamp();
+			_embed.WithFooter($"{activity.User.Username}", activity.User.AvatarUrl);
 
-			Embed.AddField(activity.Name, $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
+			_embed.AddField(activity.Name, $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
 
-			return Embed;
+			return _embed;
 		}
 
 		public static EmbedBuilder Create(List<Activity> activityList)
 		{
-			Embed = new EmbedBuilder();
-			Embed.WithColor(Color.Gold);
-			Embed.WithCurrentTimestamp();
+			_embed = new EmbedBuilder();
+			_embed.WithColor(Color.Gold);
+			_embed.WithCurrentTimestamp();
 
 			foreach (Activity activity in activityList)
 			{
-				Embed.AddField($"{activity.Id} - {activity.Name} {activity.Arguments}", $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
+				_embed.AddField($"{activity.Id} - {activity.Name} {activity.Arguments}", $"Scheduled for: {activity.DueTime}, Created on: {activity.ScheduledTime}");
 			}
 
-			return Embed;
+			return _embed;
 		}
 	}
 }

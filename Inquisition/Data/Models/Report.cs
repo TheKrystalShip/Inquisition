@@ -1,4 +1,4 @@
-﻿using Inquisition.Reporting;
+﻿using Inquisition.Reporting.Models;
 
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace Inquisition.Data.Models
 {
-	[XmlRoot]
+    [XmlRoot]
 	public class Report : IReport
 	{
 		public Guid Guid { get; set; }

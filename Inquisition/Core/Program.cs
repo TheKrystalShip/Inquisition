@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 
 using Inquisition.Handlers;
-using Inquisition.Logging;
 using Inquisition.Properties;
 
 using System;

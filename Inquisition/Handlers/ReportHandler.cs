@@ -11,7 +11,7 @@ namespace Inquisition.Handlers
 {
     public class ReportHandler
 	{
-		private Reporter Reporter = new Reporter(new ReporterConfig());
+        private Reporter _reporter = new ReporterBuilder().Build();
 
 		// CommandService.ExecuteAsync errors
 		public async void ReportAsync(string errorReason, SocketUserMessage message)
@@ -38,7 +38,7 @@ namespace Inquisition.Handlers
 
 			CatchInnerReports(ref report, e);
 
-			await Reporter.ReportAsync(report);
+			await _reporter.ReportAsync(report);
 		}
 
 		// Guild related
@@ -59,7 +59,7 @@ namespace Inquisition.Handlers
 
 			CatchInnerReports(ref report, e);
 
-			await Reporter.ReportAsync(report);
+			await _reporter.ReportAsync(report);
 		}
 
 		private void CatchInnerReports(ref Report report, Exception e)

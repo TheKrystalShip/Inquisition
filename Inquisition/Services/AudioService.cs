@@ -32,22 +32,21 @@ namespace Inquisition.Services
 
         public async Task LeaveChannel(SocketCommandContext Context)
         {
-            _audioClients.TryGetValue(Context.Guild.Id, out IAudioClient aClient);
-
-            if (aClient is null)
+            if (_audioClients.TryGetValue(Context.Guild.Id, out IAudioClient aClient))
             {
-                await Context.Channel.SendMessageAsync("Bot is not connected to any Voice Channels");
-                return;
+                try
+                {
+                    await aClient.StopAsync();
+                    _audioClients.TryRemove(Context.Guild.Id, out aClient);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Disconnected");
+                }
             }
-
-            try
+            else
             {
-                await aClient.StopAsync();
-                _audioClients.TryRemove(Context.Guild.Id, out aClient);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Disconnected");
+                await Context.Channel.SendMessageAsync("I'm not connected");
             }
         }
 
@@ -63,8 +62,8 @@ namespace Inquisition.Services
 
             if (_audioClients.TryGetValue(guild.Id, out IAudioClient client))
             {
-                using (var output = CreateStream(filePath).StandardOutput.BaseStream)
-                using (var stream = client.CreatePCMStream(AudioApplication.Music))
+                using (Stream output = CreateStream(filePath).StandardOutput.BaseStream)
+                using (AudioOutStream stream = client.CreatePCMStream(AudioApplication.Music))
                 {
                     try
                     {

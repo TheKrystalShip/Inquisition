@@ -4,7 +4,6 @@ using Discord.WebSocket;
 
 using Inquisition.Data.Models;
 using Inquisition.Database;
-using Inquisition.Database.Models;
 using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
@@ -139,8 +138,8 @@ namespace Inquisition.Modules
 		[Command("hello there")]
 		public async Task TestCommandAsync()
 		{
-            User me = _repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
-            await ReplyAsync($"General {me.Username} ⚔️⚔️");
+            //User me = _repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
+            await ReplyAsync($"General ⚔️⚔️");
 		}
 
 		[Command("restart")]

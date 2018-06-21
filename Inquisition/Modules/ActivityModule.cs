@@ -21,7 +21,10 @@ namespace Inquisition.Modules
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ActivityModule> _logger;
 
-		public ActivityModule(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<ActivityModule> logger)
+		public ActivityModule(
+            DatabaseContext dbContext,
+            IRepositoryWrapper repository,
+            ILogger<ActivityModule> logger)
         {
             _dbContext = dbContext;
             _repository = repository;

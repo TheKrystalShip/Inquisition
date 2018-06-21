@@ -45,15 +45,10 @@ namespace Inquisition.Handlers
 			return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// This method is not awaited because Inquisition can keep adding
-        /// members to the database in the background, it doesn't need to wait
-        /// for this to finish.
-        /// </summary>
-        /// <returns></returns>
-		private async Task Ready()
-		{
-
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task Ready()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             Task.Run(() =>
 			{

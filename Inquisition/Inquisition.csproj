@@ -48,12 +48,12 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="1.0.2" />
+    <PackageReference Include="Inquisition.Logging" Version="1.0.3" />
+    <PackageReference Include="Inquisition.Reporting" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
-    <ProjectReference Include="..\Inquisition.Logging\Inquisition.Logging.csproj" />
-    <ProjectReference Include="..\Inquisition.Reporting\Inquisition.Reporting.csproj" />
   </ItemGroup>
 
   <ItemGroup>

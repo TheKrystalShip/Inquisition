@@ -14,10 +14,5 @@ namespace Inquisition.Database.Repositories
             Source = source;
             Content = content;
         }
-
-        public override string ToString()
-        {
-            return $"{Date}  {Source}    {Content}";
-        }
     }
 }

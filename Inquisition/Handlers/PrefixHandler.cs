@@ -16,7 +16,10 @@ namespace Inquisition.Handlers
         private readonly IRepositoryWrapper _repository;
         private readonly ILogger<PrefixHandler> _logger;
 
-		public PrefixHandler(DatabaseContext dbContext, IRepositoryWrapper repository, ILogger<PrefixHandler> logger)
+		public PrefixHandler(
+            DatabaseContext dbContext,
+            IRepositoryWrapper repository,
+            ILogger<PrefixHandler> logger)
 		{
             _dbContext = dbContext;
 			_prefixDictionary = new Dictionary<string, string>();

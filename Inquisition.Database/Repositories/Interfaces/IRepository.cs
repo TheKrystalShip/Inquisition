@@ -9,7 +9,7 @@ namespace Inquisition.Database.Repositories
         event Action<Message> ActionExecuted;
         T SelectFirst(Expression<Func<T, bool>> expression);
         IEnumerable<T> SelectAll();
-        IEnumerable<T> Select(Expression<Func<T, bool>> expression);
+        IEnumerable<T> SelectWhere(Expression<Func<T, bool>> expression);
         void Create(T entity);
         void Update(T entity);
         void Delete(T entity);

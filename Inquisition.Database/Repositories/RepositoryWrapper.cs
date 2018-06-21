@@ -20,7 +20,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_activities is null)
                 {
-                    _activities = new ActivityRepository(Context);
+                    _activities = new ActivityRepository(_dbContext);
                     _activities.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _activities;
@@ -33,7 +33,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_alerts is null)
                 {
-                    _alerts = new AlertRepository(Context);
+                    _alerts = new AlertRepository(_dbContext);
                     _alerts.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _alerts;
@@ -46,7 +46,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_deals is null)
                 {
-                    _deals = new DealRepository(Context);
+                    _deals = new DealRepository(_dbContext);
                     _deals.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _deals;
@@ -59,7 +59,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_games is null)
                 {
-                    _games = new GameRepository(Context);
+                    _games = new GameRepository(_dbContext);
                     _games.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _games;
@@ -72,7 +72,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_guilds is null)
                 {
-                    _guilds = new GuildRepository(Context);
+                    _guilds = new GuildRepository(_dbContext);
                     _guilds.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _guilds;
@@ -85,7 +85,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_jokes is null)
                 {
-                    _jokes = new JokeRepository(Context);
+                    _jokes = new JokeRepository(_dbContext);
                     _jokes.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _jokes;
@@ -98,7 +98,7 @@ namespace Inquisition.Database.Repositories
             {
                 if (_reminders is null)
                 {
-                    _reminders = new ReminderRepository(Context);
+                    _reminders = new ReminderRepository(_dbContext);
                     _reminders.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _reminders;
@@ -111,24 +111,24 @@ namespace Inquisition.Database.Repositories
             {
                 if (_users is null)
                 {
-                    _users = new UserRepository(Context);
+                    _users = new UserRepository(_dbContext);
                     _users.ActionExecuted += SubscribeToActionExecuted;
                 }
                 return _users;
             }
         }
 
-        private readonly DatabaseContext Context;
+        private readonly DatabaseContext _dbContext;
 
-        public RepositoryWrapper(DatabaseContext context)
+        public RepositoryWrapper(DatabaseContext dbContext)
         {
-            Context = context;
+            _dbContext = dbContext;
             _logger = new Logger<RepositoryWrapper>();
         }
 
         private void SubscribeToActionExecuted(Message message)
         {
-            _logger.LogInformation(message.Content);
+            _logger.LogInformation(message.Source, message.Content);
         }
     }
 }
