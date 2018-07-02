@@ -3,7 +3,6 @@ using Discord.Commands;
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -18,16 +17,13 @@ namespace Inquisition.Modules
     public class ActivityModule : ModuleBase<SocketCommandContext>
 	{
 		private readonly DatabaseContext _dbContext;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ActivityModule> _logger;
 
 		public ActivityModule(
             DatabaseContext dbContext,
-            IRepositoryWrapper repository,
             ILogger<ActivityModule> logger)
         {
             _dbContext = dbContext;
-            _repository = repository;
             _logger = logger;
         }
 

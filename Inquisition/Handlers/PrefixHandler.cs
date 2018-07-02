@@ -1,6 +1,5 @@
 ﻿using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Logging;
 
 using System;
@@ -13,17 +12,14 @@ namespace Inquisition.Handlers
     {
 		private readonly DatabaseContext _dbContext;
         private readonly Dictionary<string, string> _prefixDictionary;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<PrefixHandler> _logger;
 
 		public PrefixHandler(
             DatabaseContext dbContext,
-            IRepositoryWrapper repository,
             ILogger<PrefixHandler> logger)
 		{
             _dbContext = dbContext;
 			_prefixDictionary = new Dictionary<string, string>();
-            _repository = repository;
             _logger = logger;
 
 			try

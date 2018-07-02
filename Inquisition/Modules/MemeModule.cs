@@ -4,7 +4,6 @@ using Discord.WebSocket;
 
 using Inquisition.Data.Models;
 using Inquisition.Database;
-using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -17,18 +16,15 @@ namespace Inquisition.Modules
     {
 		private readonly DatabaseContext _dbContext;
         private readonly ReportHandler _reportHandler;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<MemeModule> _logger;
 
 		public MemeModule(
             DatabaseContext dbContext,
             ReportHandler reportHandler,
-            IRepositoryWrapper repository,
             ILogger<MemeModule> logger)
         {
             _dbContext = dbContext;
             _reportHandler = reportHandler;
-            _repository = repository;
             _logger = logger;
         }
 

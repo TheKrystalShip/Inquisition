@@ -3,7 +3,6 @@ using Discord.Commands;
 
 using Inquisition.Data.Models;
 using Inquisition.Database;
-using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 using Inquisition.Services;
@@ -20,20 +19,17 @@ namespace Inquisition.Modules
 		private readonly DatabaseContext _dbContext;
         private readonly ReportHandler _reportHandler;
 		private readonly GameService _gameService;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<GameModule> _logger;
 
 		public GameModule(
             DatabaseContext dbContext,
             ReportHandler reportHandler,
             GameService gameService,
-            IRepositoryWrapper repository,
             ILogger<GameModule> logger)
 		{
 			_dbContext = dbContext;
             _reportHandler = reportHandler;
 			_gameService = gameService;
-            _repository = repository;
             _logger = logger;
 		}
 

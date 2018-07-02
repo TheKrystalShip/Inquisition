@@ -47,8 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Addons.Interactive" Version="1.0.1" />
     <PackageReference Include="Discord.Net" Version="1.0.2" />
-    <PackageReference Include="Inquisition.Logging" Version="1.0.3" />
+    <PackageReference Include="Inquisition.Logging" Version="1.0.4" />
     <PackageReference Include="Inquisition.Reporting" Version="1.0.4" />
   </ItemGroup>
 
@@ -99,10 +100,6 @@
     <None Update="libsodium.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

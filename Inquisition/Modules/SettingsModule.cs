@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Handlers;
 using Inquisition.Logging;
 
@@ -21,7 +20,6 @@ namespace Inquisition.Modules
         private readonly ReportHandler _reportHandler;
 		private readonly DiscordSocketClient _client;
         private readonly PrefixHandler _prefixHandler;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<SettingsModule> _logger;
 
 		public SettingsModule(
@@ -29,14 +27,12 @@ namespace Inquisition.Modules
             ReportHandler reportHandler,
             DiscordSocketClient client,
             PrefixHandler prefixHandler,
-            IRepositoryWrapper repository,
             ILogger<SettingsModule> logger)
 		{
 			_dbContext = dbContext;
             _reportHandler = reportHandler;
 			_client = client;
             _prefixHandler = prefixHandler;
-            _repository = repository;
             _logger = logger;
 		}
 
@@ -57,6 +53,12 @@ namespace Inquisition.Modules
 
 				string defaultChannelId = guild.AuditChannelId;
 				SocketTextChannel channel = _client.GetChannel(Convert.ToUInt64(defaultChannelId)) as SocketTextChannel;
+
+                if (channel is null)
+                {
+                    await ReplyAsync("No default audit channel set for this guild");
+                    return;
+                }
 
 				EmbedBuilder embed = EmbedHandler.Create(channel);
 
@@ -93,20 +95,17 @@ namespace Inquisition.Modules
 		private readonly DatabaseContext _dbContext;
         private readonly ReportHandler _reportHandler;
         private readonly PrefixHandler _prefixHandler;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<SetSettingsModule> _logger;
 
 		public SetSettingsModule(
             DatabaseContext dbContext,
             ReportHandler reportHandler,
             PrefixHandler prefixHandler,
-            IRepositoryWrapper repository,
             ILogger<SetSettingsModule> logger)
 		{
             _dbContext = dbContext;
             _reportHandler = reportHandler;
             _prefixHandler = prefixHandler;
-            _repository = repository;
             _logger = logger;
 		}
 

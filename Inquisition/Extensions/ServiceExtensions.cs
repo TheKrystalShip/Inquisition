@@ -1,5 +1,5 @@
-﻿using Inquisition.Database.Repositories;
-using Inquisition.Handlers;
+﻿using Inquisition.Handlers;
+using Inquisition.Managers;
 using Inquisition.Services;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -8,16 +8,10 @@ namespace Inquisition.Extensions
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddRepository(this IServiceCollection services)
-        {
-            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-            return services;
-        }
-
         public static IServiceCollection AddHandlers(this IServiceCollection services)
         {
             services.AddSingleton<ConversionHandler>()
-                .AddSingleton<EventHandler>()
+                .AddSingleton<EventManager>()
                 .AddSingleton<EmbedHandler>()
                 .AddSingleton<PrefixHandler>()
                 .AddSingleton<ReportHandler>()

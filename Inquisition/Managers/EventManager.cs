@@ -1,25 +1,26 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
+using Inquisition.Handlers;
 using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
 using System.Threading.Tasks;
 
-namespace Inquisition.Handlers
+namespace Inquisition.Managers
 {
-    public class EventHandler
+    public class EventManager
     {
         private readonly DiscordSocketClient _client;
 		private readonly EventService _eventService;
-        private readonly ILogger<EventHandler> _logger;
+        private readonly ILogger<EventManager> _logger;
         private readonly ConversionHandler _conversionHandler;
 
-		public EventHandler(
+		public EventManager(
             DiscordSocketClient client,
             EventService eventService,
-            ILogger<EventHandler> logger,
+            ILogger<EventManager> logger,
             ConversionHandler conversionHandler)
 		{
 			_client = client;

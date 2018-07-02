@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Inquisition.Services
 {
-    public class Service : IDisposable
+    public class Service : IService
     {
 		public Timer Timer { get; set; }
 		public event Action<Service> Start;

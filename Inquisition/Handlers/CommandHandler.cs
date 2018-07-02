@@ -6,6 +6,7 @@ using Inquisition.Database;
 using Inquisition.Extensions;
 using Inquisition.Logging;
 using Inquisition.Logging.Extensions;
+using Inquisition.Managers;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,12 +46,11 @@ namespace Inquisition.Handlers
                 .AddSingleton(_commandService)
                 .AddHandlers()
                 .AddServices()
-                .AddRepository()
                 .AddLogger()
                 .BuildServiceProvider();
 
             // Call some handlers/services to start them up
-            _serviceProvider.GetService<EventHandler>();
+            _serviceProvider.GetService<EventManager>();
             //_serviceProvider.GetService<ServiceHandler>(); // Not finished yet
 
             _reportHandler = _serviceProvider.GetService<ReportHandler>();

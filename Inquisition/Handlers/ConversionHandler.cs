@@ -2,7 +2,6 @@
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Logging;
 
 using System.Linq;
@@ -12,19 +11,16 @@ namespace Inquisition.Handlers
     public class ConversionHandler
     {
         private readonly DatabaseContext _dbContext;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ConversionHandler> _logger;
 
         public int UsersAdded { get; private set; }
 
         public ConversionHandler(
             DatabaseContext dbContext,
-            IRepositoryWrapper repository,
             ILogger<ConversionHandler> logger)
         {
             UsersAdded = 0;
             _dbContext = dbContext;
-            _repository = repository;
             _logger = logger;
         }
 

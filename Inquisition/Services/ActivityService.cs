@@ -1,6 +1,5 @@
 ﻿using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +11,11 @@ namespace Inquisition.Services
 {
     public class ActivityService : Service
     {
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ActivityService> _logger;
 
         public ActivityService(
-            IRepositoryWrapper repository,
             ILogger<ActivityService> logger)
         {
-            _repository = repository;
             _logger = logger;
         }
 

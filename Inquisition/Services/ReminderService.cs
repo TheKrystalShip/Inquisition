@@ -3,7 +3,6 @@ using Discord.WebSocket;
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Database.Repositories;
 using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
@@ -18,18 +17,15 @@ namespace Inquisition.Services
 	{
 		private readonly DiscordSocketClient _client;
 		private readonly DatabaseContext _dbContext;
-        private readonly IRepositoryWrapper _repository;
         private readonly ILogger<ReminderService> _logger;
 
 		public ReminderService(
             DiscordSocketClient client,
             DatabaseContext dbContext,
-            IRepositoryWrapper repository,
             ILogger<ReminderService> logger)
 		{
 			_client = client;
             _dbContext = dbContext;
-            _repository = repository;
             _logger = logger;
 		}
 
