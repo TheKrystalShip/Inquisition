@@ -10,7 +10,7 @@ namespace Inquisition.Extensions
     {
         public static IServiceCollection AddHandlers(this IServiceCollection services)
         {
-            services.AddSingleton<ConversionHandler>()
+            services.AddSingleton<UserManager>()
                 .AddSingleton<EventManager>()
                 .AddSingleton<EmbedHandler>()
                 .AddSingleton<PrefixHandler>()

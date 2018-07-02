@@ -34,6 +34,7 @@ namespace Inquisition.Modules
         }
 
         [Command("prune")]
+        [Alias("purge")]
         [Summary("[Admin] Prunes all inactive members from the server")]
         public async Task PruneMembersAsync(int days)
         {

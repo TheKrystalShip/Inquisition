@@ -6,22 +6,32 @@ using Inquisition.Logging;
 
 using System.Linq;
 
-namespace Inquisition.Handlers
+namespace Inquisition.Managers
 {
-    public class ConversionHandler
+    public class UserManager
     {
         private readonly DatabaseContext _dbContext;
-        private readonly ILogger<ConversionHandler> _logger;
+        private readonly ILogger<UserManager> _logger;
 
         public int UsersAdded { get; private set; }
 
-        public ConversionHandler(
+        public UserManager(
             DatabaseContext dbContext,
-            ILogger<ConversionHandler> logger)
+            ILogger<UserManager> logger)
         {
             UsersAdded = 0;
             _dbContext = dbContext;
             _logger = logger;
+        }
+
+        public void Init()
+        {
+            _logger.LogInformation("Starting user registration...");
+        }
+
+        public void Dispose()
+        {
+            _logger.LogInformation(UsersAdded > 0 ? $"Done, added {UsersAdded} user(s)" : "Done, no new users were added");
         }
 
 		public void AddUser(SocketGuildUser socketGuildUser)

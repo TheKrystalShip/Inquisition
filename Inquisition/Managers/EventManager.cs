@@ -1,7 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Handlers;
 using Inquisition.Logging;
 using Inquisition.Services;
 
@@ -14,19 +13,19 @@ namespace Inquisition.Managers
     {
         private readonly DiscordSocketClient _client;
 		private readonly EventService _eventService;
+        private readonly UserManager _conversionHandler;
         private readonly ILogger<EventManager> _logger;
-        private readonly ConversionHandler _conversionHandler;
 
 		public EventManager(
             DiscordSocketClient client,
             EventService eventService,
-            ILogger<EventManager> logger,
-            ConversionHandler conversionHandler)
+            UserManager conversionHandler,
+            ILogger<EventManager> logger)
 		{
 			_client = client;
             _eventService = eventService;
-            _logger = logger;
             _conversionHandler = conversionHandler;
+            _logger = logger;
 
 			_client.Log += Log;
 			_client.Ready += Ready;
@@ -40,20 +39,17 @@ namespace Inquisition.Managers
 			// can be ignored aparently...
 			if (!logMessage.Message.Contains("OpCode"))
 			{
-                _logger.LogInformation(logMessage.Source, logMessage.Message);
+                _logger.LogInformation(GetType().FullName + $" ({logMessage.Source})", logMessage.Message);
 			}
 
 			return Task.CompletedTask;
         }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        
         private async Task Ready()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.Run(() =>
+            await Task.Run(() =>
 			{
-                _logger.LogInformation("Starting user registration...");
+                _conversionHandler.Init();
 
 				try
 				{
@@ -73,12 +69,11 @@ namespace Inquisition.Managers
 				{
                     _logger.LogError(e);
 				}
-				finally
-				{
-                    _logger.LogInformation(_conversionHandler.UsersAdded > 0 ? $"Done, added {_conversionHandler.UsersAdded} user(s)" : "Done, no new users were added");
-				}
+                finally
+                {
+                    _conversionHandler.Dispose();
+                }
 			});
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
 		private void SubscribeToAuditService()

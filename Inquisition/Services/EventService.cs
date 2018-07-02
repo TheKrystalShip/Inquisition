@@ -2,8 +2,8 @@
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Handlers;
 using Inquisition.Logging;
+using Inquisition.Managers;
 
 using System;
 using System.Linq;
@@ -15,13 +15,13 @@ namespace Inquisition.Services
     {
 		private readonly DiscordSocketClient _client;
 		private readonly DatabaseContext _dbContext;
-        private readonly ConversionHandler _conversionHandler;
+        private readonly UserManager _conversionHandler;
         private readonly ILogger<EventService> _logger;
 
 		public EventService(
             DiscordSocketClient client,
             DatabaseContext dbContext,
-            ConversionHandler conversionHandler,
+            UserManager conversionHandler,
             ILogger<EventService> logger)
 		{
 			_client = client;
