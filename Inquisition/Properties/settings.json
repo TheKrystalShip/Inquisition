@@ -1,0 +1,17 @@
+﻿{
+  "Bot": {
+    "Token": "",
+    "DefaultPrefix": ""
+  },
+  "Email": {
+    "Username": "",
+    "Password": "",
+    "FromAddress": "",
+    "ToAddress": "",
+    "Host": "",
+    "Port": ""
+  },
+  "Database": {
+    "ConnectionString":  ""
+  }
+}

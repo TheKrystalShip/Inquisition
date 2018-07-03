@@ -19,7 +19,7 @@ namespace Inquisition
 		{
             Console.Title = "Inquisition";
 
-            _token = BotInfo.Token;
+            _token = Configuration.Get.GetSection("Bot")["Token"];
 
 			_client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
@@ -34,7 +34,7 @@ namespace Inquisition
 
             await _client.LoginAsync(TokenType.Bot, _token);
             await _client.StartAsync();
-            await _client.SetGameAsync($"God");
+            await _client.SetGameAsync("God");
 
             await Task.Delay(-1);
         }

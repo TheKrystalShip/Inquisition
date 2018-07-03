@@ -12,18 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\DbInfo.Designer.cs">
-      <DependentUpon>DbInfo.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\DbInfo.resx">
-      <LastGenOutput>DbInfo.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

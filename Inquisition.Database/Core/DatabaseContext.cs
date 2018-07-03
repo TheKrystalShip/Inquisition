@@ -1,5 +1,5 @@
 ﻿using Inquisition.Database.Models;
-using Inquisition.Database.Properties;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Inquisition.Database
@@ -26,11 +26,6 @@ namespace Inquisition.Database
         }
 
 		public void Migrate() => Database.Migrate();
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            options.UseSqlServer(DbInfo.ConnectionString);
-        }
 
 		protected override void OnModelCreating(ModelBuilder mb)
 		{

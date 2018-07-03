@@ -7,7 +7,9 @@ using Inquisition.Extensions;
 using Inquisition.Logging;
 using Inquisition.Logging.Extensions;
 using Inquisition.Managers;
+using Inquisition.Properties;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -41,7 +43,9 @@ namespace Inquisition.Handlers
             _commandService.AddModulesAsync(Assembly.GetEntryAssembly()).Wait();
 
             _serviceProvider = new ServiceCollection()
-                .AddDbContext<DatabaseContext>()
+                .AddDbContext<DatabaseContext>(x => {
+                    x.UseSqlServer(Configuration.Get.GetSection("Database")["ConnectionString"]);
+                })
                 .AddSingleton(_client)
                 .AddSingleton(_commandService)
                 .AddHandlers()
