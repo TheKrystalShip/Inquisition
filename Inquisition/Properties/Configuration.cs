@@ -7,21 +7,27 @@ namespace Inquisition.Properties
     public static class Configuration
     {
         private static IConfiguration _config;
+        private static readonly string _configPath = Path.Combine("Properties", "settings.json");
 
-        public static IConfiguration Get
+        public static IConfiguration Config
         {
-            get
+            get => (_config is null) ? _config = new ConfigurationBuilder()
+                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile(_configPath, optional: false, reloadOnChange: true)
+                        .Build() : _config;
+        }
+
+        public static string Get(params string[] index)
+        {
+            int limit = index.Length - 1;
+            IConfigurationSection section = null;
+
+            for (int i = 0; i < limit; i++)
             {
-                if (_config != null)
-                    return _config;
-
-                _config = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile(Path.Combine("Properties", "settings.json"), optional: false, reloadOnChange: true)
-                    .Build();
-
-                return _config;
+                section = Config.GetSection(index[i]);
             }
+
+            return section[index[limit]];
         }
     }
 }

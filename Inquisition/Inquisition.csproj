@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -29,12 +29,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Data\Logs\**" />
-    <EmbeddedResource Remove="Data\Logs\**" />
-    <None Remove="Data\Logs\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>mscorlib</HintPath>
     </Reference>
@@ -62,18 +56,9 @@
 
   <ItemGroup>
     <None Update="Data\XSL.xslt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="opus.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Libraries\libsodium.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Libraries\opus.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="libsodium.dll">

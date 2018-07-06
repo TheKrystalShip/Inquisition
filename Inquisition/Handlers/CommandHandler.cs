@@ -44,7 +44,7 @@ namespace Inquisition.Handlers
 
             _serviceProvider = new ServiceCollection()
                 .AddDbContext<DatabaseContext>(x => {
-                    x.UseSqlServer(Configuration.Get.GetSection("Database")["ConnectionString"]);
+                    x.UseSqlServer(Configuration.Get("Database", "ConnectionString"));
                 })
                 .AddSingleton(_client)
                 .AddSingleton(_commandService)
@@ -69,7 +69,7 @@ namespace Inquisition.Handlers
             if (message is null || message.Author.IsBot)
                 return;
 
-			//string prefix = GetGuildPrefix(message) ?? BotInfo.DefaultPrefix;
+			//string prefix = GetGuildPrefix(message) ?? Configuration.Get("Bot", "DefaultPrefix");
 			int argPos = 0;
 
 			bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);

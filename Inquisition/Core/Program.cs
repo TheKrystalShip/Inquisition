@@ -19,7 +19,7 @@ namespace Inquisition
 		{
             Console.Title = "Inquisition";
 
-            _token = Configuration.Get.GetSection("Bot")["Token"];
+            _token = Configuration.Get("Bot", "Token");
 
 			_client = new DiscordSocketClient(new DiscordSocketConfig()
 				{
