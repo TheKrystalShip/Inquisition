@@ -17,7 +17,7 @@ namespace Inquisition
 
         public static async Task Main(string[] args)
 		{
-            Console.Title = "Inquisition";
+            Console.Title = Configuration.Get("Bot", "Name");
 
             _token = Configuration.Get("Bot", "Token");
 
