@@ -2,7 +2,6 @@
 using Discord.WebSocket;
 
 using Inquisition.Logging;
-using Inquisition.Services;
 
 using System;
 using System.Threading.Tasks;
@@ -12,28 +11,54 @@ namespace Inquisition.Managers
     public class EventManager
     {
         private readonly DiscordSocketClient _client;
-		private readonly EventService _eventService;
-        private readonly UserManager _conversionHandler;
+        private readonly UserManager _userManager;
+        private readonly RoleManager _roleManager;
+        private readonly ChannelManager _channelManager;
+        private readonly GuildManager _guildManager;
         private readonly ILogger<EventManager> _logger;
 
 		public EventManager(
             DiscordSocketClient client,
-            EventService eventService,
             UserManager conversionHandler,
+            RoleManager roleManager,
+            ChannelManager channelManager,
+            GuildManager guildManager,
             ILogger<EventManager> logger)
 		{
 			_client = client;
-            _eventService = eventService;
-            _conversionHandler = conversionHandler;
+            _userManager = conversionHandler;
+            _roleManager = roleManager;
+            _channelManager = channelManager;
+            _guildManager = guildManager;
             _logger = logger;
 
 			_client.Log += Log;
-			_client.Ready += Ready;
+			_client.Ready += ReadyAsync;
+            _client.JoinedGuild += ClientJoinedGuildAsync;
 
-			SubscribeToAuditService();
+			SubscribeToEvents();
 		}
 
-		private Task Log(LogMessage logMessage)
+        private async Task ClientJoinedGuildAsync(SocketGuild guild)
+        {
+            await Task.Run(() =>
+            {
+                _logger.LogInformation($"Joined guild: {guild.Name}");
+                _logger.LogInformation($"Starting user registration for: {guild.Name}");
+                int usersAdded = 0;
+
+                foreach (SocketGuildUser user in guild.Users)
+                {
+                    _userManager.AddUser(user);
+                    usersAdded++;
+                }
+
+                _logger.LogInformation($"Added {usersAdded} users from: {guild.Name}");
+                _logger.LogInformation($"Finished user registration for: {guild.Name}");
+            });
+        }
+
+        private Task Log(LogMessage logMessage)
         {
 			if (!logMessage.Message.Contains("OpCode"))
 			{
@@ -43,12 +68,10 @@ namespace Inquisition.Managers
 			return Task.CompletedTask;
         }
         
-        private async Task Ready()
+        private async Task ReadyAsync()
         {
             await Task.Run(() =>
 			{
-                _conversionHandler.Init();
-
 				try
 				{
 					foreach (SocketGuild guild in _client.Guilds)
@@ -57,9 +80,11 @@ namespace Inquisition.Managers
 						{
 							if (!user.IsBot)
 							{
-								_conversionHandler.AddUser(user);
+								_userManager.AddUser(user);
 							}
 						}
+
+                        _logger.LogInformation($"Added {_userManager.UsersAdded} new users in {guild.Name}");
 					}
 
 				}
@@ -69,29 +94,29 @@ namespace Inquisition.Managers
 				}
                 finally
                 {
-                    _conversionHandler.Dispose();
+                    _userManager.Dispose();
                 }
 			});
         }
 
-		private void SubscribeToAuditService()
+		private void SubscribeToEvents()
 		{
-			_client.ChannelCreated += (channel) => _eventService.ChannelCreated(channel);
-			_client.ChannelDestroyed += (channel) => _eventService.ChannelDestroyed(channel);
-			_client.ChannelUpdated += (before, after) => _eventService.ChannelUpdated(before, after);
+			_client.ChannelCreated += (channel) => _channelManager.ChannelCreated(channel);
+			_client.ChannelDestroyed += (channel) => _channelManager.ChannelDestroyed(channel);
+			_client.ChannelUpdated += (before, after) => _channelManager.ChannelUpdated(before, after);
 
-			_client.GuildMemberUpdated += (before, after) => _eventService.GuildMemberUpdated(before, after);
-			_client.GuildUpdated += (before, after) => _eventService.GuildUpdated(before, after);
+			_client.GuildMemberUpdated += (before, after) => _guildManager.GuildMemberUpdated(before, after);
+			_client.GuildUpdated += (before, after) => _guildManager.GuildUpdated(before, after);
 
-			_client.RoleCreated += (role) => _eventService.RoleCreated(role);
-			_client.RoleDeleted += (role) => _eventService.RoleDeleted(role);
-			_client.RoleUpdated += (before, after) => _eventService.RoleUpdated(before, after);
+			_client.RoleCreated += (role) => _roleManager.RoleCreated(role);
+			_client.RoleDeleted += (role) => _roleManager.RoleDeleted(role);
+			_client.RoleUpdated += (before, after) => _roleManager.RoleUpdated(before, after);
 
-			_client.UserBanned += (user, guild) => _eventService.UserBanned(user, guild);
-			_client.UserJoined += (user) => _eventService.UserJoined(user);
-			_client.UserLeft += (user) => _eventService.UserLeft(user);
-			_client.UserUnbanned += (user, guild) => _eventService.UserUnbanned(user, guild);
-			_client.UserUpdated += (before, after) => _eventService.UserUpdated(before, after);
+			_client.UserBanned += (user, guild) => _userManager.UserBanned(user, guild);
+			_client.UserJoined += (user) => _userManager.UserJoined(user);
+			_client.UserLeft += (user) => _userManager.UserLeft(user);
+			_client.UserUnbanned += (user, guild) => _userManager.UserUnbanned(user, guild);
+			_client.UserUpdated += (before, after) => _userManager.UserUpdated(before, after);
 		}
 	}
 }

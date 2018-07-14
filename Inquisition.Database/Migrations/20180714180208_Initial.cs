@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace Inquisition.Database.Migrations
 {
@@ -14,11 +12,11 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(maxLength: 100, nullable: false),
-                    Arguments = table.Column<string>(maxLength: 500, nullable: true),
-                    FileName = table.Column<string>(maxLength: 500, nullable: true),
-                    IsOnline = table.Column<bool>(nullable: false),
+                    Version = table.Column<string>(maxLength: 10, nullable: true),
                     Port = table.Column<string>(maxLength: 10, nullable: true),
-                    Version = table.Column<string>(maxLength: 10, nullable: true)
+                    IsOnline = table.Column<bool>(nullable: false),
+                    FileName = table.Column<string>(maxLength: 500, nullable: true),
+                    Arguments = table.Column<string>(maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,10 +28,10 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    AuditChannelId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
                     IconUrl = table.Column<string>(nullable: true),
                     MemberCount = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    AuditChannelId = table.Column<string>(nullable: true),
                     Prefix = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -46,22 +44,14 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(maxLength: 20, nullable: false),
-                    AvatarUrl = table.Column<string>(nullable: true),
+                    Username = table.Column<string>(maxLength: 50, nullable: true),
                     Discriminator = table.Column<string>(maxLength: 10, nullable: true),
-                    GuildId = table.Column<string>(nullable: true),
-                    Nickname = table.Column<string>(maxLength: 50, nullable: true),
-                    TimezoneOffset = table.Column<int>(nullable: true),
-                    Username = table.Column<string>(maxLength: 50, nullable: true)
+                    AvatarUrl = table.Column<string>(nullable: true),
+                    TimezoneOffset = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Guilds_GuildId",
-                        column: x => x.GuildId,
-                        principalTable: "Guilds",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,13 +59,13 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Arguments = table.Column<string>(nullable: true),
-                    DueTime = table.Column<DateTime>(nullable: false),
-                    GuildId = table.Column<string>(nullable: true),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
+                    Arguments = table.Column<string>(nullable: true),
                     ScheduledTime = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<string>(nullable: true)
+                    DueTime = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    GuildId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -99,9 +89,9 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    TargetUserId = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(nullable: true),
+                    TargetUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -125,10 +115,10 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ExpireDate = table.Column<DateTime>(nullable: false),
-                    MessageId = table.Column<string>(nullable: true),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Url = table.Column<string>(nullable: true),
+                    MessageId = table.Column<string>(nullable: true),
+                    ExpireDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -147,7 +137,7 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Text = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
                 },
@@ -167,9 +157,9 @@ namespace Inquisition.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    DueDate = table.Column<DateTimeOffset>(nullable: false),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Message = table.Column<string>(nullable: true),
+                    DueDate = table.Column<DateTimeOffset>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -181,6 +171,32 @@ namespace Inquisition.Database.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Server",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
+                    GuildId = table.Column<string>(nullable: true),
+                    Nickname = table.Column<string>(maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Server", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Server_Guilds_GuildId",
+                        column: x => x.GuildId,
+                        principalTable: "Guilds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Server_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -219,9 +235,14 @@ namespace Inquisition.Database.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_GuildId",
-                table: "Users",
+                name: "IX_Server_GuildId",
+                table: "Server",
                 column: "GuildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Server_UserId",
+                table: "Server",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -245,10 +266,13 @@ namespace Inquisition.Database.Migrations
                 name: "Reminders");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Server");
 
             migrationBuilder.DropTable(
                 name: "Guilds");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

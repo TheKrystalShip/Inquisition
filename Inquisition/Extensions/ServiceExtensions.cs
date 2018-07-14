@@ -10,9 +10,7 @@ namespace Inquisition.Extensions
     {
         public static IServiceCollection AddHandlers(this IServiceCollection services)
         {
-            services.AddSingleton<UserManager>()
-                .AddSingleton<EventManager>()
-                .AddSingleton<EmbedHandler>()
+            services.AddSingleton<EmbedHandler>()
                 .AddSingleton<PrefixHandler>()
                 .AddSingleton<ReportHandler>()
                 .AddSingleton<ServiceHandler>();
@@ -24,9 +22,19 @@ namespace Inquisition.Extensions
         {
             services.AddSingleton<ActivityService>()
                 .AddSingleton<AudioService>()
-                .AddSingleton<EventService>()
                 .AddSingleton<GameService>()
                 .AddSingleton<ReminderService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddManagers(this IServiceCollection services)
+        {
+            services.AddSingleton<ChannelManager>()
+                .AddSingleton<EventManager>()
+                .AddSingleton<GuildManager>()
+                .AddSingleton<RoleManager>()
+                .AddSingleton<UserManager>();
 
             return services;
         }

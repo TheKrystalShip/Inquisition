@@ -5,6 +5,7 @@ using Inquisition.Database.Models;
 using Inquisition.Logging;
 
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Inquisition.Managers
 {
@@ -15,9 +16,7 @@ namespace Inquisition.Managers
 
         public int UsersAdded { get; private set; }
 
-        public UserManager(
-            DatabaseContext dbContext,
-            ILogger<UserManager> logger)
+        public UserManager(DatabaseContext dbContext, ILogger<UserManager> logger)
         {
             UsersAdded = 0;
             _dbContext = dbContext;
@@ -44,11 +43,15 @@ namespace Inquisition.Managers
 				{
 					Username = socketGuildUser.Username,
 					Id = socketUserId,
-					Nickname = socketGuildUser.Nickname,
 					AvatarUrl = socketGuildUser.GetAvatarUrl(),
 					Discriminator = socketGuildUser.Discriminator,
-					Guild = guild
 				};
+
+                user.Servers.Add(new Server() {
+                    User = user,
+                    Guild = guild,
+                    Nickname = socketGuildUser.Nickname
+                });
 
 				_dbContext.Users.Add(user);
 				_dbContext.SaveChanges();
@@ -79,5 +82,36 @@ namespace Inquisition.Managers
 					MemberCount = socketGuild.MemberCount
 				};
 		}
+
+        public Task UserBanned(SocketUser user, SocketGuild guild)
+        {
+            _logger.LogInformation($"User banned: {user.Username} in {guild.Name}");
+            return Task.CompletedTask;
+        }
+
+        public Task UserJoined(SocketGuildUser user)
+        {
+            _logger.LogInformation($"User joined: {user.Username} in {user.Guild.Name}");
+            return Task.CompletedTask;
+        }
+
+        public Task UserLeft(SocketGuildUser user)
+        {
+            _logger.LogInformation($"User left: {user.Username} in {user.Guild.Name}");
+            return Task.CompletedTask;
+        }
+
+        public Task UserUnbanned(SocketUser user, SocketGuild guild)
+        {
+            _logger.LogInformation($"User unbanned: {user.Username} in {guild.Name}");
+            return Task.CompletedTask;
+        }
+
+        public Task UserUpdated(SocketUser before, SocketUser after)
+        {
+            SocketGuildUser guildUser = before as SocketGuildUser;
+            _logger.LogInformation($"User updated: {guildUser.Username} in {guildUser.Guild.Name}");
+            return Task.CompletedTask;
+        }
 	}
 }

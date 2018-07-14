@@ -7,9 +7,9 @@ using Inquisition.Extensions;
 using Inquisition.Logging;
 using Inquisition.Logging.Extensions;
 using Inquisition.Managers;
-using Inquisition.Properties;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -18,48 +18,60 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-    public class CommandHandler
+    public class CommandHandler : ICommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commandService;
         private readonly ReportHandler _reportHandler;
+        private readonly IConfiguration _config;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<CommandHandler> _logger;
 
-		public CommandHandler(DiscordSocketClient client)
+		public CommandHandler(ref DiscordSocketClient client, ref IConfiguration config)
         {
             _client = client;
 
-            _logger = new Logger<CommandHandler>();
+            _config = config;
 
             _commandService = new CommandService(new CommandServiceConfig()
                 {
-                    DefaultRunMode = RunMode.Async,
-                    LogLevel = LogSeverity.Verbose,
-                    CaseSensitiveCommands = false
+                    LogLevel = LogSeverity.Debug,
+                    CaseSensitiveCommands = false,
+                    DefaultRunMode = RunMode.Async
                 }
             );
 
             _commandService.AddModulesAsync(Assembly.GetEntryAssembly()).Wait();
 
             _serviceProvider = new ServiceCollection()
-                .AddDbContext<DatabaseContext>(x => {
-                    x.UseSqlServer(Configuration.Get("Database", "ConnectionString"));
-                })
                 .AddSingleton(_client)
                 .AddSingleton(_commandService)
+                .AddSingleton(_config)
                 .AddHandlers()
                 .AddServices()
+                .AddManagers()
                 .AddLogger()
+                .AddDbContext<DatabaseContext>(x =>
+                    {
+                        x.UseSqlite(_config.GetConnectionString("SQLite"));
+                    }
+                )
                 .BuildServiceProvider();
 
-            // Call some handlers/services to start them up
+            _serviceProvider.GetService<DatabaseContext>().Migrate();
             _serviceProvider.GetService<EventManager>();
-            //_serviceProvider.GetService<ServiceHandler>(); // Not finished yet
 
             _reportHandler = _serviceProvider.GetService<ReportHandler>();
+            _logger = _serviceProvider.GetService<ILogger<CommandHandler>>();
 
+            _commandService.Log += CommandServiceLog;
             _client.MessageReceived += HandleCommands;
+        }
+
+        private Task CommandServiceLog(LogMessage logMessage)
+        {
+            _logger.LogInformation(GetType().FullName + $" ({logMessage.Source})", logMessage.Message);
+            return Task.CompletedTask;
         }
 
         private async Task HandleCommands(SocketMessage msg)

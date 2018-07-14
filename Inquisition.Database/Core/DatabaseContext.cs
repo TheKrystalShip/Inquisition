@@ -25,6 +25,11 @@ namespace Inquisition.Database
 
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            builder.UseSqlite("Data source=Data\\Inquisition.db");
+        }
+
 		public void Migrate() => Database.Migrate();
 
 		protected override void OnModelCreating(ModelBuilder mb)
@@ -52,8 +57,8 @@ namespace Inquisition.Database
 				.WithOne(x => x.User);
 
 			mb.Entity<User>()
-				.HasOne(x => x.Guild)
-				.WithMany(x => x.Users);
+				.HasMany(x => x.Servers)
+				.WithOne(x => x.User);
 
 			mb.Entity<User>()
 				.HasMany(x => x.Activities)
@@ -84,13 +89,21 @@ namespace Inquisition.Database
 				.OnDelete(DeleteBehavior.Cascade);
 
 			mb.Entity<Guild>()
-				.HasMany(x => x.Users)
+				.HasMany(x => x.Servers)
 				.WithOne(x => x.Guild);
 
 			mb.Entity<Activity>()
 				.HasOne(x => x.User)
 				.WithMany(x => x.Activities)
 				.OnDelete(DeleteBehavior.Cascade);
+
+            mb.Entity<Server>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.Servers);
+
+            mb.Entity<Server>()
+                .HasOne(x => x.Guild)
+                .WithMany(x => x.Servers);
 		}
 	}
 }

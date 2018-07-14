@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inquisition.Database.Models
 {
-	public class Guild
+    public class Guild
 	{
 		[Key]
 		public string Id { get; set; }
@@ -15,6 +15,6 @@ namespace Inquisition.Database.Models
 		public string AuditChannelId { get; set; }
 		public string Prefix { get; set; } = "--";
 
-		public virtual List<User> Users { get; set; } = new List<User>();
+		public virtual List<Server> Servers { get; set; } = new List<Server>();
 	}
 }
