@@ -9,7 +9,7 @@ namespace Inquisition.Data.Models
     [XmlRoot]
 	public class Report : IReport
 	{
-		public Guid Guid { get; set; }
+        public Guid Guid { get; set; } = Guid.NewGuid();
 		
 		public string GuildName { get; set; }
 		public string GuildID { get; set; }
@@ -30,7 +30,7 @@ namespace Inquisition.Data.Models
 
 		public class InnerReport : IReport
 		{
-			public Guid Guid { get; set; }
+            public Guid Guid { get; set; } = Guid.NewGuid();
 			public string ErrorMessage { get; set; }
 			public string StackTrace { get; set; }
 			public string Path { get; set; }

@@ -31,7 +31,6 @@ namespace Inquisition.Handlers
 		{
 			Report report = new Report
 			{
-				Guid = Guid.NewGuid(),
 				ErrorMessage = e.Message,
 				StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
 			};
@@ -46,7 +45,6 @@ namespace Inquisition.Handlers
         {
 			Report report = new Report
 			{
-				Guid = Guid.NewGuid(),
 				Channel = context.Channel.Name,
 				ErrorMessage = e.Message,
 				Message = context.Message.Content.Replace("<@304353122019704842> ", ""),
@@ -68,7 +66,6 @@ namespace Inquisition.Handlers
 			{
 				e = e.InnerException;
 				report.InnerExceptions.Add(new Report.InnerReport {
-					Guid = Guid.NewGuid(),
 					ErrorMessage = e.Message,
 					StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
 				});
