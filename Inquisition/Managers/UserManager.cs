@@ -4,6 +4,7 @@ using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Logging;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,52 +13,107 @@ namespace Inquisition.Managers
     public class UserManager
     {
         private readonly DatabaseContext _dbContext;
+        private readonly DiscordSocketClient _client;
         private readonly ILogger<UserManager> _logger;
 
-        public int UsersAdded { get; private set; }
-
-        public UserManager(DatabaseContext dbContext, ILogger<UserManager> logger)
+        public UserManager(DatabaseContext dbContext, DiscordSocketClient client, ILogger<UserManager> logger)
         {
-            UsersAdded = 0;
             _dbContext = dbContext;
+            _client = client;
             _logger = logger;
         }
 
-        public void Init()
+        public async Task RegisterGuildUsersAsync()
         {
-            _logger.LogInformation("Starting user registration...");
+            await Task.Run(() =>
+            {
+                int guildsAdded = 0;
+                int usersAdded = 0;
+                int totalUsersAdded = 0;
+
+                _logger.LogInformation($"Starting user registration");
+
+                try
+                {
+                    foreach (SocketGuild guild in _client.Guilds)
+                    {
+                        _logger.LogInformation($"Starting user registration for guild: {guild.Name}");
+
+                        foreach (SocketGuildUser user in guild.Users)
+                        {
+                            if (!user.IsBot)
+                            {
+                                if (AddUser(user))
+                                {
+                                    usersAdded++;
+                                    totalUsersAdded++;
+                                }
+                            }
+                        }
+
+                        if (usersAdded > 0)
+                            _logger.LogInformation($"Added {usersAdded} users from: {guild.Name}");
+
+                        guildsAdded++;
+                        usersAdded = 0;
+                    }
+
+                    _logger.LogInformation($"Added {guildsAdded} guilds with a total of {totalUsersAdded} new users");
+
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e);
+                }
+            });
         }
 
-        public void Dispose()
+        public async Task RegisterNewGuildUsersAsync(SocketGuild guild)
         {
-            _logger.LogInformation(UsersAdded > 0 ? $"Done, added {UsersAdded} user(s)" : "Done, no new users were added");
+            await Task.Run(() =>
+            {
+                _logger.LogInformation($"Joined guild: {guild.Name}");
+                _logger.LogInformation($"Starting user registration for: {guild.Name}");
+                int usersAdded = 0;
+
+                foreach (SocketGuildUser user in guild.Users)
+                {
+                    if (AddUser(user))
+                        usersAdded++;
+                }
+
+                _logger.LogInformation($"Added {usersAdded} users from: {guild.Name}");
+                _logger.LogInformation($"Finished user registration for: {guild.Name}");
+            });
         }
 
-		public void AddUser(SocketGuildUser socketGuildUser)
+		public bool AddUser(SocketGuildUser socketGuildUser)
 		{
 			string socketUserId = socketGuildUser.Id.ToString();
-			if (!_dbContext.Users.Any(x => x.Id == socketUserId))
-			{
-				Guild guild = ToGuild(socketGuildUser.Guild);
-				User user = new User
-				{
-					Username = socketGuildUser.Username,
-					Id = socketUserId,
-					AvatarUrl = socketGuildUser.GetAvatarUrl(),
-					Discriminator = socketGuildUser.Discriminator,
-				};
 
-                user.Servers.Add(new Server() {
-                    User = user,
-                    Guild = guild,
-                    Nickname = socketGuildUser.Nickname
-                });
+            if (_dbContext.Users.Any(x => x.Id == socketUserId))
+                return false;
 
-				_dbContext.Users.Add(user);
-				_dbContext.SaveChanges();
-				UsersAdded++;
-			}
-		}
+            Guild guild = ToGuild(socketGuildUser.Guild);
+            User user = new User
+            {
+                Username = socketGuildUser.Username,
+                Id = socketUserId,
+                AvatarUrl = socketGuildUser.GetAvatarUrl(),
+                Discriminator = socketGuildUser.Discriminator,
+            };
+
+            user.Servers.Add(new Server()
+            {
+                User = user,
+                Guild = guild,
+                Nickname = socketGuildUser.Nickname
+            });
+
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+            return true;
+        }
 
 		public void RemoveUser(SocketGuildUser user)
 		{

@@ -3,7 +3,6 @@ using Discord.WebSocket;
 
 using Inquisition.Logging;
 
-using System;
 using System.Threading.Tasks;
 
 namespace Inquisition.Managers
@@ -33,30 +32,9 @@ namespace Inquisition.Managers
             _logger = logger;
 
 			_client.Log += Log;
-			_client.Ready += ReadyAsync;
-            _client.JoinedGuild += ClientJoinedGuildAsync;
 
 			SubscribeToEvents();
 		}
-
-        private async Task ClientJoinedGuildAsync(SocketGuild guild)
-        {
-            await Task.Run(() =>
-            {
-                _logger.LogInformation($"Joined guild: {guild.Name}");
-                _logger.LogInformation($"Starting user registration for: {guild.Name}");
-                int usersAdded = 0;
-
-                foreach (SocketGuildUser user in guild.Users)
-                {
-                    _userManager.AddUser(user);
-                    usersAdded++;
-                }
-
-                _logger.LogInformation($"Added {usersAdded} users from: {guild.Name}");
-                _logger.LogInformation($"Finished user registration for: {guild.Name}");
-            });
-        }
 
         private Task Log(LogMessage logMessage)
         {
@@ -66,37 +44,6 @@ namespace Inquisition.Managers
 			}
 
 			return Task.CompletedTask;
-        }
-        
-        private async Task ReadyAsync()
-        {
-            await Task.Run(() =>
-			{
-				try
-				{
-					foreach (SocketGuild guild in _client.Guilds)
-					{
-						foreach (SocketGuildUser user in guild.Users)
-						{
-							if (!user.IsBot)
-							{
-								_userManager.AddUser(user);
-							}
-						}
-
-                        _logger.LogInformation($"Added {_userManager.UsersAdded} new users in {guild.Name}");
-					}
-
-				}
-				catch (Exception e)
-				{
-                    _logger.LogError(e);
-				}
-                finally
-                {
-                    _userManager.Dispose();
-                }
-			});
         }
 
 		private void SubscribeToEvents()
@@ -112,6 +59,8 @@ namespace Inquisition.Managers
 			_client.RoleDeleted += (role) => _roleManager.RoleDeleted(role);
 			_client.RoleUpdated += (before, after) => _roleManager.RoleUpdated(before, after);
 
+            _client.Ready += () => _userManager.RegisterGuildUsersAsync();
+            _client.JoinedGuild += (guild) => _userManager.RegisterNewGuildUsersAsync(guild);
 			_client.UserBanned += (user, guild) => _userManager.UserBanned(user, guild);
 			_client.UserJoined += (user) => _userManager.UserJoined(user);
 			_client.UserLeft += (user) => _userManager.UserLeft(user);

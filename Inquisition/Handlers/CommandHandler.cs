@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Inquisition.Handlers
 {
-    public class CommandHandler : ICommandHandler
+    public class CommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commandService;
