@@ -1,16 +1,17 @@
 ﻿using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using TheKrystalShip.Logging;
+
 namespace Inquisition.Handlers
 {
-	[Obsolete("Needs to be changed, do not use", true)]
+    [Obsolete("Needs to be changed, do not use", true)]
 	public class ProcessHandler
     {
 		private static DatabaseContext db;

@@ -1,8 +1,9 @@
-﻿using Inquisition.Logging;
-using Inquisition.Services;
+﻿using Inquisition.Services;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Handlers
 {
@@ -41,19 +42,19 @@ namespace Inquisition.Handlers
 			service.Stop += Service_Stop;
 		}
 
-		private void Service_Start(Service service)
+		private void Service_Start(IService service)
 		{
-            _logger.LogInformation(service.ToString(), "Started");
+            _logger.LogInformation(service.GetType().Name, "Started");
 		}
 
-		private void Service_Tick(Service service)
+		private void Service_Tick(IService service)
 		{
-            _logger.LogInformation(service.ToString(), "Ticked");
+            _logger.LogInformation(service.GetType().Name, "Ticked");
         }
 
-		private void Service_Stop(Service service)
+		private void Service_Stop(IService service)
 		{
-            _logger.LogInformation(service.ToString(), "Stopped");
+            _logger.LogInformation(service.GetType().Name, "Stopped");
         }
 
 		public async void StartAllLoops()

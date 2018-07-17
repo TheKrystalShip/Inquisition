@@ -3,11 +3,12 @@ using Discord.Commands;
 
 using Inquisition.Data.Models;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Modules
 {

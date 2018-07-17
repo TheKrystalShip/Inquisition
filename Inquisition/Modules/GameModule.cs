@@ -4,13 +4,14 @@ using Discord.Commands;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 using Inquisition.Services;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Modules
 {
@@ -92,7 +93,7 @@ namespace Inquisition.Modules
 					return;
 				}
 
-				Result result = _gameService.ServerStatus(game, Context);
+				Result result = _gameService.ServerStatus(game);
 				await ReplyAsync(ReplyHandler.Context(result));
 			}
 			catch (Exception e)

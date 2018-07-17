@@ -1,9 +1,9 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Logging;
-
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Managers
 {
@@ -31,7 +31,7 @@ namespace Inquisition.Managers
             _guildManager = guildManager;
             _logger = logger;
 
-			_client.Log += Log;
+            _client.Log += Log;
 
 			SubscribeToEvents();
 		}

@@ -1,11 +1,12 @@
 ﻿using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
 using System.Collections.Generic;
 using System.Linq;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Services
 {
@@ -13,8 +14,7 @@ namespace Inquisition.Services
     {
         private readonly ILogger<ActivityService> _logger;
 
-        public ActivityService(
-            ILogger<ActivityService> logger)
+        public ActivityService(ILogger<ActivityService> logger)
         {
             _logger = logger;
         }

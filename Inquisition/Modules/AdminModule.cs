@@ -5,7 +5,6 @@ using Discord.WebSocket;
 using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
@@ -13,6 +12,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Modules
 {

@@ -2,11 +2,12 @@
 
 using Inquisition.Database;
 using Inquisition.Database.Models;
-using Inquisition.Logging;
 
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Managers
 {

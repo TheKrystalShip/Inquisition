@@ -3,13 +3,13 @@ using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Logging;
-
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Services
 {

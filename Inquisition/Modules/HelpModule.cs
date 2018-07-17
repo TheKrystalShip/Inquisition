@@ -2,11 +2,12 @@
 using Discord.Commands;
 
 using Inquisition.Handlers;
-using Inquisition.Logging;
 
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Modules
 {

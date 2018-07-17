@@ -1,6 +1,7 @@
-﻿using Inquisition.Logging;
-
+﻿
 using System.Diagnostics;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Services
 {

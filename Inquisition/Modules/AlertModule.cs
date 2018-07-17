@@ -6,7 +6,6 @@ using Inquisition.Data.Models;
 using Inquisition.Database;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Modules
 {

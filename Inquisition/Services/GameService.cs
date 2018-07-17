@@ -3,12 +3,13 @@
 using Inquisition.Data.Models;
 using Inquisition.Database.Models;
 using Inquisition.Handlers;
-using Inquisition.Logging;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
 
 namespace Inquisition.Services
 {
@@ -19,9 +20,7 @@ namespace Inquisition.Services
         private readonly ReportHandler _reportHandler;
         private readonly ILogger<GameService> _logger;
 
-        public GameService(
-            ReportHandler reportHandler,
-            ILogger<GameService> logger)
+        public GameService(ReportHandler reportHandler, ILogger<GameService> logger)
         {
             _runningServers = new Dictionary<string, Process>();
             _reportHandler = reportHandler;
@@ -85,7 +84,7 @@ namespace Inquisition.Services
 			}
 		}
 
-		public Result ServerStatus(Game game, SocketCommandContext context)
+		public Result ServerStatus(Game game)
 		{
 			bool ProcessRunning = _runningServers.TryGetValue(game.Name, out Process p);
 			bool GameMarkedOnline = game.IsOnline;

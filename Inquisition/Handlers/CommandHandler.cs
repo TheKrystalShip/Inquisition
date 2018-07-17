@@ -4,8 +4,6 @@ using Discord.WebSocket;
 
 using Inquisition.Database;
 using Inquisition.Extensions;
-using Inquisition.Logging;
-using Inquisition.Logging.Extensions;
 using Inquisition.Managers;
 
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using TheKrystalShip.Logging;
+using TheKrystalShip.Logging.Extensions;
 
 namespace Inquisition.Handlers
 {
