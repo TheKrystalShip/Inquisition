@@ -1,15 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Handlers;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class HelpModule : ModuleBase<SocketCommandContext>
     {

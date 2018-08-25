@@ -1,17 +1,16 @@
 ﻿using Discord.Commands;
 
-using Inquisition.Data.Models;
-using Inquisition.Database.Models;
-using Inquisition.Handlers;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public class GameService : Service
 	{
@@ -96,14 +95,6 @@ namespace Inquisition.Services
 			else if (!ProcessRunning && !GameMarkedOnline)
 			{
 				return Result.Offline;
-			}
-			else if (ProcessRunning && !GameMarkedOnline)
-			{
-				return Result.ProcessRunningButOfflineInDb;
-			}
-			else if (!ProcessRunning && GameMarkedOnline)
-			{
-				return Result.ProcessNotRunningButOnlineInDb;
 			}
 			else
 			{

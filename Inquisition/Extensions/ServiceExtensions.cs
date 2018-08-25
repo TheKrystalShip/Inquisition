@@ -1,10 +1,10 @@
-﻿using Inquisition.Handlers;
-using Inquisition.Managers;
-using Inquisition.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-using Microsoft.Extensions.DependencyInjection;
+using TheKrystalShip.Inquisition.Handlers;
+using TheKrystalShip.Inquisition.Managers;
+using TheKrystalShip.Inquisition.Services;
 
-namespace Inquisition.Extensions
+namespace TheKrystalShip.Inquisition.Extensions
 {
     public static class ServiceExtensions
     {

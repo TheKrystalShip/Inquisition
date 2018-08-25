@@ -1,8 +1,8 @@
-﻿using Inquisition.Database.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
-using Microsoft.EntityFrameworkCore;
+using TheKrystalShip.Inquisition.Database.Models;
 
-namespace Inquisition.Database
+namespace TheKrystalShip.Inquisition.Database
 {
     public class DatabaseContext : DbContext
     {
@@ -25,12 +25,13 @@ namespace Inquisition.Database
 
         }
 
+		public void Migrate() => Database.Migrate();
+
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlite("Data source=Data\\Inquisition.db");
+            builder.UseSqlite("Data source=.\\Properties\\Inquisition.db");
+            base.OnConfiguring(builder);
         }
-
-		public void Migrate() => Database.Migrate();
 
 		protected override void OnModelCreating(ModelBuilder mb)
 		{

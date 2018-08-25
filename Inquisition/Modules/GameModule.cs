@@ -1,19 +1,18 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Models;
-using Inquisition.Database;
-using Inquisition.Handlers;
-using Inquisition.Services;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Handlers;
+using TheKrystalShip.Inquisition.Services;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class GameModule : ModuleBase<SocketCommandContext>
 	{

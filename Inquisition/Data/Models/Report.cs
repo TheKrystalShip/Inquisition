@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Inquisition.Data.Models
+namespace TheKrystalShip.Inquisition.Data.Models
 {
     [XmlRoot]
 	public class Report : IReport

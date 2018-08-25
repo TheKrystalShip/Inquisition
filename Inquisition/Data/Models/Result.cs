@@ -1,6 +1,6 @@
-﻿namespace Inquisition.Data.Models
+﻿namespace TheKrystalShip.Inquisition.Data.Models
 {
-	public enum Result
+    public enum Result
 	{
 		Failed,
 		Successful,
@@ -10,8 +10,6 @@
 		AlreadyRunning,
 		Offline,
 		Online,
-		ProcessRunningButOfflineInDb,
-		ProcessNotRunningButOnlineInDb,
 		GenericError
 	}
 }

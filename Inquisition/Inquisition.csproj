@@ -3,11 +3,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <StartupObject>Inquisition.Program</StartupObject>
+    <StartupObject></StartupObject>
     <ApplicationIcon></ApplicationIcon>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
     <AssemblyName>Inquisition</AssemblyName>
-    <RootNamespace>Inquisition</RootNamespace>
+    <RootNamespace>TheKrystalShip.Inquisition</RootNamespace>
     <Authors>Cristian Moraru</Authors>
     <Company />
     <Product />
@@ -19,16 +19,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LangVersion>7.3</LangVersion>
-    <Optimize>true</Optimize>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
@@ -59,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\XSL.xslt">
+    <None Update="Properties\XSL.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="opus.dll">

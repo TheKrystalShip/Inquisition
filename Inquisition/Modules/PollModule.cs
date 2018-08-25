@@ -1,16 +1,15 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using Inquisition.Data.Models;
-using Inquisition.Handlers;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class PollModule : ModuleBase<SocketCommandContext>
     {

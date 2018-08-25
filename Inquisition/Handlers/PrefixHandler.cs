@@ -1,13 +1,12 @@
-﻿using Inquisition.Database;
-using Inquisition.Database.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Database.Models;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Handlers
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class PrefixHandler
     {

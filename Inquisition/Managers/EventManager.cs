@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Managers
+namespace TheKrystalShip.Inquisition.Managers
 {
     public class EventManager
     {

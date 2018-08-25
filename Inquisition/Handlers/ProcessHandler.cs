@@ -1,15 +1,14 @@
-﻿using Inquisition.Data.Models;
-using Inquisition.Database;
-using Inquisition.Database.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Database.Models;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Handlers
+namespace TheKrystalShip.Inquisition.Handlers
 {
     [Obsolete("Needs to be changed, do not use", true)]
 	public class ProcessHandler

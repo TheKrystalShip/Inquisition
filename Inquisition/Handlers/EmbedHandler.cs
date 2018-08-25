@@ -1,13 +1,13 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using Inquisition.Database.Models;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Inquisition.Handlers
+using TheKrystalShip.Inquisition.Database.Models;
+
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class EmbedHandler
     {

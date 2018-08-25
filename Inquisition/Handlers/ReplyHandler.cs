@@ -1,9 +1,9 @@
 ﻿using Discord.WebSocket;
 
-using Inquisition.Data.Models;
-using Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database.Models;
 
-namespace Inquisition.Handlers
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class ReplyHandler
     {
@@ -27,10 +27,6 @@ namespace Inquisition.Handlers
 					return "Server is offline";
 				case Result.Online:
 					return "Server is online";
-				case Result.ProcessRunningButOfflineInDb:
-					return "Server has a process running, but is marked as offline";
-				case Result.ProcessNotRunningButOnlineInDb:
-					return $"Server is not running, but is marked as online";
 				case Result.GenericError:
 					return "Generic error";
 				default:

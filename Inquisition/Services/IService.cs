@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public interface IService : IDisposable
     {

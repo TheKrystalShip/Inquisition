@@ -2,10 +2,6 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Database;
-using Inquisition.Extensions;
-using Inquisition.Managers;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,25 +10,26 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Managers;
+using TheKrystalShip.Inquisition.Properties;
 using TheKrystalShip.Logging;
 using TheKrystalShip.Logging.Extensions;
 
-namespace Inquisition.Handlers
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class CommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commandService;
         private readonly ReportHandler _reportHandler;
-        private readonly IConfiguration _config;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<CommandHandler> _logger;
 
-		public CommandHandler(ref DiscordSocketClient client, ref IConfiguration config)
+		public CommandHandler(ref DiscordSocketClient client)
         {
             _client = client;
-
-            _config = config;
 
             _commandService = new CommandService(new CommandServiceConfig()
                 {
@@ -47,14 +44,13 @@ namespace Inquisition.Handlers
             _serviceProvider = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commandService)
-                .AddSingleton(_config)
                 .AddHandlers()
                 .AddServices()
                 .AddManagers()
                 .AddLogger()
                 .AddDbContext<DatabaseContext>(x =>
                     {
-                        x.UseSqlite(_config.GetConnectionString("SQLite"));
+                        x.UseSqlite(Settings.Instance.GetConnectionString("SQLite"));
                     }
                 )
                 .BuildServiceProvider();

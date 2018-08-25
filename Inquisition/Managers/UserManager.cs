@@ -1,15 +1,14 @@
 ﻿using Discord.WebSocket;
 
-using Inquisition.Database;
-using Inquisition.Database.Models;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Database.Models;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Managers
+namespace TheKrystalShip.Inquisition.Managers
 {
     public class UserManager
     {

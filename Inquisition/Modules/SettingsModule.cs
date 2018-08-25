@@ -2,18 +2,17 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Models;
-using Inquisition.Database;
-using Inquisition.Database.Models;
-using Inquisition.Handlers;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class SettingsModule : ModuleBase<SocketCommandContext>
     {

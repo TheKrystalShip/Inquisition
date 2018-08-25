@@ -2,12 +2,13 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Models;
 using Inquisition.Reporting;
 
 using System;
 
-namespace Inquisition.Handlers
+using TheKrystalShip.Inquisition.Data.Models;
+
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class ReportHandler
 	{

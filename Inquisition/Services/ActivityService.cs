@@ -1,14 +1,13 @@
-﻿using Inquisition.Database;
-using Inquisition.Database.Models;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using System.Collections.Generic;
 using System.Linq;
 
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Database.Models;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public class ActivityService : Service
     {

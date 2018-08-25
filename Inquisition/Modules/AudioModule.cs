@@ -2,15 +2,14 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Handlers;
-using Inquisition.Services;
-
 using System;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Handlers;
+using TheKrystalShip.Inquisition.Services;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class AudioModule : ModuleBase<SocketCommandContext>
 	{

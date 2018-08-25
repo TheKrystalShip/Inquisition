@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Inquisition.Extensions
+namespace TheKrystalShip.Inquisition.Extensions
 {
     public static class ConfigurationExtensions
     {

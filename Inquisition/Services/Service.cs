@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public class Service : IService
     {

@@ -1,9 +1,8 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public class Benchmark : Service
 	{

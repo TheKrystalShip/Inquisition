@@ -2,16 +2,15 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Inquisition.Data.Models;
-using Inquisition.Database;
-using Inquisition.Handlers;
-
 using System;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Modules
+namespace TheKrystalShip.Inquisition.Modules
 {
     public class MemeModule : ModuleBase<SocketCommandContext>
     {

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Services
+namespace TheKrystalShip.Inquisition.Services
 {
     public class AudioService : Service
     {

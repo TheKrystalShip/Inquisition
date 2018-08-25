@@ -1,11 +1,10 @@
-﻿using Inquisition.Services;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Services;
 using TheKrystalShip.Logging;
 
-namespace Inquisition.Handlers
+namespace TheKrystalShip.Inquisition.Handlers
 {
     public class ServiceHandler
 	{

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Inquisition.Database.Models
+namespace TheKrystalShip.Inquisition.Database.Models
 {
 	public class Joke
 	{
