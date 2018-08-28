@@ -19,14 +19,11 @@ namespace TheKrystalShip.Inquisition.Modules
     [RequireUserPermission(GuildPermission.Administrator)]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
-		private readonly DatabaseContext _dbContext;
+        private readonly DatabaseContext _dbContext;
         private readonly ReportHandler _reportHandler;
         private readonly ILogger<AdminModule> _logger;
 
-        public AdminModule(
-            DatabaseContext dbContext,
-            ReportHandler reportHandler,
-            ILogger<AdminModule> logger)
+        public AdminModule(DatabaseContext dbContext, ReportHandler reportHandler, ILogger<AdminModule> logger)
         {
             _dbContext = dbContext;
             _reportHandler = reportHandler;
@@ -76,7 +73,7 @@ namespace TheKrystalShip.Inquisition.Modules
         }
 
         [Command("wipe")]
-		[Alias("wipe last", "wipe the last")]
+        [Alias("wipe last", "wipe the last")]
         [Summary("[Admin] Wipes X number of messages from a text channel")]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
         {
@@ -106,69 +103,69 @@ namespace TheKrystalShip.Inquisition.Modules
         [Command("error")]
         public async Task RaiseErrorAsync()
         {
-			try
-			{
-				try
-				{
-					var num = int.Parse("abc");
-				}
-				catch (Exception inner)
-				{
-					try
-					{
-						var openLog = File.Open("DoesNotExist", FileMode.Open);
-					}
-					catch (Exception inner2)
-					{
-						throw new FileNotFoundException(inner2.Message, inner);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				await ReplyAsync("", false, EmbedHandler.Create(e).Build());
-				_reportHandler.ReportAsync(Context, e);
+            try
+            {
+                try
+                {
+                    var num = int.Parse("abc");
+                }
+                catch (Exception inner)
+                {
+                    try
+                    {
+                        var openLog = File.Open("DoesNotExist", FileMode.Open);
+                    }
+                    catch (Exception inner2)
+                    {
+                        throw new FileNotFoundException(inner2.Message, inner);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync("", false, EmbedHandler.Create(e).Build());
+                _reportHandler.ReportAsync(Context, e);
                 _logger.LogError(e);
-			}
+            }
         }
 
-		[Command("hello there")]
-		public async Task TestCommandAsync()
-		{
+        [Command("hello there")]
+        public async Task TestCommandAsync()
+        {
             //User me = _repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
             await ReplyAsync($"General ⚔️⚔️");
-		}
+        }
 
-		[Command("restart")]
-		[Alias("reboot")]
-		public async Task RebootAsync()
-		{
-			await ReplyAsync("Rebooting...");
+        [Command("restart")]
+        [Alias("reboot")]
+        public async Task RebootAsync()
+        {
+            await ReplyAsync("Rebooting...");
 
-			Process.Start(new ProcessStartInfo()
-                {
-                    FileName = "dotnet",
-                    Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
-                    WindowStyle = ProcessWindowStyle.Normal,
-                    CreateNoWindow = false
-                }
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "dotnet",
+                Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
+                WindowStyle = ProcessWindowStyle.Normal,
+                CreateNoWindow = false
+            }
             );
 
-			Environment.Exit(0);
-		}
+            Environment.Exit(0);
+        }
 
-		[Command("shutdown")]
-		[Alias("quit")]
-		public async Task Shutdown()
-		{
-			await ReplyAsync("Shutting down...");
-			Environment.Exit(0);
-		}
-	}
+        [Command("shutdown")]
+        [Alias("quit")]
+        public async Task Shutdown()
+        {
+            await ReplyAsync("Shutting down...");
+            Environment.Exit(0);
+        }
+    }
 
-	[Group("stop")]
-	public class StopAdminModule : ModuleBase<SocketCommandContext>
-	{
+    [Group("stop")]
+    public class StopAdminModule : ModuleBase<SocketCommandContext>
+    {
         private readonly ServiceHandler _serviceHandler;
         private readonly ILogger<AdminModule> _logger;
 
@@ -178,19 +175,19 @@ namespace TheKrystalShip.Inquisition.Modules
             _logger = logger;
         }
 
-		[Command("loops")]
-		[Alias("all loops")]
-		public async Task StopAllLoopsAsync()
-		{
-			_serviceHandler.StopAllLoops();
-			await ReplyAsync("All loops stopped");
+        [Command("loops")]
+        [Alias("all loops")]
+        public async Task StopAllLoopsAsync()
+        {
+            _serviceHandler.StopAllLoops();
+            await ReplyAsync("All loops stopped");
             _logger.LogInformation("Stopped all loops");
-		}
-	}
+        }
+    }
 
-	[Group("start")]
-	public class StartAdminModule : ModuleBase<SocketCommandContext>
-	{
+    [Group("start")]
+    public class StartAdminModule : ModuleBase<SocketCommandContext>
+    {
         private readonly ServiceHandler _serviceHandler;
 
         public StartAdminModule(ServiceHandler serviceHandler)
@@ -198,12 +195,12 @@ namespace TheKrystalShip.Inquisition.Modules
             _serviceHandler = serviceHandler;
         }
 
-		[Command("loops")]
-		[Alias("all loops")]
-		public async Task StartAllLoopsAsync()
-		{
-			_serviceHandler.StartAllLoops();
-			await ReplyAsync("All loops started");
-		}
-	}
+        [Command("loops")]
+        [Alias("all loops")]
+        public async Task StartAllLoopsAsync()
+        {
+            _serviceHandler.StartAllLoops();
+            await ReplyAsync("All loops started");
+        }
+    }
 }

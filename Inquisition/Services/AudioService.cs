@@ -94,7 +94,8 @@ namespace TheKrystalShip.Inquisition.Services
 
         public Process YTDownload(string path)
         {
-            return Process.Start(new ProcessStartInfo {
+            return Process.Start(new ProcessStartInfo
+            {
                 FileName = "youtube-dl.exe",
                 Arguments = $"-i -x --no-playlist --max-filesize 100m --write-thumbnail " +
                 $"-o \"Data/Music/%(title)s.mp3\" \"ytsearch:{path}\""

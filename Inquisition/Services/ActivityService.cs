@@ -11,35 +11,36 @@ namespace TheKrystalShip.Inquisition.Services
 {
     public class ActivityService : Service
     {
+        private readonly DatabaseContext _dbContext;
         private readonly ILogger<ActivityService> _logger;
 
-        public ActivityService(ILogger<ActivityService> logger)
+        public ActivityService(DatabaseContext dbContext, ILogger<ActivityService> logger)
         {
+            _dbContext = dbContext;
             _logger = logger;
         }
 
-		public override void Init(int startDelay = 0, int interval = 1000)
-		{
-			base.Init(startDelay, interval);
-		}
+        public override void Init(int startDelay = 0, int interval = 1000)
+        {
+            base.Init(startDelay, interval);
+        }
 
-		public override void Loop(object state)
-		{
-			base.Loop(state);
-		}
+        public override void Loop(object state)
+        {
+            base.Loop(state);
+        }
 
-		public override void Dispose()
-		{
-			base.Dispose();
-		}
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
 
-		public List<Activity> GetActivityList()
-		{
-			DatabaseContext db = new DatabaseContext();
-			return db.Activities
-				.Include(x => x.Guild)
-				.Include(x => x.User)
-				.ToList() ?? new List<Activity>();
-		}
-	}
+        public List<Activity> GetActivityList()
+        {
+            return _dbContext.Activities
+                .Include(x => x.Guild)
+                .Include(x => x.User)
+                .ToList() ?? new List<Activity>();
+        }
+    }
 }

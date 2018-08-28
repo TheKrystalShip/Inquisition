@@ -3,14 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <StartupObject></StartupObject>
     <ApplicationIcon></ApplicationIcon>
     <Platforms>AnyCPU</Platforms>
-    <AssemblyName>Inquisition</AssemblyName>
+    <AssemblyName>TheKrystalShip.Inquisition</AssemblyName>
     <RootNamespace>TheKrystalShip.Inquisition</RootNamespace>
-    <Authors>Cristian Moraru</Authors>
-    <Company />
-    <Product />
+    <Authors>Heisenberg</Authors>
+    <Company>TheKrystalShip</Company>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 

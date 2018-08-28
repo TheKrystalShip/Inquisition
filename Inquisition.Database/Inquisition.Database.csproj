@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>AnyCPU</Platforms>
     <RootNamespace>TheKrystalShip.Inquisition.Database</RootNamespace>
   </PropertyGroup>
 

@@ -27,7 +27,7 @@ namespace TheKrystalShip.Inquisition.Handlers
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<CommandHandler> _logger;
 
-		public CommandHandler(ref DiscordSocketClient client)
+        public CommandHandler(ref DiscordSocketClient client)
         {
             _client = client;
 
@@ -73,19 +73,19 @@ namespace TheKrystalShip.Inquisition.Handlers
 
         private async Task HandleCommands(SocketMessage msg)
         {
-			SocketUserMessage message = msg as SocketUserMessage;
+            SocketUserMessage message = msg as SocketUserMessage;
 
             if (message is null || message.Author.IsBot)
                 return;
 
-			//string prefix = GetGuildPrefix(message) ?? Configuration.Get("Bot", "DefaultPrefix");
-			int argPos = 0;
+            //string prefix = GetGuildPrefix(message) ?? Configuration.Get("Bot", "DefaultPrefix");
+            int argPos = 0;
 
-			bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);
-			//bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
+            bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);
+            //bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
 
-			if (!messageHasMention)
-				return;
+            if (!messageHasMention)
+                return;
 
             SocketCommandContext context = new SocketCommandContext(_client, message);
             IResult result = await _commandService.ExecuteAsync(context, argPos, _serviceProvider);
@@ -97,14 +97,14 @@ namespace TheKrystalShip.Inquisition.Handlers
             }
         }
 
-		private string GetGuildPrefix(SocketUserMessage message)
-		{
+        private string GetGuildPrefix(SocketUserMessage message)
+        {
             SocketGuildChannel guildChannel = message.Channel as SocketGuildChannel;
-			string socketGuildId = guildChannel?.Guild.Id.ToString();
+            string socketGuildId = guildChannel?.Guild.Id.ToString();
 
             PrefixHandler prefixHandler = _serviceProvider.GetService<PrefixHandler>();
 
-			return prefixHandler.GetPrefix(socketGuildId);
-		}
-	}
+            return prefixHandler.GetPrefix(socketGuildId);
+        }
+    }
 }

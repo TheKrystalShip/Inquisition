@@ -1,15 +1,15 @@
 ﻿namespace TheKrystalShip.Inquisition.Data.Models
 {
     public enum Result
-	{
-		Failed,
-		Successful,
-		Exists,
-		DoesNotExist,
+    {
+        Failed,
+        Successful,
+        Exists,
+        DoesNotExist,
         AlreadyExists,
-		AlreadyRunning,
-		Offline,
-		Online,
-		GenericError
-	}
+        AlreadyRunning,
+        Offline,
+        Online,
+        GenericError
+    }
 }

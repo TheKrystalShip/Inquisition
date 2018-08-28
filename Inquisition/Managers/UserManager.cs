@@ -87,9 +87,9 @@ namespace TheKrystalShip.Inquisition.Managers
             });
         }
 
-		public bool AddUser(SocketGuildUser socketGuildUser)
-		{
-			string socketUserId = socketGuildUser.Id.ToString();
+        public bool AddUser(SocketGuildUser socketGuildUser)
+        {
+            string socketUserId = socketGuildUser.Id.ToString();
 
             if (_dbContext.Users.Any(x => x.Id == socketUserId))
                 return false;
@@ -115,59 +115,59 @@ namespace TheKrystalShip.Inquisition.Managers
             return true;
         }
 
-		public void RemoveUser(SocketGuildUser user)
-		{
-			string userId = user.Id.ToString();
-			if (_dbContext.Users.Any(x => x.Id == userId))
-			{
-				User toRemove = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
-				_dbContext.Users.Remove(toRemove);
-				_dbContext.SaveChanges();
-			}
-		}
+        public void RemoveUser(SocketGuildUser user)
+        {
+            string userId = user.Id.ToString();
+            if (_dbContext.Users.Any(x => x.Id == userId))
+            {
+                User toRemove = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
+                _dbContext.Users.Remove(toRemove);
+                _dbContext.SaveChanges();
+            }
+        }
 
-		private Guild ToGuild(SocketGuild socketGuild)
-		{
-			string socketGuildId = socketGuild.Id.ToString();
-			return _dbContext.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
-				new Guild
-				{
-					Name = socketGuild.Name,
-					IconUrl = socketGuild.IconUrl,
-					Id = socketGuild.Id.ToString(),
-					MemberCount = socketGuild.MemberCount
-				};
-		}
+        private Guild ToGuild(SocketGuild socketGuild)
+        {
+            string socketGuildId = socketGuild.Id.ToString();
+            return _dbContext.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
+                new Guild
+                {
+                    Name = socketGuild.Name,
+                    IconUrl = socketGuild.IconUrl,
+                    Id = socketGuild.Id.ToString(),
+                    MemberCount = socketGuild.MemberCount
+                };
+        }
 
-        public Task UserBanned(SocketUser user, SocketGuild guild)
+        public Task UserBannedAsync(SocketUser user, SocketGuild guild)
         {
             _logger.LogInformation($"User banned: {user.Username} in {guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task UserJoined(SocketGuildUser user)
+        public Task UserJoinedAsync(SocketGuildUser user)
         {
             _logger.LogInformation($"User joined: {user.Username} in {user.Guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task UserLeft(SocketGuildUser user)
+        public Task UserLeftAsync(SocketGuildUser user)
         {
             _logger.LogInformation($"User left: {user.Username} in {user.Guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task UserUnbanned(SocketUser user, SocketGuild guild)
+        public Task UserUnbannedAsync(SocketUser user, SocketGuild guild)
         {
             _logger.LogInformation($"User unbanned: {user.Username} in {guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task UserUpdated(SocketUser before, SocketUser after)
+        public Task UserUpdatedAsync(SocketUser before, SocketUser after)
         {
             SocketGuildUser guildUser = before as SocketGuildUser;
             _logger.LogInformation($"User updated: {guildUser.Username} in {guildUser.Guild.Name}");
             return Task.CompletedTask;
         }
-	}
+    }
 }

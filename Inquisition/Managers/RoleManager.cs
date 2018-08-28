@@ -15,13 +15,13 @@ namespace TheKrystalShip.Inquisition.Managers
             _logger = logger;
         }
 
-        public Task RoleCreated(SocketRole role)
+        public Task RoleCreatedAsync(SocketRole role)
         {
             _logger.LogInformation($"Role created: {role.Name} in {role.Guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task RoleDeleted(SocketRole role)
+        public Task RoleDeletedAsync(SocketRole role)
         {
             _logger.LogInformation($"Role deleted: {role.Name} in {role.Guild.Name}");
             return Task.CompletedTask;

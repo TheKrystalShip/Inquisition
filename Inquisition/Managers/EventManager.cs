@@ -16,15 +16,9 @@ namespace TheKrystalShip.Inquisition.Managers
         private readonly GuildManager _guildManager;
         private readonly ILogger<EventManager> _logger;
 
-		public EventManager(
-            DiscordSocketClient client,
-            UserManager conversionHandler,
-            RoleManager roleManager,
-            ChannelManager channelManager,
-            GuildManager guildManager,
-            ILogger<EventManager> logger)
-		{
-			_client = client;
+        public EventManager(DiscordSocketClient client, UserManager conversionHandler, RoleManager roleManager, ChannelManager channelManager, GuildManager guildManager, ILogger<EventManager> logger)
+        {
+            _client = client;
             _userManager = conversionHandler;
             _roleManager = roleManager;
             _channelManager = channelManager;
@@ -33,39 +27,39 @@ namespace TheKrystalShip.Inquisition.Managers
 
             _client.Log += Log;
 
-			SubscribeToEvents();
-		}
+            SubscribeToEvents();
+        }
 
         private Task Log(LogMessage logMessage)
         {
-			if (!logMessage.Message.Contains("OpCode"))
-			{
+            if (!logMessage.Message.Contains("OpCode"))
+            {
                 _logger.LogInformation(GetType().FullName + $" ({logMessage.Source})", logMessage.Message);
-			}
+            }
 
-			return Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
-		private void SubscribeToEvents()
-		{
-			_client.ChannelCreated += (channel) => _channelManager.ChannelCreated(channel);
-			_client.ChannelDestroyed += (channel) => _channelManager.ChannelDestroyed(channel);
-			_client.ChannelUpdated += (before, after) => _channelManager.ChannelUpdated(before, after);
+        private void SubscribeToEvents()
+        {
+            _client.ChannelCreated += async (channel) => await _channelManager.ChannelCreatedAsync(channel).ConfigureAwait(false);
+            _client.ChannelDestroyed += async (channel) => await _channelManager.ChannelDestroyedAsync(channel).ConfigureAwait(false);
+            _client.ChannelUpdated += async (before, after) => await _channelManager.ChannelUpdatedAsync(before, after).ConfigureAwait(false);
 
-			_client.GuildMemberUpdated += (before, after) => _guildManager.GuildMemberUpdated(before, after);
-			_client.GuildUpdated += (before, after) => _guildManager.GuildUpdated(before, after);
+            _client.GuildMemberUpdated += async (before, after) => await _guildManager.GuildMemberUpdatedAsync(before, after).ConfigureAwait(false);
+            _client.GuildUpdated += async (before, after) => await _guildManager.GuildUpdatedAsync(before, after).ConfigureAwait(false);
 
-			_client.RoleCreated += (role) => _roleManager.RoleCreated(role);
-			_client.RoleDeleted += (role) => _roleManager.RoleDeleted(role);
-			_client.RoleUpdated += (before, after) => _roleManager.RoleUpdated(before, after);
+            _client.RoleCreated += async (role) => await _roleManager.RoleCreatedAsync(role).ConfigureAwait(false);
+            _client.RoleDeleted += async (role) => await _roleManager.RoleDeletedAsync(role).ConfigureAwait(false);
+            _client.RoleUpdated += async (before, after) => await _roleManager.RoleUpdated(before, after).ConfigureAwait(false);
 
-            _client.Ready += () => _userManager.RegisterGuildUsersAsync();
-            _client.JoinedGuild += (guild) => _userManager.RegisterNewGuildUsersAsync(guild);
-			_client.UserBanned += (user, guild) => _userManager.UserBanned(user, guild);
-			_client.UserJoined += (user) => _userManager.UserJoined(user);
-			_client.UserLeft += (user) => _userManager.UserLeft(user);
-			_client.UserUnbanned += (user, guild) => _userManager.UserUnbanned(user, guild);
-			_client.UserUpdated += (before, after) => _userManager.UserUpdated(before, after);
-		}
-	}
+            _client.Ready += async () => await _userManager.RegisterGuildUsersAsync().ConfigureAwait(false);
+            _client.JoinedGuild += async (guild) => await _userManager.RegisterNewGuildUsersAsync(guild).ConfigureAwait(false);
+            _client.UserBanned += async (user, guild) => await _userManager.UserBannedAsync(user, guild).ConfigureAwait(false);
+            _client.UserJoined += async (user) => await _userManager.UserJoinedAsync(user).ConfigureAwait(false);
+            _client.UserLeft += async (user) => await _userManager.UserLeftAsync(user).ConfigureAwait(false);
+            _client.UserUnbanned += async (user, guild) => await _userManager.UserUnbannedAsync(user, guild).ConfigureAwait(false);
+            _client.UserUpdated += async (before, after) => await _userManager.UserUpdatedAsync(before, after).ConfigureAwait(false);
+        }
+    }
 }

@@ -16,10 +16,7 @@ namespace TheKrystalShip.Inquisition.Modules
         private readonly ReportHandler _reportHandler;
         private readonly ILogger<HelpModule> _logger;
 
-        public HelpModule(
-            CommandService commandService,
-            ReportHandler reportHandler,
-            ILogger<HelpModule> logger)
+        public HelpModule(CommandService commandService, ReportHandler reportHandler, ILogger<HelpModule> logger)
         {
             _commandService = commandService;
             _reportHandler = reportHandler;

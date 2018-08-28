@@ -15,21 +15,21 @@ namespace TheKrystalShip.Inquisition.Managers
             _logger = logger;
         }
 
-        public Task ChannelCreated(SocketChannel socketChannel)
+        public Task ChannelCreatedAsync(SocketChannel socketChannel)
         {
             SocketGuildChannel channel = socketChannel as SocketGuildChannel;
             _logger.LogInformation($"Channel created: {channel.Name} in {channel.Guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task ChannelDestroyed(SocketChannel socketChannel)
+        public Task ChannelDestroyedAsync(SocketChannel socketChannel)
         {
             SocketGuildChannel channel = socketChannel as SocketGuildChannel;
             _logger.LogInformation($"Channel destroyed: {channel.Name} in {channel.Guild.Name}");
             return Task.CompletedTask;
         }
 
-        public Task ChannelUpdated(SocketChannel beforeSocketChannel, SocketChannel afterSocketChannel)
+        public Task ChannelUpdatedAsync(SocketChannel beforeSocketChannel, SocketChannel afterSocketChannel)
         {
             SocketGuildChannel before = beforeSocketChannel as SocketGuildChannel;
             SocketGuildChannel after = afterSocketChannel as SocketGuildChannel;

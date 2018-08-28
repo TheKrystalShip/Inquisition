@@ -9,7 +9,7 @@ namespace TheKrystalShip.Inquisition
         private static Bot _inquisition;
 
         public static async Task Main(string[] args)
-		{
+        {
             await (_inquisition = new Bot())
                 .InitAsync()
                 .DelayIndefinetly();
