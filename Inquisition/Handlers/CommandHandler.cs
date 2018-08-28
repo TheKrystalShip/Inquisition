@@ -10,10 +10,10 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Configuration;
 using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Managers;
-using TheKrystalShip.Inquisition.Properties;
 using TheKrystalShip.Logging;
 using TheKrystalShip.Logging.Extensions;
 

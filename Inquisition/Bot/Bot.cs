@@ -3,9 +3,9 @@ using Discord.WebSocket;
 
 using System.Threading.Tasks;
 
+using TheKrystalShip.Configuration;
 using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Handlers;
-using TheKrystalShip.Inquisition.Properties;
 
 namespace TheKrystalShip.Inquisition
 {
