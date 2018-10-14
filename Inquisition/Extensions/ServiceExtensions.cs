@@ -10,31 +10,38 @@ namespace TheKrystalShip.Inquisition.Extensions
     {
         public static IServiceCollection AddHandlers(this IServiceCollection services)
         {
-            services.AddSingleton<EmbedHandler>()
-                .AddSingleton<PrefixHandler>()
-                .AddSingleton<ReportHandler>()
-                .AddSingleton<ServiceHandler>();
+            services.AddSingleton<PrefixHandler>();
+            services.AddSingleton<ReportHandler>();
+            services.AddSingleton<ServiceHandler>();
 
             return services;
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddSingleton<ActivityService>()
-                .AddSingleton<AudioService>()
-                .AddSingleton<GameService>()
-                .AddSingleton<ReminderService>();
+            services.AddSingleton<ActivityService>();
+            services.AddSingleton<AudioService>();
+            services.AddSingleton<GameService>();
+            services.AddSingleton<ReminderService>();
 
             return services;
         }
 
         public static IServiceCollection AddManagers(this IServiceCollection services)
         {
-            services.AddSingleton<ChannelManager>()
-                .AddSingleton<EventManager>()
-                .AddSingleton<GuildManager>()
-                .AddSingleton<RoleManager>()
-                .AddSingleton<UserManager>();
+            services.AddSingleton<ChannelManager>();
+            services.AddSingleton<EventManager>();
+            services.AddSingleton<GuildManager>();
+            services.AddSingleton<RoleManager>();
+            services.AddSingleton<UserManager>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddTools(this IServiceCollection services)
+        {
+            services.AddSingleton<Tools>();
+            services.AddSingleton<Benchmark>();
 
             return services;
         }

@@ -7,13 +7,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Data.Models;
-using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Services
 {
-    public class GameService : Service
+    public class GameService
     {
         private readonly ConcurrentDictionary<string, Process> _runningServers;
         private readonly string _path = $"";

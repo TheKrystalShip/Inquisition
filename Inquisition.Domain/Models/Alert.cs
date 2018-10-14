@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TheKrystalShip.Inquisition.Database.Models
+namespace TheKrystalShip.Inquisition.Domain
 {
     public class Alert
     {

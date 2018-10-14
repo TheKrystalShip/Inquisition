@@ -1,57 +1,48 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Handlers;
-using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Modules
 {
-    public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : Module
     {
         private readonly CommandService _commandService;
-        private readonly ReportHandler _reportHandler;
-        private readonly ILogger<HelpModule> _logger;
 
-        public HelpModule(CommandService commandService, ReportHandler reportHandler, ILogger<HelpModule> logger)
+        public HelpModule(CommandService commandService, Tools tools) : base(tools)
         {
             _commandService = commandService;
-            _reportHandler = reportHandler;
-            _logger = logger;
         }
 
         [Command("help")]
         [Summary("List of all available commands.")]
         public async Task Help()
         {
-            try
+            EmbedBuilder embed = new EmbedBuilder()
+                .Create(Context.User);
+
+            embed.Title = "Inquisition Help:";
+
+            foreach (CommandInfo c in _commandService.Commands)
             {
-                EmbedBuilder embed = EmbedHandler.Create(Context.User);
+                string str = "";
 
-                embed.Title = "Inquisition Help:";
-
-                foreach (CommandInfo c in _commandService.Commands)
+                foreach (string a in c.Aliases.Skip(1))
                 {
-                    string str = "";
-                    foreach (string a in c.Aliases.Skip(1))
+                    if (a != null)
                     {
-                        if (a != null)
-                        {
-                            str += a + " | ";
-                        }
+                        str += a + " | ";
                     }
-                    embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
                 }
-                await Context.User.SendMessageAsync(ReplyHandler.Generic, false, embed.Build());
+
+                embed.AddField(c.Module.Aliases.FirstOrDefault() + " " + c.Name, $"Aliases: {str}\n\n{c.Summary ?? "No specific description"}");
             }
-            catch (Exception e)
-            {
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
+
+            await Context.User.SendMessageAsync(ReplyHandler.Generic, false, embed.Build());
         }
     }
 }

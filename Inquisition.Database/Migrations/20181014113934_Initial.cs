@@ -31,7 +31,7 @@ namespace TheKrystalShip.Inquisition.Database.Migrations
                     Name = table.Column<string>(maxLength: 100, nullable: true),
                     IconUrl = table.Column<string>(nullable: true),
                     MemberCount = table.Column<int>(nullable: false),
-                    AuditChannelId = table.Column<string>(nullable: true),
+                    AuditChannelId = table.Column<string>(nullable: false),
                     Prefix = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -43,7 +43,7 @@ namespace TheKrystalShip.Inquisition.Database.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(maxLength: 20, nullable: false),
+                    Id = table.Column<string>(nullable: false),
                     Username = table.Column<string>(maxLength: 50, nullable: true),
                     Discriminator = table.Column<string>(maxLength: 10, nullable: true),
                     AvatarUrl = table.Column<string>(nullable: true),
@@ -117,7 +117,7 @@ namespace TheKrystalShip.Inquisition.Database.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Url = table.Column<string>(nullable: true),
-                    MessageId = table.Column<string>(nullable: true),
+                    MessageId = table.Column<ulong>(nullable: false),
                     ExpireDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },

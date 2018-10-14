@@ -7,6 +7,7 @@ using Inquisition.Reporting;
 using System;
 
 using TheKrystalShip.Inquisition.Data.Models;
+using TheKrystalShip.Inquisition.Extensions;
 
 namespace TheKrystalShip.Inquisition.Handlers
 {
@@ -17,14 +18,14 @@ namespace TheKrystalShip.Inquisition.Handlers
         // CommandService.ExecuteAsync errors
         public async void ReportAsync(string errorReason, SocketUserMessage message)
         {
-            EmbedBuilder embed = EmbedHandler
+            EmbedBuilder embed = new EmbedBuilder()
                 .Create()
                 .WithColor(Color.DarkRed);
 
             embed.WithTitle("Error ocurred");
             embed.WithDescription(errorReason);
 
-            await message.Channel.SendMessageAsync("Oops...", false, embed.Build());
+            await message.Channel.SendMessageAsync("Oops...", false, embed.Build()).ConfigureAwait(false);
         }
 
         // Non-Guild related
@@ -33,12 +34,16 @@ namespace TheKrystalShip.Inquisition.Handlers
             Report report = new Report
             {
                 ErrorMessage = e.Message,
-                StackTrace = e.StackTrace.Replace("<", "").Replace(">", "").Replace("&", "").Trim()
+                StackTrace = e.StackTrace
+                    .Replace("<", string.Empty)
+                    .Replace(">", string.Empty)
+                    .Replace("&", string.Empty)
+                    .Trim()
             };
 
             CatchInnerReports(ref report, e);
 
-            await _reporter.ReportAsync(report);
+            await _reporter.ReportAsync(report).ConfigureAwait(false);
         }
 
         // Guild related
@@ -58,7 +63,7 @@ namespace TheKrystalShip.Inquisition.Handlers
 
             CatchInnerReports(ref report, e);
 
-            await _reporter.ReportAsync(report);
+            await _reporter.ReportAsync(report).ConfigureAwait(false);
         }
 
         private void CatchInnerReports(ref Report report, Exception e)

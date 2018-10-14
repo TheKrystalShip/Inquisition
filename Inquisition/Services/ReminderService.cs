@@ -1,67 +1,65 @@
 ﻿using Discord;
-using Discord.WebSocket;
 
 using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
-using TheKrystalShip.Inquisition.Database;
-using TheKrystalShip.Inquisition.Database.Models;
-using TheKrystalShip.Logging;
+using TheKrystalShip.Inquisition.Domain;
 
 namespace TheKrystalShip.Inquisition.Services
 {
     public class ReminderService : Service
     {
-        private readonly DiscordSocketClient _client;
-        private readonly DatabaseContext _dbContext;
-        private readonly ILogger<ReminderService> _logger;
+        public override Timer Timer { get; protected set; }
+        public override event Action<Service> Start;
+        public override event Action<Service> Stop;
+        public override event Action<Service> Tick;
 
-        public ReminderService(DiscordSocketClient client, DatabaseContext dbContext, ILogger<ReminderService> logger)
+        public ReminderService(Tools tools) : base(tools)
         {
-            _client = client;
-            _dbContext = dbContext;
-            _logger = logger;
+            
         }
 
         public override void Init(int startDelay = 0, int interval = 1000)
         {
-            base.Init(startDelay, interval);
+            Timer = new Timer(Loop, null, startDelay, interval);
+            Start?.Invoke(this);
         }
 
-        public override void Loop(object state)
+        protected override void Loop(object state)
         {
-            base.Loop(state);
-            List<Reminder> RemindersList = GetReminderList(10);
+            List<Reminder> reminderList = GetReminderList(10);
 
-            foreach (Reminder r in RemindersList)
+            foreach (Reminder reminder in reminderList)
             {
-                _client.GetUser(Convert.ToUInt64(r.User.Id)).SendMessageAsync($"Reminder: {r.Message}");
+                Tools.Client.GetUser(reminder.User.Id).SendMessageAsync($"Reminder: {reminder.Message}");
             }
 
-            RemoveReminderList(RemindersList);
+            RemoveReminderList(reminderList);
+            Tick?.Invoke(this);
         }
 
         public override void Dispose()
         {
-            base.Dispose();
+            Stop?.Invoke(this);
         }
 
         private List<Reminder> GetReminderList(int amount)
         {
-            return _dbContext.Reminders
+            return Tools.Database.Reminders
                 .Where(x => x.DueDate <= DateTimeOffset.UtcNow)
                 .Include(x => x.User)
                 .Take(amount)
                 .ToList() ?? new List<Reminder>();
         }
 
-        private void RemoveReminderList(List<Reminder> r)
+        private void RemoveReminderList(List<Reminder> reminderList)
         {
-            _dbContext.Reminders.RemoveRange(r);
-            _dbContext.SaveChanges();
+            Tools.Database.Reminders.RemoveRange(reminderList);
+            Tools.Database.SaveChanges();
         }
     }
 }

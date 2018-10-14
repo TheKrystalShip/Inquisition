@@ -2,49 +2,35 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-using System;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Inquisition.Services;
-using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Modules
 {
-    public class AudioModule : ModuleBase<SocketCommandContext>
+    public class AudioModule : Module
     {
         private readonly AudioService _audioService;
-        private readonly ReportHandler _reportHandler;
-        private readonly ILogger<AudioService> _logger;
 
-        public AudioModule(AudioService audioService, ReportHandler reportHandler, ILogger<AudioService> logger)
+        public AudioModule(AudioService audioService, Tools tools) : base(tools)
         {
             _audioService = audioService;
-            _reportHandler = reportHandler;
-            _logger = logger;
         }
 
         [Command("join")]
         [Summary("Joines the channel of the User or the one passed as an argument")]
         public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            try
-            {
-                SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser).VoiceChannel;
+            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
 
-                if (voiceChannel is null)
-                {
-                    await ReplyAsync(ReplyHandler.Error.NotInVoiceChannel);
-                    return;
-                }
-
-                await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
-            }
-            catch (Exception e)
+            if (voiceChannel is null)
             {
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
+                await ReplyAsync(ReplyHandler.Error.NotInVoiceChannel);
+                return;
             }
+
+            await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
         }
 
         [Command("leave")]
@@ -52,43 +38,27 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("Kick the bot from the voice channel")]
         public async Task LeaveChannel(IVoiceChannel channel = null)
         {
-            try
-            {
-                await _audioService.LeaveChannel(Context);
-            }
-            catch (Exception e)
-            {
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
+            await _audioService.LeaveChannel(Context);
         }
 
         [Command("play")]
         [Summary("Request a song to be played")]
         public async Task PlayCmd([Remainder] string song)
         {
-            try
+            SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
+
+            if (voiceChannel is null)
             {
-                SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
-
-                if (voiceChannel is null)
-                {
-                    await ReplyAsync(ReplyHandler.Error.NotInVoiceChannel);
-                    return;
-                }
-
-                if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
-                {
-                    await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
-                }
-
-                await _audioService.SendAudioAsync(Context.Guild, Context.Channel, song);
+                await ReplyAsync(ReplyHandler.Error.NotInVoiceChannel);
+                return;
             }
-            catch (Exception e)
+
+            if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
             {
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
+                await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
             }
+
+            await _audioService.SendAudioAsync(Context.Guild, Context.Channel, song);
         }
     }
 }

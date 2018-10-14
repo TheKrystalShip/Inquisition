@@ -7,40 +7,35 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Database;
-using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Domain;
+using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Handlers;
-using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Modules
 {
-    public class ActivityModule : ModuleBase<SocketCommandContext>
+    public class ActivityModule : Module
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly ILogger<ActivityModule> _logger;
-
-        public ActivityModule(DatabaseContext dbContext, ILogger<ActivityModule> logger)
+        public ActivityModule(Tools tools) : base(tools)
         {
-            _dbContext = dbContext;
-            _logger = logger;
+
         }
 
         [Command("activities")]
         [Alias("tasks")]
         public async Task ShowActivitiesAsync()
         {
-            string contextUserId = Context.User.Id.ToString();
-            User user = _dbContext.Users.FirstOrDefault(x => x.Id == contextUserId);
+            List<Domain.Activity> ActivityList = Database.Activities
+                .Where(x => x.User.Id == User.Id)
+                .ToList();
 
-            List<Database.Models.Activity> ActivityList = _dbContext.Activities.Where(x => x.User == user).ToList();
-
-            if (ActivityList.Count == 0)
+            if (ActivityList.Count is 0)
             {
                 await ReplyAsync(ReplyHandler.Error.NoContentGeneric);
                 return;
             }
 
-            EmbedBuilder embed = EmbedHandler.Create(ActivityList);
+            EmbedBuilder embed = new EmbedBuilder()
+                .Create(ActivityList);
 
             await ReplyAsync(ReplyHandler.Generic, false, embed.Build());
         }
@@ -49,10 +44,12 @@ namespace TheKrystalShip.Inquisition.Modules
     [Group("add activity")]
     [Alias("schedule")]
     [RequireUserPermission(GuildPermission.Administrator)]
-    public class ScheduleActivityModule : ModuleBase<SocketCommandContext>
+    public class ScheduleActivityModule : Module
     {
-        private DatabaseContext db;
-        public ScheduleActivityModule(DatabaseContext dbHandler) => db = dbHandler;
+        public ScheduleActivityModule(Tools tools) : base(tools)
+        {
+
+        }
 
         [Command("shutdown")]
         [Alias("shutdown in")]
@@ -77,23 +74,17 @@ namespace TheKrystalShip.Inquisition.Modules
 
         private void ScheduleActivity(string Args, int time)
         {
-            string contextUserId = Context.User.Id.ToString();
-            string contextGuildId = Context.Guild.Id.ToString();
-            User user = db.Users.FirstOrDefault(x => x.Id == contextUserId);
-            Guild guild = db.Guilds.FirstOrDefault(x => x.Id == contextGuildId);
-
-            Database.Models.Activity activity = new Database.Models.Activity
+            Domain.Activity activity = new Domain.Activity
             {
                 Name = "shutdown",
                 Arguments = Args,
                 ScheduledTime = DateTime.Now,
                 DueTime = DateTime.Now.AddSeconds(time),
-                User = user,
-                Guild = guild
+                User = User,
+                Guild = Guild
             };
 
-            db.Activities.Add(activity);
-            db.SaveChanges();
+            Database.Activities.Add(activity);
         }
     }
 }

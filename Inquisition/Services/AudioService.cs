@@ -13,7 +13,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Services
 {
-    public class AudioService : Service
+    public class AudioService
     {
         private readonly ConcurrentDictionary<ulong, IAudioClient> _audioClients;
         private readonly ILogger<AudioService> _logger;
@@ -32,12 +32,12 @@ namespace TheKrystalShip.Inquisition.Services
 
         public async Task LeaveChannel(SocketCommandContext Context)
         {
-            if (_audioClients.TryGetValue(Context.Guild.Id, out IAudioClient aClient))
+            if (_audioClients.TryGetValue(Context.Guild.Id, out IAudioClient audioClient))
             {
                 try
                 {
-                    await aClient.StopAsync();
-                    _audioClients.TryRemove(Context.Guild.Id, out aClient);
+                    await audioClient.StopAsync();
+                    _audioClients.TryRemove(Context.Guild.Id, out audioClient);
                 }
                 catch (Exception e)
                 {

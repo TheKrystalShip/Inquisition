@@ -1,7 +1,7 @@
 ﻿using Discord.WebSocket;
 
 using TheKrystalShip.Inquisition.Data.Models;
-using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Domain;
 
 namespace TheKrystalShip.Inquisition.Handlers
 {

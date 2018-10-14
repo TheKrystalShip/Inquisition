@@ -5,18 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Database;
-using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Managers
 {
     public class UserManager
     {
-        private readonly DatabaseContext _dbContext;
+        private readonly SQLiteContext _dbContext;
         private readonly DiscordSocketClient _client;
         private readonly ILogger<UserManager> _logger;
 
-        public UserManager(DatabaseContext dbContext, DiscordSocketClient client, ILogger<UserManager> logger)
+        public UserManager(SQLiteContext dbContext, DiscordSocketClient client, ILogger<UserManager> logger)
         {
             _dbContext = dbContext;
             _client = client;
@@ -89,16 +89,14 @@ namespace TheKrystalShip.Inquisition.Managers
 
         public bool AddUser(SocketGuildUser socketGuildUser)
         {
-            string socketUserId = socketGuildUser.Id.ToString();
-
-            if (_dbContext.Users.Any(x => x.Id == socketUserId))
+            if (_dbContext.Users.Any(x => x.Id == socketGuildUser.Id))
                 return false;
 
             Guild guild = ToGuild(socketGuildUser.Guild);
             User user = new User
             {
                 Username = socketGuildUser.Username,
-                Id = socketUserId,
+                Id = socketGuildUser.Id,
                 AvatarUrl = socketGuildUser.GetAvatarUrl(),
                 Discriminator = socketGuildUser.Discriminator,
             };
@@ -117,10 +115,9 @@ namespace TheKrystalShip.Inquisition.Managers
 
         public void RemoveUser(SocketGuildUser user)
         {
-            string userId = user.Id.ToString();
-            if (_dbContext.Users.Any(x => x.Id == userId))
+            if (_dbContext.Users.Any(x => x.Id == user.Id))
             {
-                User toRemove = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
+                User toRemove = _dbContext.Users.FirstOrDefault(x => x.Id == user.Id);
                 _dbContext.Users.Remove(toRemove);
                 _dbContext.SaveChanges();
             }
@@ -128,13 +125,12 @@ namespace TheKrystalShip.Inquisition.Managers
 
         private Guild ToGuild(SocketGuild socketGuild)
         {
-            string socketGuildId = socketGuild.Id.ToString();
-            return _dbContext.Guilds.FirstOrDefault(x => x.Id == socketGuildId) ??
+            return _dbContext.Guilds.FirstOrDefault(x => x.Id == socketGuild.Id) ??
                 new Guild
                 {
                     Name = socketGuild.Name,
                     IconUrl = socketGuild.IconUrl,
-                    Id = socketGuild.Id.ToString(),
+                    Id = socketGuild.Id,
                     MemberCount = socketGuild.MemberCount
                 };
         }
@@ -166,6 +162,10 @@ namespace TheKrystalShip.Inquisition.Managers
         public Task UserUpdatedAsync(SocketUser before, SocketUser after)
         {
             SocketGuildUser guildUser = before as SocketGuildUser;
+
+            if (guildUser is null)
+                return Task.CompletedTask;
+
             _logger.LogInformation($"User updated: {guildUser.Username} in {guildUser.Guild.Name}");
             return Task.CompletedTask;
         }

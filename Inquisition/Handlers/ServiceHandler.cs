@@ -41,17 +41,17 @@ namespace TheKrystalShip.Inquisition.Handlers
             service.Stop += Service_Stop;
         }
 
-        private void Service_Start(IService service)
+        private void Service_Start(Service service)
         {
             _logger.LogInformation(service.GetType().Name, "Started");
         }
 
-        private void Service_Tick(IService service)
+        private void Service_Tick(Service service)
         {
             _logger.LogInformation(service.GetType().Name, "Ticked");
         }
 
-        private void Service_Stop(IService service)
+        private void Service_Stop(Service service)
         {
             _logger.LogInformation(service.GetType().Name, "Stopped");
         }

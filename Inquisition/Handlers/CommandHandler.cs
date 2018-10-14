@@ -3,17 +3,16 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Configuration;
 using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Managers;
+using TheKrystalShip.Inquisition.Properties;
 using TheKrystalShip.Logging;
 using TheKrystalShip.Logging.Extensions;
 
@@ -48,14 +47,14 @@ namespace TheKrystalShip.Inquisition.Handlers
                 .AddServices()
                 .AddManagers()
                 .AddLogger()
-                .AddDbContext<DatabaseContext>(x =>
-                    {
-                        x.UseSqlite(Settings.Instance.GetConnectionString("SQLite"));
-                    }
-                )
+                .AddTools()
+                .AddDbContext<SQLiteContext>(x =>
+                {
+                    x.UseSqlite(Settings.GetConnectionString("SQLite"));
+                })
                 .BuildServiceProvider();
 
-            _serviceProvider.GetService<DatabaseContext>().Migrate();
+            _serviceProvider.GetService<SQLiteContext>().Migrate();
             _serviceProvider.GetService<EventManager>();
 
             _reportHandler = _serviceProvider.GetService<ReportHandler>();
@@ -67,7 +66,15 @@ namespace TheKrystalShip.Inquisition.Handlers
 
         private Task CommandServiceLog(LogMessage logMessage)
         {
-            _logger.LogInformation(GetType().FullName + $" ({logMessage.Source})", logMessage.Message);
+            if (logMessage.Message != null)
+            {
+                _logger.LogInformation(GetType().FullName + $" ({logMessage.Source})", logMessage.Message);
+            }
+            else if (logMessage.Exception != null)
+            {
+                _logger.LogError(logMessage.Exception);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -75,14 +82,12 @@ namespace TheKrystalShip.Inquisition.Handlers
         {
             SocketUserMessage message = msg as SocketUserMessage;
 
-            if (message is null || message.Author.IsBot)
+            if (message is null | message.Author.IsBot)
                 return;
-
-            //string prefix = GetGuildPrefix(message) ?? Configuration.Get("Bot", "DefaultPrefix");
+            
             int argPos = 0;
 
             bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);
-            //bool messageHasPrefix = message.HasStringPrefix(prefix, ref argPos);
 
             if (!messageHasMention)
                 return;
@@ -95,16 +100,6 @@ namespace TheKrystalShip.Inquisition.Handlers
                 _reportHandler.ReportAsync(result.ErrorReason, message);
                 _logger.LogError(result.ErrorReason);
             }
-        }
-
-        private string GetGuildPrefix(SocketUserMessage message)
-        {
-            SocketGuildChannel guildChannel = message.Channel as SocketGuildChannel;
-            string socketGuildId = guildChannel?.Guild.Id.ToString();
-
-            PrefixHandler prefixHandler = _serviceProvider.GetService<PrefixHandler>();
-
-            return prefixHandler.GetPrefix(socketGuildId);
         }
     }
 }

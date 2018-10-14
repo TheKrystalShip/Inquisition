@@ -3,28 +3,22 @@ using System.Threading;
 
 namespace TheKrystalShip.Inquisition.Services
 {
-    public class Service : IService
+    public abstract class Service
     {
-        private Timer _timer;
-        public event Action<IService> Start;
-        public event Action<IService> Stop;
-        public event Action<IService> Tick;
+        public abstract Timer Timer { get; protected set; }
+        public abstract event Action<Service> Start;
+        public abstract event Action<Service> Stop;
+        public abstract event Action<Service> Tick;
 
-        public virtual void Init(int startDelay = 0, int interval = 1000)
+        public Tools Tools { get; private set; }
+
+        public Service(Tools tools)
         {
-            _timer = new Timer(Loop, null, startDelay, interval);
-            Start?.Invoke(this);
+            Tools = tools;
         }
 
-        public virtual void Loop(object state)
-        {
-            Tick?.Invoke(this);
-        }
-
-        public virtual void Dispose()
-        {
-            _timer.Dispose();
-            Stop?.Invoke(this);
-        }
+        public abstract void Init(int startDelay = 0, int interval = 1000);
+        protected abstract void Loop(object state);
+        public abstract void Dispose();
     }
 }

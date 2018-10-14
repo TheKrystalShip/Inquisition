@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace TheKrystalShip.Inquisition.Database.Models
+namespace TheKrystalShip.Inquisition.Domain
 {
     public class User
     {
         [Key]
-        [MaxLength(20)]
-        public string Id { get; set; }
+        public ulong Id { get; set; }
+
         [MaxLength(50)]
         public string Username { get; set; }
+
         [MaxLength(10)]
         public string Discriminator { get; set; }
+
         public string AvatarUrl { get; set; }
         public int? TimezoneOffset { get; set; }
 

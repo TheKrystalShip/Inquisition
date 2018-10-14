@@ -5,24 +5,16 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Data.Models;
-using TheKrystalShip.Inquisition.Database;
+using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Handlers;
-using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Modules
 {
-    public class MemeModule : ModuleBase<SocketCommandContext>
+    public class MemeModule : Module
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly ReportHandler _reportHandler;
-        private readonly ILogger<MemeModule> _logger;
-
-        public MemeModule(DatabaseContext dbContext, ReportHandler reportHandler, ILogger<MemeModule> logger)
+        public MemeModule(Tools tools) : base(tools)
         {
-            _dbContext = dbContext;
-            _reportHandler = reportHandler;
-            _logger = logger;
+
         }
 
         [Command("meme")]
@@ -30,16 +22,7 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("Displays a random meme by random user unless user is specified")]
         public async Task ShowMemeAsync(SocketGuildUser user = null)
         {
-            try
-            {
 
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
         }
 
         [Command("meme random")]
@@ -47,25 +30,14 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("Shows a random meme")]
         public async Task ShowRandomMemeAsync()
         {
-            try
-            {
-                Random rn = new Random();
-                int limit = 33000;
+            string meme = string.Format("http://images.memes.com/meme/{0}.jpg", new Random().Next(33000));
 
-                string meme = String.Format("http://images.memes.com/meme/{0}.jpg", rn.Next(limit));
+            EmbedBuilder embed = new EmbedBuilder()
+                .Create(Context.User)
+                .WithImageUrl(meme)
+                .WithTitle(meme);
 
-                EmbedBuilder embed = EmbedHandler.Create(Context.User);
-                embed.WithImageUrl(meme);
-                embed.WithTitle(meme);
-
-                await ReplyAsync(ReplyHandler.Generic, false, embed.Build());
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
+            await ReplyAsync(ReplyHandler.Generic, false, embed.Build());
         }
 
         [Command("memes")]
@@ -73,32 +45,14 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("Shows a list of all memes from all users unless user is specified")]
         public async Task ListMemesAsync(SocketUser user = null)
         {
-            try
-            {
 
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
         }
 
         [Command("add meme")]
         [Summary("Adds a new meme")]
         public async Task AddMemeAsync([Remainder] string url)
         {
-            try
-            {
 
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
         }
 
         [Command("delete meme")]
@@ -106,16 +60,7 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("Delete a meme")]
         public async Task RemoveMemeAsync(int id)
         {
-            try
-            {
 
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
         }
     }
 }

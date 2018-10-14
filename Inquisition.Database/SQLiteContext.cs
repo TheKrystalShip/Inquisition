@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using TheKrystalShip.Inquisition.Database.Models;
+using TheKrystalShip.Inquisition.Domain;
 
 namespace TheKrystalShip.Inquisition.Database
 {
-    public class DatabaseContext : DbContext
+    public class SQLiteContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Joke> Jokes { get; set; }
@@ -15,7 +15,7 @@ namespace TheKrystalShip.Inquisition.Database
         public DbSet<Guild> Guilds { get; set; }
         public DbSet<Activity> Activities { get; set; }
 
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public SQLiteContext(DbContextOptions options) : base(options)
         {
 
         }
@@ -24,8 +24,9 @@ namespace TheKrystalShip.Inquisition.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlite("Data source=.\\Properties\\Inquisition.db");
             base.OnConfiguring(builder);
+
+            builder.UseSqlite("Data source=.\\Properties\\Inquisition.db");
         }
 
         protected override void OnModelCreating(ModelBuilder mb)
@@ -60,6 +61,10 @@ namespace TheKrystalShip.Inquisition.Database
                 .HasMany(x => x.Activities)
                 .WithOne(x => x.User);
 
+            mb.Entity<User>()
+                .Property(x => x.Id)
+                .HasConversion<string>();
+
             mb.Entity<Joke>()
                 .HasOne(x => x.User)
                 .WithMany(x => x.Jokes)
@@ -87,6 +92,14 @@ namespace TheKrystalShip.Inquisition.Database
             mb.Entity<Guild>()
                 .HasMany(x => x.Servers)
                 .WithOne(x => x.Guild);
+
+            mb.Entity<Guild>()
+                .Property(x => x.Id)
+                .HasConversion<string>();
+
+            mb.Entity<Guild>()
+                .Property(x => x.AuditChannelId)
+                .HasConversion<string>();
 
             mb.Entity<Activity>()
                 .HasOne(x => x.User)

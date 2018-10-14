@@ -5,12 +5,12 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition
 {
-    public class Benchmark : IDisposable
+    public class BenchmarkAttribute : Attribute, IDisposable
     {
         private readonly Stopwatch _stopwatch;
         private readonly ILogger<Benchmark> _logger;
 
-        public Benchmark()
+        public BenchmarkAttribute()
         {
             _stopwatch = Stopwatch.StartNew();
             _logger = new Logger<Benchmark>();
@@ -19,7 +19,7 @@ namespace TheKrystalShip.Inquisition
         public void Dispose()
         {
             _stopwatch.Stop();
-            _logger.LogInformation($"Elapsed time: {_stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
+            _logger.LogInformation($"{_stopwatch.Elapsed:hh\\:mm\\:ss\\:ffffff}");
         }
     }
 }

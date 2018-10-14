@@ -3,9 +3,9 @@ using Discord.WebSocket;
 
 using System.Threading.Tasks;
 
-using TheKrystalShip.Configuration;
 using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Handlers;
+using TheKrystalShip.Inquisition.Properties;
 
 namespace TheKrystalShip.Inquisition
 {
@@ -19,7 +19,7 @@ namespace TheKrystalShip.Inquisition
         {
             _client = new DiscordSocketClient(new DiscordSocketConfig()
                 {
-                    LogLevel = LogSeverity.Debug,
+                    LogLevel = LogSeverity.Info,
                     DefaultRetryMode = RetryMode.AlwaysRetry,
                     ConnectionTimeout = 5000,
                     AlwaysDownloadUsers = true

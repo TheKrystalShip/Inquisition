@@ -265,3 +265,4 @@ __pycache__/
 *.jpg
 *.xml
 *.exe
+/Inquisition/Properties/secrets.json

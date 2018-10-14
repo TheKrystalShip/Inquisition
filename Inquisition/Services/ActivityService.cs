@@ -1,43 +1,46 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
-using TheKrystalShip.Inquisition.Database;
-using TheKrystalShip.Inquisition.Database.Models;
-using TheKrystalShip.Logging;
+using TheKrystalShip.Inquisition.Domain;
 
 namespace TheKrystalShip.Inquisition.Services
 {
     public class ActivityService : Service
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly ILogger<ActivityService> _logger;
+        public override Timer Timer { get; protected set; }
+        public override event Action<Service> Start;
+        public override event Action<Service> Stop;
+        public override event Action<Service> Tick;
 
-        public ActivityService(DatabaseContext dbContext, ILogger<ActivityService> logger)
+        public ActivityService(Tools tools) : base(tools)
         {
-            _dbContext = dbContext;
-            _logger = logger;
+
         }
 
         public override void Init(int startDelay = 0, int interval = 1000)
         {
-            base.Init(startDelay, interval);
+            Timer = new Timer(Loop, null, startDelay, interval);
+            Start?.Invoke(this);
         }
 
-        public override void Loop(object state)
+        protected override void Loop(object state)
         {
-            base.Loop(state);
+
+            Tick?.Invoke(this);
         }
 
         public override void Dispose()
         {
-            base.Dispose();
+            Stop?.Invoke(this);
         }
 
         public List<Activity> GetActivityList()
         {
-            return _dbContext.Activities
+            return Tools.Database.Activities
                 .Include(x => x.Guild)
                 .Include(x => x.User)
                 .ToList() ?? new List<Activity>();

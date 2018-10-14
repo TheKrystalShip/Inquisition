@@ -5,29 +5,19 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Data.Models;
-using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Inquisition.Handlers;
-using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Modules
 {
     [RequireUserPermission(GuildPermission.Administrator)]
-    public class AdminModule : ModuleBase<SocketCommandContext>
+    public class AdminModule : Module
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly ReportHandler _reportHandler;
-        private readonly ILogger<AdminModule> _logger;
-
-        public AdminModule(DatabaseContext dbContext, ReportHandler reportHandler, ILogger<AdminModule> logger)
+        public AdminModule(Tools tools) : base(tools)
         {
-            _dbContext = dbContext;
-            _reportHandler = reportHandler;
-            _logger = logger;
+
         }
 
         [Command("prune")]
@@ -35,41 +25,23 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("[Admin] Prunes all inactive members from the server")]
         public async Task PruneMembersAsync(int days)
         {
-            try
+            if (days < 7)
             {
-                if (days < 7)
-                {
-                    await ReplyAsync("Minimum is 7 days of innactivity");
-                    return;
-                }
+                await ReplyAsync("Minimum is 7 days of innactivity");
+                return;
+            }
 
-                int members = await Context.Guild.PruneUsersAsync(days);
-                await ReplyAsync(ReplyHandler.Info.UsersPruned(members, days));
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(e);
-                _logger.LogError(e);
-            }
+            int members = await Context.Guild.PruneUsersAsync(days);
+            await ReplyAsync(ReplyHandler.Info.UsersPruned(members, days));
         }
 
         [Command("ban")]
         [Summary("[Admin] Bans a user from the server")]
         public async Task BanMemberAsync(SocketGuildUser user, [Remainder] string reason = "")
         {
-            try
-            {
-                await user.SendMessageAsync($"You've been banned from {Context.Guild}, reason: {reason}.");
-                await Context.Guild.AddBanAsync(user, 0, reason);
-                await ReplyAsync(ReplyHandler.Info.UserBanned(user));
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(e);
-                _logger.LogError(e);
-            }
+            await user.SendMessageAsync($"You've been banned from {Context.Guild}, reason: {reason}.");
+            await Context.Guild.AddBanAsync(user, 0, reason);
+            await ReplyAsync(ReplyHandler.Info.UserBanned(user));
         }
 
         [Command("wipe")]
@@ -77,63 +49,24 @@ namespace TheKrystalShip.Inquisition.Modules
         [Summary("[Admin] Wipes X number of messages from a text channel")]
         public async Task WipeChannelAsync(uint amount = 1, [Remainder] string s = "")
         {
-            try
-            {
-                IEnumerable<IMessage> messages = await Context.Channel
-                    .GetMessagesAsync((int)amount + 1)
-                    .Flatten();
+            IEnumerable<IMessage> messages = await Context.Channel
+                .GetMessagesAsync((int)amount + 1)
+                .Flatten();
 
-                await Context.Channel
-                    .DeleteMessagesAsync(messages);
+            await Context.Channel
+                .DeleteMessagesAsync(messages);
 
-                const int delay = 5000;
-                IUserMessage reply = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
+            const int delay = 5000;
+            IUserMessage reply = await ReplyAsync($"Deleted {amount} messages. _This message will be deleted in {delay / 1000} seconds._");
 
-                await Task.Delay(delay);
-                await reply.DeleteAsync();
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync(ReplyHandler.Context(Result.Failed));
-                _reportHandler.ReportAsync(e);
-                _logger.LogError(e);
-            }
-        }
-
-        [Command("error")]
-        public async Task RaiseErrorAsync()
-        {
-            try
-            {
-                try
-                {
-                    var num = int.Parse("abc");
-                }
-                catch (Exception inner)
-                {
-                    try
-                    {
-                        var openLog = File.Open("DoesNotExist", FileMode.Open);
-                    }
-                    catch (Exception inner2)
-                    {
-                        throw new FileNotFoundException(inner2.Message, inner);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                await ReplyAsync("", false, EmbedHandler.Create(e).Build());
-                _reportHandler.ReportAsync(Context, e);
-                _logger.LogError(e);
-            }
+            await Task.Delay(delay);
+            await reply.DeleteAsync();
         }
 
         [Command("hello there")]
         public async Task TestCommandAsync()
         {
-            //User me = _repository.Users.SelectFirst(x => x.Id == Context.User.Id.ToString());
-            await ReplyAsync($"General ⚔️⚔️");
+            await ReplyAsync($"General {User.Username} ⚔️⚔️");
         }
 
         [Command("restart")]
@@ -143,12 +76,12 @@ namespace TheKrystalShip.Inquisition.Modules
             await ReplyAsync("Rebooting...");
 
             Process.Start(new ProcessStartInfo()
-            {
-                FileName = "dotnet",
-                Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
-                WindowStyle = ProcessWindowStyle.Normal,
-                CreateNoWindow = false
-            }
+                {
+                    FileName = "dotnet",
+                    Arguments = "\"" + Assembly.GetExecutingAssembly().Location + "\"",
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    CreateNoWindow = false
+                }
             );
 
             Environment.Exit(0);
@@ -164,15 +97,13 @@ namespace TheKrystalShip.Inquisition.Modules
     }
 
     [Group("stop")]
-    public class StopAdminModule : ModuleBase<SocketCommandContext>
+    public class StopAdminModule : Module
     {
         private readonly ServiceHandler _serviceHandler;
-        private readonly ILogger<AdminModule> _logger;
 
-        public StopAdminModule(ServiceHandler serviceHandler, ILogger<AdminModule> logger)
+        public StopAdminModule(ServiceHandler serviceHandler, Tools tools) : base(tools)
         {
             _serviceHandler = serviceHandler;
-            _logger = logger;
         }
 
         [Command("loops")]
@@ -181,16 +112,16 @@ namespace TheKrystalShip.Inquisition.Modules
         {
             _serviceHandler.StopAllLoops();
             await ReplyAsync("All loops stopped");
-            _logger.LogInformation("Stopped all loops");
+            Tools.Logger.LogInformation("Stopped all loops");
         }
     }
 
     [Group("start")]
-    public class StartAdminModule : ModuleBase<SocketCommandContext>
+    public class StartAdminModule : Module
     {
         private readonly ServiceHandler _serviceHandler;
 
-        public StartAdminModule(ServiceHandler serviceHandler)
+        public StartAdminModule(ServiceHandler serviceHandler, Tools tools) : base(tools)
         {
             _serviceHandler = serviceHandler;
         }
