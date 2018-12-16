@@ -5,9 +5,25 @@ VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition", "Inquisition\Inquisition.csproj", "{8E2363AA-AAD7-4C40-A299-197F5E26ED6C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Database.SQLite", "Inquisition.Database.SQLite\Inquisition.Database.SQLite.csproj", "{B9AE8E97-B1A7-4C57-BA69-3DC0348C985E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Domain", "Inquisition.Domain\Inquisition.Domain.csproj", "{93B9C01D-7CB1-4E86-9929-A8F415FF6C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Database.Domain", "Inquisition.Database.Domain\Inquisition.Database.Domain.csproj", "{93B9C01D-7CB1-4E86-9929-A8F415FF6C16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Core", "Inquisition.Core\Inquisition.Core.csproj", "{C11E5B81-D072-4FB3-A51B-4744FA6CAD2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Core.Commands", "Inquisition.Core.Commands\Inquisition.Core.Commands.csproj", "{B308F666-0751-4B94-9B0F-A47BB48C14B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Core.Modules", "Inquisition.Core.Modules\Inquisition.Core.Modules.csproj", "{748156B5-DF5F-40E6-A4C7-4855509A2B4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Managers", "Inquisition.Managers\Inquisition.Managers.csproj", "{B269562F-81C4-4F9A-87FD-378D741FB6C2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Services", "Inquisition.Services\Inquisition.Services.csproj", "{0AFDEFDA-89D4-4341-B831-9482D5C722C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Extensions", "Inquisition.Extensions\Inquisition.Extensions.csproj", "{43A92233-8516-4C5E-B844-96362F4F580F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Handlers", "Inquisition.Handlers\Inquisition.Handlers.csproj", "{B46DA773-6DD0-46DE-83E5-63D37BDEE224}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Tools", "Inquisition.Tools\Inquisition.Tools.csproj", "{70D0432B-D2DA-421A-9950-2806EE4948E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +43,38 @@ Global
 		{93B9C01D-7CB1-4E86-9929-A8F415FF6C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93B9C01D-7CB1-4E86-9929-A8F415FF6C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93B9C01D-7CB1-4E86-9929-A8F415FF6C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C11E5B81-D072-4FB3-A51B-4744FA6CAD2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C11E5B81-D072-4FB3-A51B-4744FA6CAD2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C11E5B81-D072-4FB3-A51B-4744FA6CAD2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C11E5B81-D072-4FB3-A51B-4744FA6CAD2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B308F666-0751-4B94-9B0F-A47BB48C14B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B308F666-0751-4B94-9B0F-A47BB48C14B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B308F666-0751-4B94-9B0F-A47BB48C14B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B308F666-0751-4B94-9B0F-A47BB48C14B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{748156B5-DF5F-40E6-A4C7-4855509A2B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{748156B5-DF5F-40E6-A4C7-4855509A2B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{748156B5-DF5F-40E6-A4C7-4855509A2B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{748156B5-DF5F-40E6-A4C7-4855509A2B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B269562F-81C4-4F9A-87FD-378D741FB6C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B269562F-81C4-4F9A-87FD-378D741FB6C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B269562F-81C4-4F9A-87FD-378D741FB6C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B269562F-81C4-4F9A-87FD-378D741FB6C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AFDEFDA-89D4-4341-B831-9482D5C722C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AFDEFDA-89D4-4341-B831-9482D5C722C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AFDEFDA-89D4-4341-B831-9482D5C722C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AFDEFDA-89D4-4341-B831-9482D5C722C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A92233-8516-4C5E-B844-96362F4F580F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A92233-8516-4C5E-B844-96362F4F580F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A92233-8516-4C5E-B844-96362F4F580F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A92233-8516-4C5E-B844-96362F4F580F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B46DA773-6DD0-46DE-83E5-63D37BDEE224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46DA773-6DD0-46DE-83E5-63D37BDEE224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46DA773-6DD0-46DE-83E5-63D37BDEE224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46DA773-6DD0-46DE-83E5-63D37BDEE224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Inquisition.Core.Commands</AssemblyName>
+    <RootNamespace>TheKrystalShip.Inquisition.Core.Commands</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Discord.Net" Version="2.0.0-beta" />
+    <PackageReference Include="TheKrystalShip.DependencyInjection" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Inquisition.Core.Modules\Inquisition.Core.Modules.csproj" />
+    <ProjectReference Include="..\Inquisition.Handlers\Inquisition.Handlers.csproj" />
+  </ItemGroup>
+
+</Project>
