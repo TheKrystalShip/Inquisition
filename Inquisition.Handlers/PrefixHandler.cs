@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using TheKrystalShip.Inquisition.Database.SQLite;
+using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Handlers
 {
     public class PrefixHandler
     {
-		private readonly SQLiteContext _dbContext;
+		private readonly IDbContext _dbContext;
         private readonly ConcurrentDictionary<ulong, string> _prefixDictionary;
         private readonly ILogger<PrefixHandler> _logger;
 
-		public PrefixHandler(SQLiteContext dbContext)
+		public PrefixHandler(IDbContext dbContext)
 		{
             _dbContext = dbContext;
 			_prefixDictionary = new ConcurrentDictionary<ulong, string>();

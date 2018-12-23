@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 
 using TheKrystalShip.DependencyInjection;
-using TheKrystalShip.Inquisition.Database.SQLite;
+using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Logging;
@@ -14,7 +14,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class Module : ModuleBase<SocketCommandContext>
     {
-        public SQLiteContext Database { get; private set; }
+        public IDbContext Database { get; private set; }
         public Guild Guild { get; private set; }
         public User User { get; private set; }
         public PrefixHandler Prefix { get; private set; }
@@ -22,7 +22,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         public Module()
         {
-            Database = Container.Get<SQLiteContext>();
+            Database = Container.Get<IDbContext>();
             Prefix = Container.Get<PrefixHandler>();
             Logger = new Logger<Module>();
         }

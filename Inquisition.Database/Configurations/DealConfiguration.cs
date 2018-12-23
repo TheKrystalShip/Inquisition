@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using TheKrystalShip.Inquisition.Domain;
 
-namespace TheKrystalShip.Inquisition.Database.SQLite
+namespace TheKrystalShip.Inquisition.Database
 {
-    public class JokeConfiguration : IEntityTypeConfiguration<Joke>
+    public class DealConfiguration : IEntityTypeConfiguration<Deal>
     {
-        public void Configure(EntityTypeBuilder<Joke> builder)
+        public void Configure(EntityTypeBuilder<Deal> builder)
         {
             builder.HasOne(x => x.User)
-                .WithMany(x => x.Jokes)
+                .WithMany(x => x.Deals)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

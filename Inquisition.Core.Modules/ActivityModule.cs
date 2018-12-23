@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,22 +18,21 @@ namespace TheKrystalShip.Inquisition.Core.Modules
     {
         [Command("activities")]
         [Alias("tasks")]
-        public async Task ShowActivitiesAsync()
+        public async Task<RuntimeResult> ShowActivitiesAsync()
         {
-            List<Domain.Activity> ActivityList = Database.Activities
+            List<Domain.Activity> ActivityList = await Database.Activities
                 .Where(x => x.User.Id == User.Id)
-                .ToList();
+                .ToListAsync();
 
             if (ActivityList.Count is 0)
             {
-                await ReplyAsync("No content");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "No activities were found");
             }
 
             EmbedBuilder embed = new EmbedBuilder()
                 .Create(ActivityList);
 
-            await ReplyAsync(embed);
+            return new SuccessResult("Success", embed);
         }
     }
 

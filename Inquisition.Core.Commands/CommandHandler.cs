@@ -6,36 +6,26 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 using TheKrystalShip.DependencyInjection;
+using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Core.Commands
 {
     public class CommandHandler : CommandService
     {
-        private DiscordSocketClient _client;
+        private readonly DiscordSocketClient _client;
         private readonly ILogger<CommandHandler> _logger;
 
-        public CommandHandler() : this(new CommandServiceConfig() { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async })
-        {
-
-        }
-
-        public CommandHandler(CommandServiceConfig config) : base(config)
+        public CommandHandler(DiscordSocketClient client,CommandServiceConfig config) : base(config)
         {
             AddModulesAsync(Assembly.GetAssembly(typeof(Modules.Module))).Wait();
-            Log += OnLog;
-            CommandExecuted += OnCommandExecutedAsync;
-            _logger = new Logger<CommandHandler>();
-        }
-
-        public void SetClient(DiscordSocketClient client)
-        {
             _client = client;
-            _client.Log += OnLog;
-            _client.MessageReceived += OnClientMessageRecievedAsync;
+            _logger = new Logger<CommandHandler>();
+            Log += OnLog;
+            CommandExecuted += Dispatcher.Dispatch;
         }
 
-        private Task OnLog(LogMessage logMessage)
+        public Task OnLog(LogMessage logMessage)
         {
             if (logMessage.Message != null)
             {
@@ -49,32 +39,18 @@ namespace TheKrystalShip.Inquisition.Core.Commands
             return Task.CompletedTask;
         }
 
-        private async Task OnClientMessageRecievedAsync(SocketMessage msg)
+        public async Task OnClientMessageRecievedAsync(SocketMessage socketMessage)
         {
-            SocketUserMessage message = msg as SocketUserMessage;
+            SocketUserMessage socketUserMessage = socketMessage as SocketUserMessage;
 
-            if (message is null | message.Author.IsBot)
-                return;
-            
-            int argPos = 0;
-
-            bool messageHasMention = message.HasMentionPrefix(_client.CurrentUser, ref argPos);
-
-            if (!messageHasMention)
+            if (socketUserMessage is null | socketUserMessage.Author.IsBot)
                 return;
 
-            SocketCommandContext context = new SocketCommandContext(_client, message);
-            IResult result = await ExecuteAsync(context, argPos, Container.GetServiceProvider());
-        }
-
-        private Task OnCommandExecutedAsync(CommandInfo command, ICommandContext context, IResult result)
-        {
-            if (!result.IsSuccess)
+            if (socketUserMessage.IsValid(_client.CurrentUser, out int argPos))
             {
-                _logger.LogError(result.ErrorReason);
+                SocketCommandContext context = new SocketCommandContext(_client, socketUserMessage);
+                IResult result = await ExecuteAsync(context, argPos, Container.GetServiceProvider());
             }
-
-            return Task.CompletedTask;
         }
     }
 }

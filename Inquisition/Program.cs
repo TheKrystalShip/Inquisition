@@ -15,6 +15,7 @@ namespace TheKrystalShip.Inquisition
                 .ConfigureHandlers()
                 .ConfigureServices()
                 .ConfigureClient()
+                .ConfigureEvents()
                 .InitAsync();
         }
     }

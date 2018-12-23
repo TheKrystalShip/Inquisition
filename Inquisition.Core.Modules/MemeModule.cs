@@ -5,18 +5,12 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
 using TheKrystalShip.Inquisition.Extensions;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class MemeModule : Module
     {
-        public MemeModule()
-        {
-
-        }
-
         [Command("meme")]
         [Alias("meme by")]
         [Summary("Displays a random meme by random user unless user is specified")]
@@ -28,16 +22,16 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Command("meme random")]
         [Alias("random meme")]
         [Summary("Shows a random meme")]
-        public async Task ShowRandomMemeAsync()
+        public async Task<RuntimeResult> ShowRandomMemeAsync()
         {
             string meme = string.Format("http://images.memes.com/meme/{0}.jpg", new Random().Next(33000));
 
-            EmbedBuilder embed = new EmbedBuilder()
+            EmbedBuilder embedBuilder = new EmbedBuilder()
                 .Create(Context.User)
                 .WithImageUrl(meme)
                 .WithTitle(meme);
 
-            await ReplyAsync(embed);
+            return new SuccessResult("Success", embedBuilder);
         }
 
         [Command("memes")]

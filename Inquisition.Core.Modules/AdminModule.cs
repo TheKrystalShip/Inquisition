@@ -5,8 +5,6 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
-
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
     [RequireUserPermission(GuildPermission.Administrator)]
@@ -15,25 +13,25 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Command("prune")]
         [Alias("purge")]
         [Summary("[Admin] Prunes all inactive members from the server")]
-        public async Task PruneMembersAsync(int days)
+        public async Task<RuntimeResult> PruneMembersAsync(int days)
         {
             if (days < 7)
             {
-                await ReplyAsync("Minimum is 7 days of innactivity");
-                return;
+                return new ErrorResult("Minimum is 7 days of innactivity");
             }
 
             int members = await Context.Guild.PruneUsersAsync(days);
-            await ReplyAsync($"Purged {members} members");
+
+            return new SuccessResult($"Purged {members} members");
         }
 
         [Command("ban")]
         [Summary("[Admin] Bans a user from the server")]
-        public async Task BanMemberAsync(SocketGuildUser user, [Remainder] string reason = "")
+        public async Task<RuntimeResult> BanMemberAsync(SocketGuildUser user, [Remainder] string reason = "")
         {
             await user.SendMessageAsync($"You've been banned from {Context.Guild}, reason: {reason}.");
             await Context.Guild.AddBanAsync(user, 0, reason);
-            await ReplyAsync($"Banned {user.Username}");
+            return new SuccessResult($"Banned {user.Username}");
         }
 
         [Command("hello there")]

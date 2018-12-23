@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using TheKrystalShip.Inquisition.Domain;
 
-namespace TheKrystalShip.Inquisition.Database.SQLite
+namespace TheKrystalShip.Inquisition.Database
 {
     public class AlertConfiguration : IEntityTypeConfiguration<Alert>
     {

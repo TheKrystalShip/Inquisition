@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Database.Domain\Inquisition.Database.Domain.csproj" />
+    <ProjectReference Include="..\Inquisition.Database\Inquisition.Database.csproj" />
     <ProjectReference Include="..\Inquisition.Tools\Inquisition.Tools.csproj" />
   </ItemGroup>
 

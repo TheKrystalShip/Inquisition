@@ -1,12 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Extensions;
 
@@ -14,11 +15,6 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class DealModule : Module
     {
-        public DealModule()
-        {
-
-        }
-
         [Command("add deal")]
         [Summary("Adds a deal")]
         public async Task AddDealAsync(string url, string timeLeft = null)
@@ -51,13 +47,19 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         [Command("deals")]
         [Summary("Returns all active deals")]
-        public async Task ShowDealsAsync()
+        public async Task<RuntimeResult> ShowDealsAsync()
         {
-            List<Deal> dealList = Database.Deals.ToList();
+            List<Deal> dealList = await Database.Deals
+                .ToListAsync();
+
+            if (dealList is null)
+            {
+                return new ErrorResult(CommandError.ObjectNotFound, "No deals were found");
+            }
 
             EmbedBuilder embed = new EmbedBuilder().Create(dealList);
 
-            await ReplyAsync(embed);
+            return new SuccessResult("Success", embed);
         }
     }
 }

@@ -8,24 +8,24 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class TimezoneModule : Module
     {
-        public TimezoneModule()
-        {
-
-        }
-
         [Command("timezone")]
         [Summary("Tells you your timezone from the database")]
-        public async Task ShowTimezoneAsync()
+        public async Task<RuntimeResult> ShowTimezoneAsync()
         {
-            await ReplyAsync($"Your timezone is set to: {User.TimezoneOffset}");
+            if (User.TimezoneOffset is null)
+            {
+                return new ErrorResult(CommandError.UnmetPrecondition, "Timezone not set");
+            }
+
+            return new InfoResult($"Your timezone is set to: {User.TimezoneOffset}");
         }
 
         [Command("set timezone")]
         [Summary("Set your timezone")]
-        public async Task SetTimezoneAsync(int offset)
+        public async Task<RuntimeResult> SetTimezoneAsync(int offset)
         {
             User.TimezoneOffset = offset;
-            await ReplyAsync($"Your timezone is set to: {User.TimezoneOffset}");
+            return new InfoResult($"Your timezone is set to: {User.TimezoneOffset}");
         }
     }
 }

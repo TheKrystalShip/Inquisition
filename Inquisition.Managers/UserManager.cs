@@ -1,10 +1,11 @@
 ﻿using Discord.WebSocket;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Database.SQLite;
+using TheKrystalShip.Inquisition.Database;
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Logging;
 
@@ -12,20 +13,18 @@ namespace TheKrystalShip.Inquisition.Managers
 {
     public class UserManager
     {
-        private readonly SQLiteContext _dbContext;
-        private readonly DiscordSocketClient _client;
+        private readonly IDbContext _dbContext;
         private readonly ILogger<UserManager> _logger;
 
-        public UserManager(SQLiteContext dbContext, DiscordSocketClient client)
+        public UserManager(IDbContext dbContext)
         {
             _dbContext = dbContext;
-            _client = client;
             _logger = new Logger<UserManager>();
         }
 
-        public async Task OnClientReadyAsync()
+        public async Task OnClientReadyAsync(IReadOnlyCollection<SocketGuild> guilds)
         {
-            await Task.Run(() =>
+            _ = Task.Run(() =>
             {
                 int guildsAdded = 0;
                 int usersAdded = 0;
@@ -35,7 +34,7 @@ namespace TheKrystalShip.Inquisition.Managers
 
                 try
                 {
-                    foreach (SocketGuild guild in _client.Guilds)
+                    foreach (SocketGuild guild in guilds)
                     {
                         _logger.LogInformation($"Starting user registration for guild: {guild.Name}");
 

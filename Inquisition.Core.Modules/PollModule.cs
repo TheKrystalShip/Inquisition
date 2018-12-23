@@ -31,17 +31,17 @@ namespace TheKrystalShip.Inquisition.Core.Modules
             IEnumerable<IMessage> messages = await Context.Channel.GetMessagesAsync(1).FlattenAsync();
             await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
 
-            EmbedBuilder embed = new EmbedBuilder()
+            EmbedBuilder embedBuilder = new EmbedBuilder()
                 .Create(Context.User)
                 .WithTitle(question)
                 .WithFooter($"Asked by {Context.User.Username}", Context.User.GetAvatarUrl() ?? null);
 
-            IUserMessage message = await ReplyAsync("", false, embed.Build());
+            IUserMessage message = await ReplyAsync(embedBuilder);
 
-            foreach (Emoji e in _reactions)
+            foreach (Emoji reaction in _reactions)
             {
-                await message.AddReactionAsync(e).ConfigureAwait(false);
-                await Task.Delay(100);
+                await message.AddReactionAsync(reaction);
+                await Task.Delay(250);
             }
         }
     }

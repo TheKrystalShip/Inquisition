@@ -11,40 +11,34 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class SettingsModule : Module
     {
-        public SettingsModule()
-        {
-
-        }
-
         [Command("audit channel")]
         [Alias("default audit channel")]
-        public async Task ShowDefaultAuditChannelAsync()
+        public async Task<RuntimeResult> ShowDefaultAuditChannelAsync()
         {
             SocketTextChannel channel = Context.Client.GetChannel(Guild.AuditChannelId) as SocketTextChannel;
 
             if (channel is null)
             {
-                await ReplyAsync("No default audit channel set for this guild");
-                return;
+                return new ErrorResult(CommandError.UnmetPrecondition, "No default audit channel set for this guild");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(channel);
+            EmbedBuilder embedBuilder = new EmbedBuilder().Create(channel);
 
-            await ReplyAsync(embed);
+            return new InfoResult("Info", embedBuilder);
         }
 
         [Command("prefix")]
-        public async Task ShowPrefixAsync()
+        public async Task<RuntimeResult> ShowPrefixAsync()
         {
             string prefix = Prefix.Get(Context.Guild.Id);
 
             if (prefix is null)
             {
-                await ReplyAsync("Your guild is not in the database for some reason...");
+                return new ErrorResult(CommandError.UnmetPrecondition, "Your guild is not in the database for some reason...");
             }
             else
             {
-                await ReplyAsync($"Prefix for this guild is: **{prefix}**");
+                return new InfoResult($"Prefix for this guild is: **{prefix}**");
             }
         }
     }
@@ -52,27 +46,22 @@ namespace TheKrystalShip.Inquisition.Core.Modules
     [Group("set")]
     public class SetSettingsModule : Module
     {
-        public SetSettingsModule()
-        {
-
-        }
-
         [Command("audit channel")]
         [Alias("default audit channel")]
-        public async Task SetDefaultAuditChannelAsync(SocketGuildChannel channel)
+        public async Task<RuntimeResult> SetDefaultAuditChannelAsync(SocketGuildChannel channel)
         {
             Guild.AuditChannelId = channel.Id;
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
 
         [Command("prefix")]
-        public async Task SetDefaultPrefix(string newPrefix)
+        public async Task<RuntimeResult> SetDefaultPrefix(string newPrefix)
         {
             string currentPrefix = Guild.Prefix;
 
             Prefix.Set(Context.Guild.Id, newPrefix);
 
-            await ReplyAsync($"Prefix was **{currentPrefix}**, now changed to **{newPrefix}**");
+            return new InfoResult($"Prefix was **{currentPrefix}**, now changed to **{newPrefix}**");
         }
     }
 }

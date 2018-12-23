@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Threading.Tasks;
+
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Database.SQLite
 {
-    public class SQLiteContext : DbContext
+    public class SQLiteContext : DbContext, IDbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Joke> Jokes { get; set; }
@@ -20,6 +22,8 @@ namespace TheKrystalShip.Inquisition.Database.SQLite
         {
 
         }
+
+        public void Migrate() => Database.Migrate();
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
@@ -41,6 +45,16 @@ namespace TheKrystalShip.Inquisition.Database.SQLite
             modelBuilder.ApplyConfiguration(new ReminderConfiguration());
             modelBuilder.ApplyConfiguration(new ServerConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+        }
+
+        void IDbContext.SaveChanges()
+        {
+            base.SaveChanges();
+        }
+
+        public Task SaveChangesAsync()
+        {
+            return SaveChangesAsync();
         }
     }
 }

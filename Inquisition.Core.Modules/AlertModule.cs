@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Extensions;
 
@@ -18,18 +17,17 @@ namespace TheKrystalShip.Inquisition.Core.Modules
     {
         [Command("alerts")]
         [Summary("Displays a list of all of your notifications")]
-        public async Task ListAlertsAsync()
+        public async Task<RuntimeResult> ListAlertsAsync()
         {
-            List<Alert> Alerts = Database.Alerts
+            List<Alert> Alerts = await Database.Alerts
                 .Where(x => x.User.Id == User.Id)
                 .Include(x => x.User)
                 .Include(x => x.TargetUser)
-                .ToList();
+                .ToListAsync();
 
             if (Alerts.Count is 0)
             {
-                await ReplyAsync("No content");
-                return;
+                return new ErrorResult("No alerts were found");
             }
 
             EmbedBuilder embed = new EmbedBuilder().Create(Context.User);
@@ -42,15 +40,20 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             embed.WithDescription(description);
 
-            await ReplyAsync(embed);
+            return new SuccessResult("Success", embed);
         }
 
         [Command("add alert")]
         [Summary("Add a new alert, must specify a target user")]
-        public async Task AddAlertAsync(SocketGuildUser targetAlert)
+        public async Task<RuntimeResult> AddAlertAsync(SocketGuildUser targetAlert)
         {
             User target = Database.Users
                 .FirstOrDefault(x => x.Id == targetAlert.Id);
+
+            if (target is null)
+            {
+                return new ErrorResult(CommandError.ObjectNotFound, "Target user was not found");
+            }
 
             Alert alert = new Alert
             {
@@ -60,31 +63,33 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Alerts.Add(alert);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
 
         [Command("delete alert")]
         [Alias("remove alert")]
         [Summary("Removes an alert, must specify a target user")]
-        public async Task RemoveAlertAsync(SocketGuildUser targetUser)
+        public async Task<RuntimeResult> RemoveAlertAsync(SocketGuildUser targetUser)
         {
-            User target = Database
-                .Users
-                .FirstOrDefault(x => x.Id == targetUser.Id);
+            User target = await Database.Users
+                .FirstOrDefaultAsync(x => x.Id == targetUser.Id);
 
-            Alert alert = Database
-                .Alerts
-                .FirstOrDefault(x => x.User.Id == User.Id && x.TargetUser == target);
+            if (target is null)
+            {
+                return new ErrorResult(CommandError.ObjectNotFound, "Target user was not found");
+            }
+
+            Alert alert = await Database.Alerts
+                .FirstOrDefaultAsync(x => x.User.Id == User.Id && x.TargetUser == target);
 
             if (alert is null)
             {
-                await ReplyAsync("Not found");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "Alert not found");
             }
 
             Database.Alerts.Remove(alert);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
     }
 }

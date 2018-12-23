@@ -4,7 +4,6 @@ using Discord.WebSocket;
 
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
 using TheKrystalShip.Inquisition.Services;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
@@ -20,17 +19,17 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         [Command("join")]
         [Summary("Joines the channel of the User or the one passed as an argument")]
-        public async Task JoinChannel(IVoiceChannel channel = null)
+        public async Task<RuntimeResult> JoinChannel(IVoiceChannel channel = null)
         {
             SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
 
             if (voiceChannel is null)
             {
-                await ReplyAsync("Not in a voice channel");
-                return;
+                return new ErrorResult("Not in a voice channel");
             }
 
             await _audioService.JoinChannel(voiceChannel, Context.Guild.Id);
+            return new EmptyResult();
         }
 
         [Command("leave")]
@@ -43,14 +42,13 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         [Command("play")]
         [Summary("Request a song to be played")]
-        public async Task PlayCmd([Remainder] string song)
+        public async Task<RuntimeResult> PlayCmd([Remainder] string song)
         {
             SocketVoiceChannel voiceChannel = (Context.User as SocketGuildUser)?.VoiceChannel;
 
             if (voiceChannel is null)
             {
-                await ReplyAsync("Not in a voice channel");
-                return;
+                return new ErrorResult("Not in a voice channel");
             }
 
             if (Context.Guild.CurrentUser.VoiceChannel != voiceChannel)
@@ -59,6 +57,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
             }
 
             await _audioService.SendAudioAsync(Context.Guild, Context.Channel, song);
+            return new EmptyResult();
         }
     }
 }

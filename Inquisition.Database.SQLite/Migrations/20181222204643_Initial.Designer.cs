@@ -9,7 +9,7 @@ using TheKrystalShip.Inquisition.Database.SQLite;
 namespace TheKrystalShip.Inquisition.Database.SQLite.Migrations
 {
     [DbContext(typeof(SQLiteContext))]
-    [Migration("20181216152732_Initial")]
+    [Migration("20181222204643_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,43 +15,36 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class ReminderModule : Module
     {
-        public ReminderModule()
-        {
-
-        }
-
         [Command("reminders")]
         [Summary("Displays a list with all of your reminders")]
-        public async Task ListRemindersAsync()
+        public async Task<RuntimeResult> ListRemindersAsync()
         {
-            List<Reminder> Reminders = Database.Reminders
+            List<Reminder> reminderList = await Database.Reminders
                 .Where(x => x.User.Id == User.Id)
-                .ToList();
+                .ToListAsync();
 
-            if (Reminders.Count is 0)
+            if (reminderList.Count is 0)
             {
-                await ReplyAsync("No content");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "No reminders in the database");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(Context.User);
+            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User);
 
-            foreach (Reminder reminder in Reminders)
+            foreach (Reminder reminder in reminderList)
             {
-                embed.AddField($"{reminder.Id} - {reminder.Message ?? "No message"}", $"{reminder.DueDate}");
+                embedBuilder.AddField($"{reminder.Id} - {reminder.Message ?? "No message"}", $"{reminder.DueDate}");
             }
 
-            await ReplyAsync(embed);
+            return new InfoResult("Info", embedBuilder);
         }
 
         [Command("add reminder")]
         [Summary("Add a new reminder")]
-        public async Task AddReminderAsync(string dueDate, [Remainder] string remainder = "")
+        public async Task<RuntimeResult> AddReminderAsync(string dueDate, [Remainder] string remainder = "")
         {
             if (User.TimezoneOffset is null)
             {
-                await ReplyAsync("Timezone not set");
-                return;
+                return new ErrorResult(CommandError.UnmetPrecondition, "Timezone not set");
             }
 
             DateTimeOffset dueDateUtc;
@@ -61,8 +56,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
             }
             catch (Exception)
             {
-                await ReplyAsync("Datetime parse error");
-                return;
+                return new ErrorResult(CommandError.ParseFailed, "DateTime parse error");
             }
 
             Reminder reminder = new Reminder
@@ -74,26 +68,25 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Reminders.Add(reminder);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
 
         [Command("delete reminder")]
         [Alias("remove reminder")]
         [Summary("Remove a reminder")]
-        public async Task RemoveReminderAsync(int id)
+        public async Task<RuntimeResult> RemoveReminderAsync(int id)
         {
-            Reminder reminder = Database.Reminders
-                .FirstOrDefault(x => x.Id == id && x.User.Id == User.Id);
+            Reminder reminder = await Database.Reminders
+                .FirstOrDefaultAsync(x => x.Id == id && x.User.Id == User.Id);
 
             if (reminder is null)
             {
-                await ReplyAsync("Reminder not found");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "Reminder not found");
             }
 
             Database.Reminders.Remove(reminder);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
     }
 }

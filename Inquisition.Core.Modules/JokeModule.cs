@@ -2,12 +2,13 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
+using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Core.Modules;
 using TheKrystalShip.Inquisition.Domain;
 using TheKrystalShip.Inquisition.Extensions;
 
@@ -15,15 +16,10 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class JokeModule : Module
     {
-        public JokeModule()
-        {
-
-        }
-
         [Command("joke")]
         [Alias("joke by")]
         [Summary("Displays a random joke by random user unless user is specified")]
-        public async Task ShowJokeAsync(SocketGuildUser user = null)
+        public async Task<RuntimeResult> ShowJokeAsync(SocketGuildUser user = null)
         {
             Joke joke;
 
@@ -43,21 +39,20 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             if (joke is null)
             {
-                await ReplyAsync("There doesn't seem to be any jokes in the database");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "No jokes in the database");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(Context.User)
+            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User)
                 .WithTitle($"{joke.Id} - {joke.Text}")
                 .WithFooter($"Submitted by {joke.User.Username}", joke.User.AvatarUrl);
 
-            await ReplyAsync(embed);
+            return new InfoResult("Info", embedBuilder);
         }
 
         [Command("jokes")]
         [Alias("jokes by")]
         [Summary("Shows a list of all jokes from all users unless user is specified")]
-        public async Task ListJokesAsync(SocketGuildUser user = null)
+        public async Task<RuntimeResult> ListJokesAsync(SocketGuildUser user = null)
         {
             List<Joke> Jokes;
 
@@ -79,28 +74,26 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             if (Jokes.Count is 0)
             {
-                await ReplyAsync("No content");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "No jokes in the database");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(Context.User);
+            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User);
 
             foreach (Joke joke in Jokes)
             {
-                embed.AddField($"{joke.Id} - {joke.Text}", $"Submitted by {joke.User.Username}");
+                embedBuilder.AddField($"{joke.Id} - {joke.Text}", $"Submitted by {joke.User.Username}");
             }
 
-            await ReplyAsync(embed);
+            return new InfoResult("Info", embedBuilder);
         }
 
         [Command("add joke")]
         [Summary("Adds a new joke")]
-        public async Task AddJokeAsync([Remainder] string jokeText)
+        public async Task<RuntimeResult> AddJokeAsync([Remainder] string jokeText)
         {
             if (jokeText is null)
             {
-                await ReplyAsync("No content");
-                return;
+                return new ErrorResult("Joke is empty");
             }
 
             Joke joke = new Joke
@@ -111,26 +104,25 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Jokes.Add(joke);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
 
         [Command("delete joke")]
         [Alias("remove joke")]
         [Summary("Delete a joke")]
-        public async Task RemoveJokeAsync(int id)
+        public async Task<RuntimeResult> RemoveJokeAsync(int id)
         {
-            Joke joke = Database.Jokes
-                .FirstOrDefault(x => x.User.Id == User.Id && x.Id == id);
+            Joke joke = await Database.Jokes
+                .FirstOrDefaultAsync(x => x.User.Id == User.Id && x.Id == id);
 
             if (joke is null)
             {
-                await ReplyAsync("You're no the owner");
-                return;
+                return new ErrorResult(CommandError.ObjectNotFound, "Joke not found in the database");
             }
 
             Database.Jokes.Remove(joke);
 
-            await ReplyAsync("Success");
+            return new SuccessResult("Success");
         }
     }
 }

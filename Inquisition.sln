@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Handlers", "Inq
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Inquisition.Tools", "Inquisition.Tools\Inquisition.Tools.csproj", "{70D0432B-D2DA-421A-9950-2806EE4948E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inquisition.Database", "Inquisition.Database\Inquisition.Database.csproj", "{BAC82B60-BB36-41B0-8B85-9274282BF165}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70D0432B-D2DA-421A-9950-2806EE4948E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAC82B60-BB36-41B0-8B85-9274282BF165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAC82B60-BB36-41B0-8B85-9274282BF165}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAC82B60-BB36-41B0-8B85-9274282BF165}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAC82B60-BB36-41B0-8B85-9274282BF165}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

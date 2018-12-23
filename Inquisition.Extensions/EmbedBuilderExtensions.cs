@@ -137,5 +137,47 @@ namespace TheKrystalShip.Inquisition.Extensions
 
             return embed;
         }
+
+        public static EmbedBuilder CreateError(this EmbedBuilder builder, string title, string message)
+        {
+            builder = CreateStandard(title, message);
+            builder.WithColor(Color.DarkRed);
+
+            return builder;
+        }
+
+        public static EmbedBuilder CreateSuccess(this EmbedBuilder builder, string title, string message)
+        {
+            builder = CreateStandard(title, message);
+            builder.WithColor(Color.DarkGreen);
+
+            return builder;
+        }
+
+        public static EmbedBuilder CreateInfo(this EmbedBuilder builder, string title, string message)
+        {
+            builder = CreateStandard(title, message);
+            builder.WithColor(Color.Teal);
+
+            return builder;
+        }
+
+        public static EmbedBuilder CreateDefault(this EmbedBuilder builder, string title, string message)
+        {
+            builder = CreateStandard(title, message);
+            builder.WithColor(Color.Gold);
+
+            return builder;
+        }
+
+        private static EmbedBuilder CreateStandard(string title, string message)
+        {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithCurrentTimestamp();
+            builder.WithTitle(title);
+            builder.WithDescription(message);
+
+            return builder;
+        }
     }
 }
