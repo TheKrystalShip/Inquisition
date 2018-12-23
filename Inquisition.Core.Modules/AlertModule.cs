@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -19,28 +19,28 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Summary("Displays a list of all of your notifications")]
         public async Task<RuntimeResult> ListAlertsAsync()
         {
-            List<Alert> Alerts = await Database.Alerts
+            List<Alert> alertList = await Database.Alerts
                 .Where(x => x.User.Id == User.Id)
                 .Include(x => x.User)
                 .Include(x => x.TargetUser)
                 .ToListAsync();
 
-            if (Alerts.Count is 0)
+            if (alertList.Count is 0)
             {
                 return new ErrorResult("No alerts were found");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(Context.User);
-            string description = "";
+            Embed embed = EmbedFactory.Create(ResultType.Success, builder => {
+                string description = "";
+                foreach (Alert alert in alertList)
+                {
+                    description += $"Alert for **{alert.TargetUser.Username}**\n";
+                }
 
-            foreach (Alert n in Alerts)
-            {
-                description += $"Alert for **{n.TargetUser.Username}**\n";
-            }
+                builder.WithDescription(description);
+            });
 
-            embed.WithDescription(description);
-
-            return new SuccessResult("Success", embed);
+            return new SuccessResult(embed);
         }
 
         [Command("add alert")]
@@ -63,7 +63,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Alerts.Add(alert);
 
-            return new SuccessResult("Success");
+            return new SuccessResult();
         }
 
         [Command("delete alert")]
@@ -89,7 +89,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Alerts.Remove(alert);
 
-            return new SuccessResult("Success");
+            return new SuccessResult();
         }
     }
 }

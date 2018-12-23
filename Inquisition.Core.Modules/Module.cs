@@ -58,9 +58,14 @@ namespace TheKrystalShip.Inquisition.Core.Modules
             Database.SaveChanges();
         }
 
-        public async Task<IUserMessage> ReplyAsync(EmbedBuilder embed)
+        public async Task<IUserMessage> ReplyAsync(EmbedBuilder embedBuilder)
         {
-            return await Context.Channel.SendMessageAsync(string.Empty, false, embed.Build());
+            return await Context.Channel.SendMessageAsync(string.Empty, false, embedBuilder.Build());
+        }
+
+        public async Task<IUserMessage> ReplyAsync(Embed embed)
+        {
+            return await Context.Channel.SendMessageAsync(string.Empty, false, embed);
         }
 
         private void UnhandledExceptionHandle(object sender, UnhandledExceptionEventArgs e)

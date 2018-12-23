@@ -5,7 +5,7 @@ using Discord.WebSocket;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -22,9 +22,12 @@ namespace TheKrystalShip.Inquisition.Core.Modules
                 return new ErrorResult(CommandError.UnmetPrecondition, "No default audit channel set for this guild");
             }
 
-            EmbedBuilder embedBuilder = new EmbedBuilder().Create(channel);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle("Here's the audit channel");
+                builder.WithDescription(channel.Mention);
+            });
 
-            return new InfoResult("Info", embedBuilder);
+            return new InfoResult(embed);
         }
 
         [Command("prefix")]
@@ -51,7 +54,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         public async Task<RuntimeResult> SetDefaultAuditChannelAsync(SocketGuildChannel channel)
         {
             Guild.AuditChannelId = channel.Id;
-            return new SuccessResult("Success");
+            return new SuccessResult();
         }
 
         [Command("prefix")]

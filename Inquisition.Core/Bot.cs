@@ -17,6 +17,7 @@ namespace TheKrystalShip.Inquisition.Core
             await LoginAsync(TokenType.Bot, token);
             await StartAsync();
             await SetGameAsync("God");
+            await SetStatusAsync(UserStatus.Online);
         }
     }
 }

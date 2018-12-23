@@ -62,7 +62,7 @@ namespace TheKrystalShip.Inquisition
         public Startup ConfigureClient()
         {
             Bot client = new Bot(new DiscordSocketConfig() {
-                LogLevel = LogSeverity.Debug,
+                LogLevel = LogSeverity.Info,
                 DefaultRetryMode = RetryMode.AlwaysRetry,
                 ConnectionTimeout = 5000,
                 AlwaysDownloadUsers = true,

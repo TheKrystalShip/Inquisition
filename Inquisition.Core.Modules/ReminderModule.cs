@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -28,14 +28,15 @@ namespace TheKrystalShip.Inquisition.Core.Modules
                 return new ErrorResult(CommandError.ObjectNotFound, "No reminders in the database");
             }
 
-            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle("Here's your reminders");
+                foreach (Reminder reminder in reminderList)
+                {
+                    builder.AddField($"{reminder.Id} - {reminder.Message ?? "No message"}", $"{reminder.DueDate}");
+                }
+            });
 
-            foreach (Reminder reminder in reminderList)
-            {
-                embedBuilder.AddField($"{reminder.Id} - {reminder.Message ?? "No message"}", $"{reminder.DueDate}");
-            }
-
-            return new InfoResult("Info", embedBuilder);
+            return new InfoResult(embed);
         }
 
         [Command("add reminder")]

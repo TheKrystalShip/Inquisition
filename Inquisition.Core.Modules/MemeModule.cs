@@ -5,7 +5,7 @@ using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -26,12 +26,12 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         {
             string meme = string.Format("http://images.memes.com/meme/{0}.jpg", new Random().Next(33000));
 
-            EmbedBuilder embedBuilder = new EmbedBuilder()
-                .Create(Context.User)
-                .WithImageUrl(meme)
-                .WithTitle(meme);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle(meme);
+                builder.WithImageUrl(meme);
+            });
 
-            return new SuccessResult("Success", embedBuilder);
+            return new SuccessResult(embed);
         }
 
         [Command("memes")]

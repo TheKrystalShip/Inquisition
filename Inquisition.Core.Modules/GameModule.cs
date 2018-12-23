@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheKrystalShip.Inquisition.Extensions;
 using TheKrystalShip.Inquisition.Services;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -58,8 +58,8 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Summary("Returns a game's version")]
         public async Task<RuntimeResult> GameVersionAsync(string name)
         {
-            Domain.Game game = Database.Games
-                .FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            Domain.Game game = await Database.Games
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
 
             if (game is null)
             {
@@ -88,23 +88,26 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Summary("Returns list of all games in the database")]
         public async Task<RuntimeResult> ListAllGamesAsync()
         {
-            List<Domain.Game> Games = await Database.Games
+            List<Domain.Game> gamesList = await Database.Games
                 .ToListAsync();
 
-            if (Games.Count is 0)
+            if (gamesList.Count is 0)
             {
                 return new ErrorResult(CommandError.ObjectNotFound, "No games found in the database");
             }
 
-            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle("Here are the currently registered game servers");
+                builder.WithCurrentTimestamp();
 
-            foreach (Domain.Game game in Games)
-            {
-                string st = game.IsOnline ? "Online " : "Offline ";
-                embedBuilder.AddField(game.Name, st + $"on port {game.Port}, version {game.Version}");
-            }
+                foreach (Domain.Game game in gamesList)
+                {
+                    string st = game.IsOnline ? "Online " : "Offline ";
+                    builder.AddField(game.Name, st + $"on port {game.Port}, version {game.Version}");
+                }
+            });
             
-            return new InfoResult("Info", embedBuilder);
+            return new InfoResult("Info", embed);
         }
     }
 }

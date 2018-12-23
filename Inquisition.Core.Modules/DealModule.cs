@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -35,8 +35,9 @@ namespace TheKrystalShip.Inquisition.Core.Modules
                 deal.ExpireDate = DateTime.Now.Add(expires);
             }
 
-            EmbedBuilder embed = new EmbedBuilder()
-                .Create(deal, (messages.First() as IUserMessage));
+            Embed embed = EmbedFactory.Create(ResultType.Success, builder => {
+                builder.WithTitle((messages.First() as IUserMessage).Content);
+            });
 
             IUserMessage message = await ReplyAsync(embed);
 
@@ -52,12 +53,19 @@ namespace TheKrystalShip.Inquisition.Core.Modules
             List<Deal> dealList = await Database.Deals
                 .ToListAsync();
 
-            if (dealList is null)
+            if (dealList.Count is 0)
             {
                 return new ErrorResult(CommandError.ObjectNotFound, "No deals were found");
             }
 
-            EmbedBuilder embed = new EmbedBuilder().Create(dealList);
+            Embed embed = EmbedFactory.Create(ResultType.Success, builder => {
+                builder.WithTitle("Here's the deals");
+
+                foreach (Deal deal in dealList)
+                {
+                    builder.AddField($"{deal.Url}", $"{deal.ExpireDate}");
+                }
+            });
 
             return new SuccessResult("Success", embed);
         }

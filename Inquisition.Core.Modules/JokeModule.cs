@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -25,28 +25,29 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             if (user is null)
             {
-                joke = Database.Jokes
+                joke = await Database.Jokes
                     .OrderBy(x => Guid.NewGuid())
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else
             {
-                joke = Database.Jokes
+                joke = await Database.Jokes
                     .Where(x => x.User.Id == user.Id)
                     .OrderBy(x => Guid.NewGuid())
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
 
             if (joke is null)
             {
                 return new ErrorResult(CommandError.ObjectNotFound, "No jokes in the database");
-            }
+            }                
 
-            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User)
-                .WithTitle($"{joke.Id} - {joke.Text}")
-                .WithFooter($"Submitted by {joke.User.Username}", joke.User.AvatarUrl);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle($"{joke.Id} - {joke.Text}");
+                builder.WithFooter($"Submitted by {joke.User.Username}", joke.User.AvatarUrl);
+            });
 
-            return new InfoResult("Info", embedBuilder);
+            return new InfoResult(embed);
         }
 
         [Command("jokes")]
@@ -54,37 +55,38 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Summary("Shows a list of all jokes from all users unless user is specified")]
         public async Task<RuntimeResult> ListJokesAsync(SocketGuildUser user = null)
         {
-            List<Joke> Jokes;
+            List<Joke> jokesList;
 
             if (user is null)
             {
-                Jokes = Database.Jokes
+                jokesList = await Database.Jokes
                         .OrderBy(x => Guid.NewGuid())
                         .Take(10)
-                        .ToList();
+                        .ToListAsync();
             }
             else
             {
-                Jokes = Database.Jokes
+                jokesList = await Database.Jokes
                         .Where(x => x.User.Id == user.Id)
                         .OrderBy(x => Guid.NewGuid())
                         .Take(10)
-                        .ToList();
+                        .ToListAsync();
             }
 
-            if (Jokes.Count is 0)
+            if (jokesList.Count is 0)
             {
                 return new ErrorResult(CommandError.ObjectNotFound, "No jokes in the database");
             }
 
-            EmbedBuilder embedBuilder = new EmbedBuilder().Create(Context.User);
+            Embed embed = EmbedFactory.Create(ResultType.Info, builder => {
+                builder.WithTitle("Here's the list of jokes");
+                foreach (Joke joke in jokesList)
+                {
+                    builder.AddField($"{joke.Id} - {joke.Text}", $"Submitted by {joke.User.Username}");
+                }
+            });
 
-            foreach (Joke joke in Jokes)
-            {
-                embedBuilder.AddField($"{joke.Id} - {joke.Text}", $"Submitted by {joke.User.Username}");
-            }
-
-            return new InfoResult("Info", embedBuilder);
+            return new InfoResult(embed);
         }
 
         [Command("add joke")]
@@ -102,9 +104,9 @@ namespace TheKrystalShip.Inquisition.Core.Modules
                 User = User
             };
 
-            Database.Jokes.Add(joke);
+            await Database.Jokes.AddAsync(joke);
 
-            return new SuccessResult("Success");
+            return new SuccessResult();
         }
 
         [Command("delete joke")]
@@ -122,7 +124,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
             Database.Jokes.Remove(joke);
 
-            return new SuccessResult("Success");
+            return new SuccessResult();
         }
     }
 }

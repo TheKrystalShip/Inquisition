@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Extensions;
+using TheKrystalShip.Inquisition.Tools;
 
 namespace TheKrystalShip.Inquisition.Core.Modules
 {
@@ -20,19 +20,27 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         [Alias("tasks")]
         public async Task<RuntimeResult> ShowActivitiesAsync()
         {
-            List<Domain.Activity> ActivityList = await Database.Activities
+            List<Domain.Activity> activityList = await Database.Activities
                 .Where(x => x.User.Id == User.Id)
                 .ToListAsync();
 
-            if (ActivityList.Count is 0)
+            if (activityList.Count is 0)
             {
                 return new ErrorResult(CommandError.ObjectNotFound, "No activities were found");
             }
 
-            EmbedBuilder embed = new EmbedBuilder()
-                .Create(ActivityList);
+            Embed embed = EmbedFactory.Create(ResultType.Success, builder => {
+                foreach (Domain.Activity activity in activityList)
+                {
+                    builder.AddField(field => {
+                        field.WithName(activity.Name);
+                        field.WithValue(activity.Arguments);
+                        field.WithIsInline(false);
+                    });
+                }
+            });
 
-            return new SuccessResult("Success", embed);
+            return new SuccessResult(embed);
         }
     }
 

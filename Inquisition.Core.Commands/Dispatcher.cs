@@ -21,16 +21,15 @@ namespace TheKrystalShip.Inquisition.Core.Commands
             switch (result)
             {
                 case SuccessResult success:
-                    Embed successEmbed = new EmbedBuilder().CreateSuccess(title: "Success", message: success.Reason).Build();
-                    await context.Channel.SendMessageAsync(string.Empty, false, successEmbed);
+                    await context.Channel.SendMessageAsync(success?.Reason, false, success.Embed ?? success.EmbedBuilder?.Build());
                     break;
                 case InfoResult info:
-                    Embed infoEmbed = new EmbedBuilder().CreateInfo(title: "Info", message: info.Reason).Build();
-                    await context.Channel.SendMessageAsync(string.Empty, false, infoEmbed);
+                    await context.Channel.SendMessageAsync(info?.Reason, false, info.Embed ?? info.EmbedBuilder?.Build());
                     break;
                 case ErrorResult error:
-                    Embed errorEmbed = new EmbedBuilder().CreateError(title: error.Error.ToString(), message: error.Reason).Build();
-                    await context.Channel.SendMessageAsync(string.Empty, false, errorEmbed);
+                    await context
+                        .Channel
+                        .SendMessageAsync(error?.Reason, false, error.Embed ?? error.EmbedBuilder?.Build());
                     break;
                 default:
                     break;
