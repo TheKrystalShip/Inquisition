@@ -19,7 +19,7 @@ namespace TheKrystalShip.Inquisition.Tools
                     embedBuilder.WithColor(Color.DarkGreen);
                     break;
                 case ResultType.Info:
-                    embedBuilder.WithColor(Color.DarkTeal);
+                    embedBuilder.WithColor(Color.DarkBlue);
                     break;
                 case ResultType.Warning:
                     embedBuilder.WithColor(Color.DarkOrange);

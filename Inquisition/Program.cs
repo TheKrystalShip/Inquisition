@@ -11,8 +11,6 @@ namespace TheKrystalShip.Inquisition
             await BotBuilder
                 .UseStartup<Startup>()
                 .ConfigureDatabase()
-                .ConfigureManagers()
-                .ConfigureHandlers()
                 .ConfigureServices()
                 .ConfigureClient()
                 .ConfigureEvents()

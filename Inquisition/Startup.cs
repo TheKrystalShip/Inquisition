@@ -32,25 +32,15 @@ namespace TheKrystalShip.Inquisition
             return this;
         }
 
-        public Startup ConfigureHandlers()
+        public Startup ConfigureServices()
         {
             Container.Add<PrefixHandler>();
 
-            return this;
-        }
-
-        public Startup ConfigureManagers()
-        {
             Container.Add<ChannelManager>();
             Container.Add<GuildManager>();
             Container.Add<RoleManager>();
             Container.Add<UserManager>();
 
-            return this;
-        }
-
-        public Startup ConfigureServices()
-        {
             Container.Add<ActivityService>();
             Container.Add<AudioService>();
             Container.Add<GameService>();
