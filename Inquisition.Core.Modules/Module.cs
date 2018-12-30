@@ -17,13 +17,13 @@ namespace TheKrystalShip.Inquisition.Core.Modules
         public IDbContext Database { get; private set; }
         public Guild Guild { get; private set; }
         public User User { get; private set; }
-        public PrefixHandler Prefix { get; private set; }
+        public IPrefixHandler Prefix { get; private set; }
         public ILogger<Module> Logger { get; private set; }
 
         public Module()
         {
             Database = Container.Get<IDbContext>();
-            Prefix = Container.Get<PrefixHandler>();
+            Prefix = Container.Get<IPrefixHandler>();
             Logger = new Logger<Module>();
         }
 

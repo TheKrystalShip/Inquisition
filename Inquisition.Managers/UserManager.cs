@@ -11,7 +11,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Managers
 {
-    public class UserManager
+    public class UserManager : IUserManager
     {
         private readonly IDbContext _dbContext;
         private readonly ILogger<UserManager> _logger;

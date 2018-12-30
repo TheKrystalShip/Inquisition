@@ -6,7 +6,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Managers
 {
-    public class ChannelManager
+    public class ChannelManager : IChannelManager
     {
         private readonly ILogger<ChannelManager> _logger;
 

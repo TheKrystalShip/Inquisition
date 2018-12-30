@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.0.0-beta" />
+    <PackageReference Include="Discord.Net" Version="2.0.0" />
     <PackageReference Include="TheKrystalShip.DependencyInjection" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Inquisition.Core.Modules\Inquisition.Core.Modules.csproj" />
+    <ProjectReference Include="..\Inquisition.Core\Inquisition.Core.csproj" />
     <ProjectReference Include="..\Inquisition.Handlers\Inquisition.Handlers.csproj" />
   </ItemGroup>
 

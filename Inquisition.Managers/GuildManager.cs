@@ -6,7 +6,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Managers
 {
-    public class GuildManager
+    public class GuildManager : IGuildManager
     {
         private readonly ILogger<GuildManager> _logger;
 

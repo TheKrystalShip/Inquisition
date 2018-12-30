@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="TheKrystalShip.Tools.Configuration" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>mscorlib</HintPath>
     </Reference>
@@ -33,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Inquisition.Core.Commands\Inquisition.Core.Commands.csproj" />
     <ProjectReference Include="..\Inquisition.Core\Inquisition.Core.csproj" />
     <ProjectReference Include="..\Inquisition.Database.Domain\Inquisition.Database.Domain.csproj" />
     <ProjectReference Include="..\Inquisition.Database.SQLite\Inquisition.Database.SQLite.csproj" />

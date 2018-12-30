@@ -4,6 +4,7 @@ using Discord.WebSocket;
 
 using Microsoft.EntityFrameworkCore;
 
+using System.IO;
 using System.Threading.Tasks;
 
 using TheKrystalShip.DependencyInjection;
@@ -14,17 +15,24 @@ using TheKrystalShip.Inquisition.Database.SQLite;
 using TheKrystalShip.Inquisition.Handlers;
 using TheKrystalShip.Inquisition.Managers;
 using TheKrystalShip.Inquisition.Services;
-using TheKrystalShip.Inquisition.Tools;
+using TheKrystalShip.Tools.Configuration;
 
 namespace TheKrystalShip.Inquisition
 {
     public class Startup
     {
+        public Startup()
+        {
+            Configuration.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "Properties"));
+            Configuration.AddFiles("secrets.json", "settings.json");
+        }
+
         public Startup ConfigureDatabase()
         {
             DbContextOptionsBuilder<SQLiteContext> builder = new DbContextOptionsBuilder<SQLiteContext>();
             builder.UseSqlite(Configuration.GetConnectionString("SQLite"));
             SQLiteContext context = new SQLiteContext(builder.Options);
+
             context.Migrate();
 
             Container.Add<IDbContext>(context);
@@ -34,12 +42,12 @@ namespace TheKrystalShip.Inquisition
 
         public Startup ConfigureServices()
         {
-            Container.Add<PrefixHandler>();
+            Container.Add<IPrefixHandler, PrefixHandler>();
 
-            Container.Add<ChannelManager>();
-            Container.Add<GuildManager>();
-            Container.Add<RoleManager>();
-            Container.Add<UserManager>();
+            Container.Add<IChannelManager, ChannelManager>();
+            Container.Add<IGuildManager, GuildManager>();
+            Container.Add<IRoleManager, RoleManager>();
+            Container.Add<IUserManager, UserManager>();
 
             Container.Add<ActivityService>();
             Container.Add<AudioService>();
@@ -72,8 +80,13 @@ namespace TheKrystalShip.Inquisition
             client.MessageReceived += commandHandler.OnClientMessageRecievedAsync;
             client.InitAsync(Configuration.Get("Bot:Token")).Wait();
 
+            commandHandler.Log += commandHandler.OnLog;
+            commandHandler.CommandExecuted += Dispatcher.Dispatch;
+
             Container.Add(client);
-            Container.Add(commandHandler);
+            Container.Add<ICommandHandler>(commandHandler);
+
+            commandHandler.LoadModulesAsync().Wait();
 
             return this;
         }
@@ -82,10 +95,10 @@ namespace TheKrystalShip.Inquisition
         {
             Bot client = Container.Get<Bot>();
 
-            UserManager userManager = Container.Get<UserManager>();
-            RoleManager roleManager = Container.Get<RoleManager>();
-            ChannelManager channelManager = Container.Get<ChannelManager>();
-            GuildManager guildManager = Container.Get<GuildManager>();
+            IUserManager userManager = Container.Get<IUserManager>();
+            IRoleManager roleManager = Container.Get<IRoleManager>();
+            IChannelManager channelManager = Container.Get<IChannelManager>();
+            IGuildManager guildManager = Container.Get<IGuildManager>();
 
             client.ChannelCreated += channelManager.OnChannelCreatedAsync;
             client.ChannelDestroyed += channelManager.OnChannelDestroyedAsync;

@@ -6,7 +6,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Managers
 {
-    public class RoleManager
+    public class RoleManager : IRoleManager
     {
         private readonly ILogger<RoleManager> _logger;
 

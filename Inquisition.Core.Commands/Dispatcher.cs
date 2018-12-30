@@ -10,7 +10,7 @@ namespace TheKrystalShip.Inquisition.Core.Commands
 {
     public static class Dispatcher
     {
-        public static async Task Dispatch(CommandInfo command, ICommandContext context, IResult result)
+        public static async Task Dispatch(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             if (!result.IsSuccess)
             {
@@ -21,15 +21,15 @@ namespace TheKrystalShip.Inquisition.Core.Commands
             switch (result)
             {
                 case SuccessResult success:
-                    await context.Channel.SendMessageAsync(success?.Reason, false, success.Embed ?? success.EmbedBuilder?.Build());
+                    await context.Channel.SendMessageAsync(success?.Reason, false, success.Embed);
                     break;
                 case InfoResult info:
-                    await context.Channel.SendMessageAsync(info?.Reason, false, info.Embed ?? info.EmbedBuilder?.Build());
+                    await context.Channel.SendMessageAsync(info?.Reason, false, info.Embed);
                     break;
                 case ErrorResult error:
                     await context
                         .Channel
-                        .SendMessageAsync(error?.Reason, false, error.Embed ?? error.EmbedBuilder?.Build());
+                        .SendMessageAsync(error?.Reason, false, error.Embed);
                     break;
                 default:
                     break;

@@ -8,7 +8,7 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Handlers
 {
-    public class PrefixHandler
+    public class PrefixHandler : IPrefixHandler
     {
 		private readonly IDbContext _dbContext;
         private readonly ConcurrentDictionary<ulong, string> _prefixDictionary;

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 
 using TheKrystalShip.Inquisition.Database.SQLite;
-using TheKrystalShip.Inquisition.Tools;
+using TheKrystalShip.Tools.Configuration;
 
 namespace TheKrystalShip.Inquisition.Database
 {

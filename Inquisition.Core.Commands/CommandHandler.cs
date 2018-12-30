@@ -11,18 +11,20 @@ using TheKrystalShip.Logging;
 
 namespace TheKrystalShip.Inquisition.Core.Commands
 {
-    public class CommandHandler : CommandService
+    public class CommandHandler : CommandService, ICommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly ILogger<CommandHandler> _logger;
 
-        public CommandHandler(DiscordSocketClient client,CommandServiceConfig config) : base(config)
+        public CommandHandler(DiscordSocketClient client, CommandServiceConfig config) : base(config)
         {
-            AddModulesAsync(Assembly.GetAssembly(typeof(Modules.Module))).Wait();
             _client = client;
             _logger = new Logger<CommandHandler>();
-            Log += OnLog;
-            CommandExecuted += Dispatcher.Dispatch;
+        }
+
+        public async Task LoadModulesAsync()
+        {
+            await AddModulesAsync(Assembly.GetAssembly(typeof(Modules.Module)), Container.GetServiceProvider());
         }
 
         public Task OnLog(LogMessage logMessage)

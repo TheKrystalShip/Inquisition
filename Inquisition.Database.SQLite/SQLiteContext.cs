@@ -3,7 +3,7 @@
 using System.Threading.Tasks;
 
 using TheKrystalShip.Inquisition.Domain;
-using TheKrystalShip.Inquisition.Tools;
+using TheKrystalShip.Tools.Configuration;
 
 namespace TheKrystalShip.Inquisition.Database.SQLite
 {

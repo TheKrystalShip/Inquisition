@@ -5,7 +5,6 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 {
     public class WarningResult : RuntimeResult
     {
-        public EmbedBuilder EmbedBuilder { get; set; }
         public Embed Embed { get; set; }
 
         // Redirect all constructors to this one
@@ -21,7 +20,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         public WarningResult(string message, EmbedBuilder embedBuilder) : this(null, message)
         {
-            EmbedBuilder = embedBuilder;
+            Embed = embedBuilder.Build();
         }
 
         public WarningResult(string message, Embed embed) : this(null, message)
@@ -31,7 +30,7 @@ namespace TheKrystalShip.Inquisition.Core.Modules
 
         public WarningResult(EmbedBuilder embedBuilder) : this(null, "Warning")
         {
-            EmbedBuilder = embedBuilder;
+            Embed = embedBuilder.Build();
         }
 
         public WarningResult(Embed embed) : this(null, "Warning")
